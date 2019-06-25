@@ -9,6 +9,7 @@ inputs:
   - name: bin_gpdb
   - name: gpdb_src
   - name: greenplum-database-release_src
+  - name: license_file
 
 outputs:
   - name: gpdb_debian_installer
@@ -22,7 +23,6 @@ params:
   #  To override, please do so in pipeline
   GPDB_NAME: greenplum-db
   GPDB_SUMMARY: Greenplum-DB
-  GPDB_LICENSE: Pivotal Software EULA
   GPDB_URL: https://network.pivotal.io/products/pivotal-gpdb/
   GPDB_BUILDARCH: amd64
   GPDB_DESCRIPTION: Pivotal Greenplum Server

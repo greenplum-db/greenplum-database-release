@@ -28,9 +28,9 @@ rm -f ${GPDB_PREFIX}/${GPDB_NAME}
 exit 0
 EOF
 	chmod 0775 "${__package_name}/DEBIAN/postrm"
-	cat <<EOF >"${__package_name}/DEBIAN/copyright"
-License: ${GPDB_LICENSE}
-EOF
+	mkdir -p "${__package_name}/usr/share/doc/greenplum-db/"
+	cp ../license_file/*.txt "${__package_name}/usr/share/doc/greenplum-db/copyright"
+
 	cat <<EOF >"${__package_name}/DEBIAN/control"
 Package: greenplum-db
 Priority: extra

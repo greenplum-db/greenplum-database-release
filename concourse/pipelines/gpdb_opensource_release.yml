@@ -231,6 +231,7 @@ jobs:
           - get: bin_gpdb_ubuntu18.04
             passed: [compile_gpdb_ubuntu18.04]
           - get: gpdb6-ubuntu18.04-build
+          - get: license_file
       # Even though we don't ship the QA utils, we still need to strip out non-shipping files
       - task: separate_qautils_files_for_rc_ubuntu18.04
         file: gpdb_src/concourse/tasks/separate_qautils_files_for_rc.yml
