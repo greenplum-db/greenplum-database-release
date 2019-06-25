@@ -1,0 +1,29 @@
+---
+
+platform: linux
+
+image_resource:
+  type: docker-image
+
+inputs:
+  - name: bin_gpdb
+  - name: gpdb_src
+  - name: greenplum-database-release_src
+
+outputs:
+  - name: gpdb_debian_installer
+
+run:
+  path: greenplum-database-release_src/concourse/scripts/build_gpdb_debian.bash
+
+params:
+  PLATFORM:
+  # Default values passed to debian package
+  #  To override, please do so in pipeline
+  GPDB_NAME: greenplum-db
+  GPDB_SUMMARY: Greenplum-DB
+  GPDB_LICENSE: Pivotal Software EULA
+  GPDB_URL: https://network.pivotal.io/products/pivotal-gpdb/
+  GPDB_BUILDARCH: amd64
+  GPDB_DESCRIPTION: Pivotal Greenplum Server
+  GPDB_PREFIX: /usr/local
