@@ -39,13 +39,10 @@ list:
 set-dev: set-pipeline-dev
 
 set-pipeline-dev:
-
-	sed -e 's|tag_filter: *|## tag_filter: |g' concourse/pipelines/gpdb_opensource_release.yml > concourse/pipelines/${PIPELINE_NAME}.yml
-
 	$(FLY_CMD) --target=${CONCOURSE} \
     set-pipeline \
     --pipeline=${PIPELINE_NAME} \
-    --config=concourse/pipelines/${PIPELINE_NAME}.yml \
+    --config=concourse/pipelines/gpdb_opensource_release.yml \
     --load-vars-from=${HOME}/workspace/gp-continuous-integration/secrets/gpdb-oss-release.dev.yml  \
     --var=greenplum-database-release-git-branch=${BRANCH} \
     --var=greenplum-database-release-git-remote=https://github.com/greenplum-db/greenplum-database-release.git \
@@ -85,4 +82,4 @@ set-pipeline-prod:
     ${FLY_OPTION_NON-INTERACTIVE}
 
 	@echo using the following command to unpause the pipeline:
-	@echo "\t$(FLY_CMD) -t prod unpause-pipeline --pipeline 6X-release"
+	@echo "\t$(FLY_CMD) -t prod unpause-pipeline --pipeline greenplum-database-release"
