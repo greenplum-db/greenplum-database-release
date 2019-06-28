@@ -145,6 +145,7 @@ export_gpdb () {
 }
 
 _main () {
+    export ORCA_TAG="$(grep 'ORCA_TAG:' gpdb_src/concourse/tasks/compile_gpdb.yml | cut -d ':' -f 2 | tr -d '[:space:]')"
     fetch_orca_src "${ORCA_TAG}"
 
     if [ -e /opt/gcc_env.sh ]; then

@@ -96,4 +96,4 @@ set-pipeline-prod:
     ${FLY_OPTION_NON-INTERACTIVE}
 
 	@echo using the following command to unpause the pipeline:
-	@echo "\t$(FLY_CMD) -t prod unpause-pipeline --pipeline 6X-release"
+	@echo "\t$(FLY_CMD) -t prod unpause-pipeline --pipeline greenplum-database-release"

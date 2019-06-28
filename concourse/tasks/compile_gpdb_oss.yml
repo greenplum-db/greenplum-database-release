@@ -25,6 +25,3 @@ outputs:
 
 run:
   path: greenplum-database-release_src/concourse/scripts/compile_gpdb_oss.bash
-
-params:
-  ORCA_TAG: v3.51.0
