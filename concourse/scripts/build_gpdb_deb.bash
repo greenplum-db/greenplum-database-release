@@ -40,7 +40,9 @@ exit 0
 EOF
 	chmod 0775 "${__package_name}/DEBIAN/postrm"
 	mkdir -p "${__package_name}/usr/share/doc/greenplum-db/"
-	cp ../license_file/*.txt "${__package_name}/usr/share/doc/greenplum-db/copyright"
+	if [ -d ../license_file ]; then
+	    cp ../license_file/*.txt "${__package_name}/usr/share/doc/greenplum-db/copyright"
+	fi
 
 	cat <<EOF >"${__package_name}/DEBIAN/control"
 Package: greenplum-db

@@ -18,14 +18,16 @@ image_resource:
 inputs:
   - name: bin_gpdb
   - name: gpdb_src
-  - name: greenplum-database-release_src
+    optional: true
+  - name: greenplum-database-release
   - name: license_file
+    optional: true
 
 outputs:
   - name: gpdb_deb_installer
 
 run:
-  path: greenplum-database-release_src/concourse/scripts/build_gpdb_deb.bash
+  path: greenplum-database-release/concourse/scripts/build_gpdb_deb.bash
 
 params:
   PLATFORM:

@@ -18,10 +18,10 @@ image_resource:
 inputs:
   - name: gpdb_src
   - name: python-tarball
-  - name: greenplum-database-release_src
+  - name: greenplum-database-release
 
 outputs:
   - name: gpdb_artifacts
 
 run:
-  path: greenplum-database-release_src/concourse/scripts/compile_gpdb_oss.bash
+  path: greenplum-database-release/concourse/scripts/compile_gpdb_oss.bash
