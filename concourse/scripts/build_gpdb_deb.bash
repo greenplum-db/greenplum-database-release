@@ -14,6 +14,19 @@
 set -eo pipefail
 set -x
 
+function set_gpdb_version_from_source() {
+  GPDB_VERSION=$(./gpdb_src/getversion --short | grep -Po '^[^+]*')
+  export GPDB_VERSION
+}
+
+function set_gpdb_version_from_binary() {
+  apt-get update
+  apt-get install -y jq
+
+  GPDB_VERSION="$(tar xzf bin_gpdb/*.tar.gz -O ./etc/git-info.json | jq -r '.root.version')"
+  export GPDB_VERSION
+}
+
 function build_deb() {
 
 	local __package_name=$1
@@ -93,8 +106,13 @@ function _main() {
 	local __final_package_name
 	local __built_deb
 
-	if [[ -z "${GPDB_VERSION}" ]]; then
-		export GPDB_VERSION="$(./gpdb_src/getversion --short | grep -Po '^[^+]*')"
+	if [[ -d gpdb_src ]]; then
+		set_gpdb_version_from_source
+	elif [[ -d bin_gpdb ]]; then
+		set_gpdb_version_from_binary
+	else
+		echo "[FATAL] Missing gpdb_src and bin_gpdb; needed to set GPDB_VERSION"
+		exit 1
 	fi
 	echo "[INFO] Building deb installer for GPDB version: ${GPDB_VERSION}"
 
@@ -112,7 +130,7 @@ function _main() {
 	# case `bin_gpdb` is expected to contain files `bin_gpdb.tar.gz` and `QAUtils-<platform>-<arch>.tar.gz`
 	if [[ -f bin_gpdb/bin_gpdb.tar.gz ]]; then
 		build_deb "${__final_package_name}" bin_gpdb/bin_gpdb.tar.gz
-    else
+    	else
 		build_deb "${__final_package_name}" bin_gpdb/server-*.tar.gz
 	fi
 	# Export the built deb and include a sha256 hash
