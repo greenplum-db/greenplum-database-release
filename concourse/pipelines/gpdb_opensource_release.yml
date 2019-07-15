@@ -100,6 +100,13 @@ resources:
       json_key: ((concourse-gcs-resources-service-account-key))
       regexp: greenplum-oss-server/released/gpdb6/server-(.*)-rhel6_x86_64.tar.gz
 
+  - name: gpdb_rpm_installer_centos6
+    type: gcs
+    source:
+      bucket: ((gcs-bucket-for-oss))
+      json_key: ((concourse-gcs-resources-service-account-key))
+      regexp: greenplum-oss-server/released/gpdb6/greenplum-db-(.*)-rhel6-x86_64.rpm
+
   ## RHEL7 Resources
   - name: bin_gpdb_centos7
     type: gcs
@@ -114,6 +121,13 @@ resources:
       bucket: ((gcs-bucket-for-oss))
       json_key: ((concourse-gcs-resources-service-account-key))
       regexp: greenplum-oss-server/released/gpdb6/server-(.*)-rhel7_x86_64.tar.gz
+
+  - name: gpdb_rpm_installer_centos7
+    type: gcs
+    source:
+      bucket: ((gcs-bucket-for-oss))
+      json_key: ((concourse-gcs-resources-service-account-key))
+      regexp: greenplum-oss-server/released/gpdb6/greenplum-db-(.*)-rhel7-x86_64.rpm
 
   ## Ubuntu18.04 Resources
   - name: bin_gpdb_ubuntu18.04
@@ -186,45 +200,89 @@ jobs:
         params:
           file: gpdb_artifacts/bin_gpdb.tar.gz
 
-  - name: create_gpdb_tarball_centos6
+  - name: rhel6 packaging
     plan:
       - aggregate:
           - get: gpdb_src
             trigger: true
             passed: [compile_gpdb_centos6]
+          - get: greenplum-database-release
+            passed: [compile_gpdb_centos6]
           - get: bin_gpdb_centos6
             passed: [compile_gpdb_centos6]
           - get: gpdb6-centos6-build
+          - get: license_file
       - task: remove_non_production_files
         file: gpdb_src/concourse/tasks/remove_non_production_files.yml
         image: gpdb6-centos6-build
         input_mapping:
           bin_gpdb: bin_gpdb_centos6
         output_mapping:
-          rc_bin_gpdb: rc_bin_gpdb_rhel6
-      - put: bin_gpdb_centos6
+          rc_bin_gpdb: rc_bin_gpdb_centos6
+      - task: create_gpdb_rpm_package
+        file: greenplum-database-release/concourse/tasks/build_gpdb_rpm.yml
+        image: gpdb6-centos6-build
+        input_mapping:
+          bin_gpdb: rc_bin_gpdb_centos6
         params:
-          file: rc_bin_gpdb_rhel6/bin_gpdb.tar.gz
+          PLATFORM: "rhel6"
+          GPDB_NAME: greenplum-database
+          GPDB_RELEASE: 1
+          GPDB_SUMMARY: Greenplum-DB
+          GPDB_LICENSE: Pivotal Software EULA
+          GPDB_URL: https://github.com/greenplum-db/gpdb
+          GPDB_BUILDARCH: x86_64
+          GPDB_DESCRIPTION: Greenplum Database
+          GPDB_PREFIX: /usr/local
+      - aggregate:
+          - put: bin_gpdb_centos6
+            params:
+              file: rc_bin_gpdb_centos6/bin_gpdb.tar.gz
+          - put: gpdb_rpm_installer_centos6
+            params:
+              file: gpdb_rpm_installer/*.rpm
 
-  - name: create_gpdb_tarball_centos7
+  - name: rhel7 packaging
     plan:
       - aggregate:
           - get: gpdb_src
             trigger: true
             passed: [compile_gpdb_centos7]
+          - get: greenplum-database-release
+            passed: [compile_gpdb_centos7]
           - get: bin_gpdb_centos7
             passed: [compile_gpdb_centos7]
           - get: gpdb6-centos7-build
+          - get: license_file
       - task: remove_non_production_files
         file: gpdb_src/concourse/tasks/remove_non_production_files.yml
         image: gpdb6-centos7-build
         input_mapping:
           bin_gpdb: bin_gpdb_centos7
         output_mapping:
-          rc_bin_gpdb: rc_bin_gpdb_rhel7
-      - put: bin_gpdb_centos7
+          rc_bin_gpdb: rc_bin_gpdb_centos7
+      - task: create_gpdb_rpm_package
+        file: greenplum-database-release/concourse/tasks/build_gpdb_rpm.yml
+        image: gpdb6-centos7-build
+        input_mapping:
+          bin_gpdb: rc_bin_gpdb_centos7
         params:
-          file: rc_bin_gpdb_rhel7/bin_gpdb.tar.gz
+          PLATFORM: "rhel7"
+          GPDB_NAME: greenplum-database
+          GPDB_RELEASE: 1
+          GPDB_SUMMARY: Greenplum-DB
+          GPDB_LICENSE: Pivotal Software EULA
+          GPDB_URL: https://github.com/greenplum-db/gpdb
+          GPDB_BUILDARCH: x86_64
+          GPDB_DESCRIPTION: Greenplum Database
+          GPDB_PREFIX: /usr/local
+      - aggregate:
+          - put: bin_gpdb_centos7
+            params:
+              file: rc_bin_gpdb_centos7/bin_gpdb.tar.gz
+          - put: gpdb_rpm_installer_centos7
+            params:
+              file: gpdb_rpm_installer/*.rpm
 
   - name: ubuntu18.04 packaging
     plan:
@@ -265,18 +323,22 @@ jobs:
       - aggregate:
           - get: gpdb_src
             passed:
-              - create_gpdb_tarball_centos6
-              - create_gpdb_tarball_centos7
+              - rhel6 packaging
+              - rhel7 packaging
               - ubuntu18.04 packaging
           - get: bin_gpdb_centos6
-            passed: [create_gpdb_tarball_centos6]
+            passed: [rhel6 packaging]
             trigger: true
           - get: bin_gpdb_centos7
-            passed: [create_gpdb_tarball_centos7]
+            passed: [rhel7 packaging]
             trigger: true
           - get: bin_gpdb_ubuntu18.04
             passed: [ubuntu18.04 packaging]
             trigger: true
+          - get: gpdb_rpm_installer_centos6
+            passed: [rhel6 packaging]
+          - get: gpdb_rpm_installer_centos7
+            passed: [rhel7 packaging]
           - get: gpdb_deb_package
             passed: [ubuntu18.04 packaging]
           - get: gpdb6-centos6-build
@@ -323,6 +385,10 @@ jobs:
             trigger: true
             passed: [release]
           - get: license_file
+          - get: gpdb_rpm_installer_centos6
+            passed: [release]
+          - get: gpdb_rpm_installer_centos7
+            passed: [release]
           - get: gpdb_deb_package
             passed: [release]
           - get: greenplum-database-release
@@ -338,4 +404,6 @@ jobs:
             - release_artifacts/*.tar.gz
             - release_artifacts/*.zip
             - license_file/*.txt
+            - gpdb_rpm_installer_centos6/*.rpm
+            - gpdb_rpm_installer_centos7/*.rpm
             - gpdb_deb_package/*.deb
