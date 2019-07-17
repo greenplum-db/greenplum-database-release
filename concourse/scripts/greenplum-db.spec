@@ -75,6 +75,12 @@ cp -R * %{buildroot}%{bin_gpdb}
 exit 0
 
 %files
+# only Open Source Greenplum provide copyright, and the difference is the gpdb_name
+# for open source greenplum it is greenplum-database, while non open source greenplum is greenplum-db
+%if "%{gpdb_name}" == "greenplum-database"
+%doc copyright
+%{bin_gpdb}/copyright
+%endif
 %{bin_gpdb}
 
 %clean

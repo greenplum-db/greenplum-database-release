@@ -35,8 +35,20 @@ function determine_rpm_build_dir() {
 function setup_rpm_buildroot() {
   local __rpm_build_dir="${1}"
   local __gpdb_binary_tarbal="${2}"
+  local __bin_gpdb
 
   mkdir -p "${__rpm_build_dir}"/{SOURCES,SPECS}
+  # GPDB_NAME="greenplum-database" indicates open source gpdb and it requires license_file exist.
+  if [ "${GPDB_NAME}" == "greenplum-database" ]; then
+    if [ ! -d license_file ]; then
+      die "Not provide license_file when build open source gpdb rpm"
+    fi
+    gunzip "${__gpdb_binary_tarbal}"
+    cp license_file/*.txt copyright
+    __bin_gpdb=$(dirname "${__gpdb_binary_tarbal}")
+    tar rf "${__bin_gpdb}"/*.tar copyright
+    gzip "${__bin_gpdb}"/*.tar
+  fi
   cp "${__gpdb_binary_tarbal}" "${__rpm_build_dir}/SOURCES/gpdb.tar.gz"
 }
 
@@ -109,7 +121,7 @@ function _main() {
   echo "[INFO] GPDB version modified for rpm requirements: ${__rpm_gpdb_version}"
 
   # Build the expected rpm name based on the gpdb version of the artifacts
-  __final_rpm_name="greenplum-db-${__gpdb_version}-${PLATFORM}-x86_64.rpm"
+  __final_rpm_name="${GPDB_NAME}-${__gpdb_version}-${PLATFORM}-x86_64.rpm"
   echo "[INFO] Final RPM name: ${__final_rpm_name}"
 
   # Conventional location to build RPMs is platform specific
