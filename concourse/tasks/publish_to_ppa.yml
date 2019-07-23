@@ -27,12 +27,14 @@ run:
   args:
   - -ec
   - |
-    cp greenplum-database-release/concourse/publish_to_ppa/dput.cf ~/.dput.cf
+    cp greenplum-database-release/concourse/scripts/dput.cf ~/.dput.cf
     apt-get update -q=2
     apt-get install -q=2 -y software-properties-common debmake equivs git
     gpg --import <(echo "${GPG_PRIVATE_KEY}")
-    pushd greenplum-database-release/concourse/publish_to_ppa && python3 -m unittest run_test && popd
-    python3 greenplum-database-release/concourse/publish_to_ppa/run.py
+
+    export PYTHONPATH=${PWD}/greenplum-database-release/concourse
+    pushd greenplum-database-release/concourse && python3 -m unittest tests/ppa_test.py && popd
+    python3 greenplum-database-release/concourse/scripts/publish_to_ppa.py
 
 params:
   PPA_REPO:

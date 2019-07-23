@@ -326,7 +326,7 @@ jobs:
       - get: bin_gpdb_ubuntu18.04
         passed: [compile_gpdb_ubuntu18.04]
     - task: push to ppa
-      file: greenplum-database-release/concourse/publish_to_ppa/task.yml
+      file: greenplum-database-release/concourse/tasks/publish_to_ppa.yml
       params:
         PPA_REPO: ((ppa-repository))
         GPG_PRIVATE_KEY: ((gpg-private-key))

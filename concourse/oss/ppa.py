@@ -12,12 +12,11 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 import fileinput
-import json
 import os
-import re
 import shutil
-import subprocess
 import tarfile
+
+from oss.utils import Util
 
 
 class DebianPackageBuilder:
@@ -221,40 +220,3 @@ class SourcePackageBuilder:
                |  contributions.  For the Greenplum Database community, no contribution is too
                |  small, we encourage all types of contributions.
                |''')
-
-
-class Util:
-    @staticmethod
-    def strip_margin(text):
-        return re.sub(r'\n[ \t]*\|', '\n', text)
-
-    @staticmethod
-    def extract_gpdb_version(bin_gpdb_path):
-        with tarfile.open(bin_gpdb_path) as bin_gpdb_tar:
-            member = bin_gpdb_tar.getmember('./etc/git-info.json')
-            with bin_gpdb_tar.extractfile(member) as fd:
-                git_info = json.loads(fd.read())
-        return git_info['root']['version']
-
-    @staticmethod
-    def run_or_fail(cmd, cwd="."):
-        return_code = subprocess.call(cmd, cwd=cwd)
-        if return_code != 0:
-            full_cmd = ' '.join(cmd)
-            raise SystemExit(f'Exit {return_code}: Command "{full_cmd}" failed.\n')
-
-
-if __name__ == '__main__':
-    source_package = SourcePackageBuilder(
-        bin_gpdb_path='bin_gpdb_ubuntu18.04/bin_gpdb.tar.gz',
-        package_name='greenplum-database',
-        release_message=os.environ["RELEASE_MESSAGE"]
-    ).build()
-
-    builder = DebianPackageBuilder(source_package=source_package)
-    builder.build_binary()
-    builder.build_source()
-
-    ppa_repo = os.environ["PPA_REPO"]
-    publisher = LaunchpadPublisher(ppa_repo, source_package)
-    publisher.publish()
