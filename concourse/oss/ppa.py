@@ -96,6 +96,7 @@ class SourcePackageBuilder:
 
         self.replace_greenplum_path()
 
+        # using _ here is debian convention
         archive_name = f'{self.package_name}_{self.gpdb_version_short}.orig.tar.gz'
         with tarfile.open(archive_name, 'w:gz') as tar:
             tar.add(self.source_dir, arcname=os.path.basename(self.source_dir))
