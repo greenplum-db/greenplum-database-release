@@ -19,8 +19,11 @@ image_resource:
     tag: 18.04
 
 inputs:
-  - name: bin_gpdb_ubuntu18.04
+  - name: bin_gpdb
   - name: greenplum-database-release
+
+outputs:
+  - name: gpdb_deb_installer
 
 run:
   path: bash
@@ -30,7 +33,7 @@ run:
     cp greenplum-database-release/concourse/publish_to_ppa/dput.cf ~/.dput.cf
     apt-get update -q=2
     apt-get install -q=2 -y software-properties-common debmake equivs git
-    gpg --import <(echo "${GPG_PRIVATE_KEY}")
+    if [ ! -z "${GPG_PRIVATE_KEY}" ]; then gpg --import <(echo "${GPG_PRIVATE_KEY}"); fi
     pushd greenplum-database-release/concourse/publish_to_ppa && python3 -m unittest run_test && popd
     python3 greenplum-database-release/concourse/publish_to_ppa/run.py
 

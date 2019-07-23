@@ -18,6 +18,7 @@ import re
 import shutil
 import subprocess
 import tarfile
+import glob
 
 
 class DebianPackageBuilder:
@@ -96,6 +97,10 @@ class SourcePackageBuilder:
             tar.extractall(dest)
 
         self.replace_greenplum_path()
+
+        if os.path.exists("license_file"):
+            cmd = ['cp', glob.glob("license_file/*.txt")[0], os.path.join(self.source_dir, 'bin_gpdb', open_source_license_greenplum_database.txt)]
+            Util.run_or_fail(cmd)
 
         archive_name = f'{self.package_name}_{self.gpdb_version_short}.orig.tar.gz'
         with tarfile.open(archive_name, 'w:gz') as tar:
@@ -245,13 +250,19 @@ class Util:
 
 if __name__ == '__main__':
     source_package = SourcePackageBuilder(
-        bin_gpdb_path='bin_gpdb_ubuntu18.04/bin_gpdb.tar.gz',
+        bin_gpdb_path='bin_gpdb/bin_gpdb.tar.gz',
         package_name='greenplum-database',
         release_message=os.environ["RELEASE_MESSAGE"]
     ).build()
 
     builder = DebianPackageBuilder(source_package=source_package)
     builder.build_binary()
+    cmd = ['cp', glob.glob("*.deb")[0], 'gpdb_deb_installer/']
+    Util.run_or_fail(cmd)
+
+    # if PPA_REPO is not set, do not need to publish to ppa
+    if os.environ["PPA_REPO"].strip() == 'null' or os.environ["PPA_REPO"].strip() == '':
+        exit()
     builder.build_source()
 
     ppa_repo = os.environ["PPA_REPO"]

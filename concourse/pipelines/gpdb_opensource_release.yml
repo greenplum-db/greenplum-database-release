@@ -303,13 +303,16 @@ jobs:
           bin_gpdb: bin_gpdb_ubuntu18.04
         output_mapping:
           rc_bin_gpdb: rc_bin_gpdb_ubuntu18.04
-      - task: create_gpdb_deb_package
-        file: greenplum-database-release/concourse/tasks/build_gpdb_deb.yml
-        image: gpdb6-ubuntu18.04-build
+      - task: publish to ppa
+        file: greenplum-database-release/concourse/publish_to_ppa/task.yml
         input_mapping:
           bin_gpdb: rc_bin_gpdb_ubuntu18.04
         params:
-          PLATFORM: "ubuntu18.04"
+          PPA_REPO: ((ppa-repository))
+          GPG_PRIVATE_KEY: ((gpg-private-key))
+          RELEASE_MESSAGE: ((release-message))
+          DEBFULLNAME: ((debian-package-maintainer-fullname))
+          DEBEMAIL: ((debian-package-maintainer-email))
       - aggregate:
         - put: bin_gpdb_ubuntu18.04
           params:
@@ -317,22 +320,6 @@ jobs:
         - put: gpdb_deb_package
           params:
             file: gpdb_deb_installer/*.deb
-
-  - name: publish to ppa
-    plan:
-    - aggregate:
-      - get: greenplum-database-release
-        passed: [compile_gpdb_ubuntu18.04]
-      - get: bin_gpdb_ubuntu18.04
-        passed: [compile_gpdb_ubuntu18.04]
-    - task: push to ppa
-      file: greenplum-database-release/concourse/publish_to_ppa/task.yml
-      params:
-        PPA_REPO: ((ppa-repository))
-        GPG_PRIVATE_KEY: ((gpg-private-key))
-        RELEASE_MESSAGE: ((release-message))
-        DEBFULLNAME: ((debian-package-maintainer-fullname))
-        DEBEMAIL: ((debian-package-maintainer-email))
 
   - name: release
     plan:

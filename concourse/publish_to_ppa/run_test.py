@@ -16,7 +16,7 @@ import tempfile
 from pathlib import Path
 from run import DebianPackageBuilder, LaunchpadPublisher, \
     SourcePackage, SourcePackageBuilder, Util
-from unittest import TestCase
+from unittest import TestCase, skipIf
 from unittest.mock import patch, call, PropertyMock, Mock
 
 
@@ -34,6 +34,7 @@ class TestDebianPackageBuilder(TestCase):
                                               cwd="some-dir")
 
     @patch('run.Util.run_or_fail')
+    @skipIf(os.environ["PPA_REPO"].strip() == 'null' or os.environ["PPA_REPO"].strip() == '', "gpg private key only needed when publish to ppa")
     def test_build_source(self, mocked_run_or_fail):
         self.debian_package_builder.build_source()
         mocked_run_or_fail.assert_called_with(['debuild', '-S', '-sa'], cwd="some-dir")
