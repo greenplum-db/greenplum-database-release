@@ -1,0 +1,4 @@
+*.pyc
+concourse/pipelines/greenplum-database-release-*.yml
+concourse/oss/__pycache__/
+concourse/tests/__pycache__/

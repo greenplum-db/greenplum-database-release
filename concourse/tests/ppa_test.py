@@ -14,10 +14,11 @@ import shutil
 import tarfile
 import tempfile
 from pathlib import Path
-from run import DebianPackageBuilder, LaunchpadPublisher, \
-    SourcePackage, SourcePackageBuilder, Util
 from unittest import TestCase
 from unittest.mock import patch, call, PropertyMock, Mock
+
+from oss.ppa import SourcePackageBuilder, SourcePackage, LaunchpadPublisher, DebianPackageBuilder
+from oss.utils import Util
 
 
 class TestDebianPackageBuilder(TestCase):
@@ -26,14 +27,14 @@ class TestDebianPackageBuilder(TestCase):
         source_package_mock.dir.return_value = "some-dir"
         self.debian_package_builder = DebianPackageBuilder(source_package_mock)
 
-    @patch('run.Util.run_or_fail')
+    @patch('oss.utils.Util.run_or_fail')
     def test_build_binary(self, mocked_run_or_fail):
         self.debian_package_builder.build_binary()
         mocked_run_or_fail.assert_called_with(['debuild', '--unsigned-changes',
                                                '--unsigned-source', '--build=binary'],
                                               cwd="some-dir")
 
-    @patch('run.Util.run_or_fail')
+    @patch('oss.utils.Util.run_or_fail')
     def test_build_source(self, mocked_run_or_fail):
         self.debian_package_builder.build_source()
         mocked_run_or_fail.assert_called_with(['debuild', '-S', '-sa'], cwd="some-dir")
@@ -45,7 +46,7 @@ class TestLaunchpadPublisher(TestCase):
         source_package_mock.changes.return_value = "some-changes"
         self.launchpad_publisher = LaunchpadPublisher("ppa-repo-mock", source_package_mock)
 
-    @patch('run.Util.run_or_fail')
+    @patch('oss.utils.Util.run_or_fail')
     def test_publish(self, mocked_run_or_fail):
         self.launchpad_publisher.publish()
         mocked_run_or_fail.assert_called_with(['dput', 'ppa-repo-mock', 'some-changes'])
@@ -71,7 +72,7 @@ class TestSourcePackageBuilder(TestCase):
     def tearDown(self):
         shutil.rmtree(self.temp_dir)
 
-    @patch('run.Util.extract_gpdb_version')
+    @patch('oss.utils.Util.extract_gpdb_version')
     def test_gpdb_version_short_when_none_extracts_gpdb_version_from_path(self, mock_extract_gpdb_version):
         self.source_package_builder._gpdb_version_short = None
         mock_extract_gpdb_version.return_value = 'fake-version'
@@ -94,15 +95,16 @@ class TestSourcePackageBuilder(TestCase):
         install = self.source_package_builder._install()
         self.assertEqual(install, 'bin_gpdb/* /opt/name-short-version\n')
 
-    @patch('run.Util.run_or_fail')
+    @patch('oss.utils.Util.run_or_fail')
     def test_generate_changelog_runs_dch_command(self, mocked_run_or_fail):
         self.source_package_builder.generate_changelog()
         self.assertEqual(
             mocked_run_or_fail.call_args_list,
-            [call(['dch', '--create', '--package', 'name', '--newversion', 'short-version-1', 'message'], cwd='name-short-version'),
+            [call(['dch', '--create', '--package', 'name', '--newversion', 'short-version-1', 'message'],
+                  cwd='name-short-version'),
              call(['dch', '--release', 'ignored message'], cwd='name-short-version')])
 
-    @patch('run.SourcePackageBuilder.source_dir', new_callable=PropertyMock)
+    @patch('oss.ppa.SourcePackageBuilder.source_dir', new_callable=PropertyMock)
     def test_create_debian_dir(self, mock_source_dir):
         mock_source_dir.return_value = self.temp_dir
 
@@ -114,9 +116,9 @@ class TestSourcePackageBuilder(TestCase):
         self.assertTrue(os.path.isfile(os.path.join(debian_dir, 'rules')))
         self.assertTrue(os.path.isfile(os.path.join(debian_dir, 'control')))
 
-    @patch('run.SourcePackageBuilder.create_source')
-    @patch('run.SourcePackageBuilder.create_debian_dir')
-    @patch('run.SourcePackageBuilder.generate_changelog')
+    @patch('oss.ppa.SourcePackageBuilder.create_source')
+    @patch('oss.ppa.SourcePackageBuilder.create_debian_dir')
+    @patch('oss.ppa.SourcePackageBuilder.generate_changelog')
     def test_build(self, mock1, mock2, mock3):
         source_package_builder = self.source_package_builder
         source_package = source_package_builder.build()
@@ -127,9 +129,10 @@ class TestSourcePackageBuilder(TestCase):
         mock2.assert_called()
         mock3.assert_called()
 
-    @patch('run.SourcePackageBuilder.install_location')
-    @patch('run.SourcePackageBuilder.source_dir', new_callable=PropertyMock)
-    def test_replace_greenplum_path_replaces_GPHOME_with_the_install_location(self, mock_source_dir, mock_install_location):
+    @patch('oss.ppa.SourcePackageBuilder.install_location')
+    @patch('oss.ppa.SourcePackageBuilder.source_dir', new_callable=PropertyMock)
+    def test_replace_greenplum_path_replaces_GPHOME_with_the_install_location(self, mock_source_dir,
+                                                                              mock_install_location):
         mock_source_dir.return_value = self.temp_dir
         os.mkdir(os.path.join(self.temp_dir, 'bin_gpdb'))
         mock_install_location.return_value = 'fake-install-location'
@@ -143,7 +146,7 @@ class TestSourcePackageBuilder(TestCase):
 
         self.source_package_builder.replace_greenplum_path()
         expected = [
-        'OTHER=123\n',
+            'OTHER=123\n',
             'GPHOME=fake-install-location\n',
             'thing\n'
         ]
@@ -151,9 +154,9 @@ class TestSourcePackageBuilder(TestCase):
             greenplum_path_contents = greenplum_path_file.readlines()
             self.assertEqual(greenplum_path_contents, expected)
 
-    @patch('run.SourcePackageBuilder.replace_greenplum_path')
-    @patch('run.tarfile')
-    @patch('run.SourcePackageBuilder.source_dir', new_callable=PropertyMock)
+    @patch('oss.ppa.SourcePackageBuilder.replace_greenplum_path')
+    @patch('oss.ppa.tarfile')
+    @patch('oss.ppa.SourcePackageBuilder.source_dir', new_callable=PropertyMock)
     def test_create_source_it_creates_the_source_directory_when_it_does_not_exist(self, mock_source_dir, _1, _2):
         source_dir = os.path.join(self.temp_dir, 'my_src')
         mock_source_dir.return_value = source_dir
@@ -161,9 +164,9 @@ class TestSourcePackageBuilder(TestCase):
         self.source_package_builder.create_source()
         self.assertTrue(os.path.exists(source_dir))
 
-    @patch('run.SourcePackageBuilder.replace_greenplum_path')
-    @patch('run.tarfile')
-    @patch('run.SourcePackageBuilder.source_dir', new_callable=PropertyMock)
+    @patch('oss.ppa.SourcePackageBuilder.replace_greenplum_path')
+    @patch('oss.ppa.tarfile')
+    @patch('oss.ppa.SourcePackageBuilder.source_dir', new_callable=PropertyMock)
     def test_create_source_it_removes_the_source_directory_when_it_already_exists(self, mock_source_dir, _1, _2):
         mock_source_dir.return_value = self.temp_dir
         file_path = os.path.join(self.temp_dir, 'a.txt')
@@ -173,9 +176,10 @@ class TestSourcePackageBuilder(TestCase):
         self.assertFalse(os.path.exists(file_path))
         self.assertTrue(os.path.exists(self.temp_dir))
 
-    @patch('run.SourcePackageBuilder.replace_greenplum_path')
-    @patch('run.SourcePackageBuilder.source_dir', new_callable=PropertyMock)
-    def test_create_source_extracts_bin_and_archives_it_to_basename_of_source_dir(self, mock_source_dir, mock_replace_greenplum_path):
+    @patch('oss.ppa.SourcePackageBuilder.replace_greenplum_path')
+    @patch('oss.ppa.SourcePackageBuilder.source_dir', new_callable=PropertyMock)
+    def test_create_source_extracts_bin_and_archives_it_to_basename_of_source_dir(self, mock_source_dir,
+                                                                                  mock_replace_greenplum_path):
         os.chdir(self.temp_dir)
         source_dir = os.path.join(self.temp_dir, 'my_src')
         os.mkdir(source_dir)
@@ -212,15 +216,15 @@ class TestUtil(TestCase):
         self.assertEqual(Util.strip_margin(f'''A
                |B
                |C'''),
-               "A\nB\nC")
+                         "A\nB\nC")
 
-    @patch('run.subprocess')
+    @patch('oss.utils.subprocess')
     def test_run_or_fail_when_successful_works(self, subprocess_mock):
         subprocess_mock.call.return_value = 0
         Util.run_or_fail("test-cmd", "test-cwd")
         subprocess_mock.call.assert_called_with("test-cmd", cwd="test-cwd")
 
-    @patch('run.subprocess')
+    @patch('oss.utils.subprocess')
     def test_run_or_fail_when_fails_raises_system_exit(self, subprocess_mock):
         subprocess_mock.call.return_value = 1
         with self.assertRaises(SystemExit) as cm:
