@@ -16,6 +16,7 @@ import os
 import shutil
 import tarfile
 
+from oss.base import BaseSourcePackageBuilder
 from oss.utils import Util
 
 
@@ -57,12 +58,13 @@ class SourcePackage:
         return f'{self.package_name}-{self.version}'
 
 
-class SourcePackageBuilder:
+class SourcePackageBuilder(BaseSourcePackageBuilder):
     def __init__(self, bin_gpdb_path='', package_name='', release_message=''):
+        super(SourcePackageBuilder, self).__init__(bin_gpdb_path)
+
         self.bin_gpdb_path = bin_gpdb_path
         self.package_name = package_name
         self.release_message = release_message
-        self._gpdb_version_short = None
         self.debian_revision = 1
 
     def build(self):
@@ -74,12 +76,6 @@ class SourcePackageBuilder:
             package_name=self.package_name,
             version=self.gpdb_version_short,
             debian_revision=self.debian_revision)
-
-    @property
-    def gpdb_version_short(self):
-        if self._gpdb_version_short is None:
-            self._gpdb_version_short = Util.extract_gpdb_version(self.bin_gpdb_path)
-        return self._gpdb_version_short
 
     @property
     def source_dir(self):

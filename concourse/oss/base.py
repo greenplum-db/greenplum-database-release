@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 # Copyright (C) 2019-Present Pivotal Software, Inc. All rights reserved.
 # This program and the accompanying materials are made available under the
 # terms of the under the Apache License, Version 2.0 (the "License"); you may
@@ -9,41 +11,19 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations under
 # the License.
----
+from oss.utils import Util
 
-platform: linux
 
-image_resource:
-  type: docker-image
+class BaseSourcePackageBuilder(object):
+    def __init__(self, bin_gpdb_path):
+        self._gpdb_version_short = None
+        self.bin_gpdb_path = bin_gpdb_path
 
-inputs:
-  - name: bin_gpdb
-  - name: greenplum-database-release
-  - name: gpdb_src
-    optional: true
-  - name: license_file
-    optional: true
+    @property
+    def gpdb_version_short(self):
+        if self._gpdb_version_short is None:
+            self._gpdb_version_short = Util.extract_gpdb_version(self.bin_gpdb_path)
+        return self._gpdb_version_short
 
-outputs:
-  - name: gpdb_rpm_installer
-
-run:
-  path: bash
-  args:
-  - -ec
-  - |
-    export PYTHONPATH=greenplum-database-release/concourse/
-    python greenplum-database-release/concourse/tasks/build_gpdb_rpm.py
-
-params:
-  # Default values passed to rpm SPEC
-  #  To override, please do so in pipeline
-  PLATFORM:
-  GPDB_NAME:
-  GPDB_RELEASE:
-  GPDB_SUMMARY:
-  GPDB_LICENSE:
-  GPDB_URL:
-  GPDB_BUILDARCH:
-  GPDB_DESCRIPTION:
-  GPDB_PREFIX:
+    def build(self):
+        pass

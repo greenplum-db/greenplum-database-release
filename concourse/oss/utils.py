@@ -15,6 +15,8 @@ import json
 import re
 import subprocess
 import tarfile
+# Support centos6 and centos7, due to the python version is 2.6 on centos6
+from contextlib import closing
 
 
 class Util:
@@ -24,9 +26,9 @@ class Util:
 
     @staticmethod
     def extract_gpdb_version(bin_gpdb_path):
-        with tarfile.open(bin_gpdb_path) as bin_gpdb_tar:
+        with closing(tarfile.open(bin_gpdb_path)) as bin_gpdb_tar:
             member = bin_gpdb_tar.getmember('./etc/git-info.json')
-            with bin_gpdb_tar.extractfile(member) as fd:
+            with closing(bin_gpdb_tar.extractfile(member)) as fd:
                 git_info = json.loads(fd.read())
         return git_info['root']['version']
 
@@ -35,4 +37,4 @@ class Util:
         return_code = subprocess.call(cmd, cwd=cwd)
         if return_code != 0:
             full_cmd = ' '.join(cmd)
-            raise SystemExit(f'Exit {return_code}: Command "{full_cmd}" failed.\n')
+            raise SystemExit('Exit %s: Command "%s" failed.\n' % (return_code, full_cmd))
