@@ -16,7 +16,7 @@ import os
 import shutil
 import tarfile
 
-from oss.base import BaseSourcePackageBuilder
+from oss.base import BasePackageBuilder
 from oss.utils import Util
 
 
@@ -58,7 +58,7 @@ class SourcePackage:
         return f'{self.package_name}-{self.version}'
 
 
-class SourcePackageBuilder(BaseSourcePackageBuilder):
+class SourcePackageBuilder(BasePackageBuilder):
     def __init__(self, bin_gpdb_path='', package_name='', release_message=''):
         super(SourcePackageBuilder, self).__init__(bin_gpdb_path)
 

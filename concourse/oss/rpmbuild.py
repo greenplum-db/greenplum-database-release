@@ -17,11 +17,11 @@ import tarfile
 import tempfile
 from contextlib import closing
 
-from oss.base import BaseSourcePackageBuilder
+from oss.base import BasePackageBuilder
 from oss.utils import Util
 
 
-class RPMPackageBuilder(BaseSourcePackageBuilder):
+class RPMPackageBuilder(BasePackageBuilder):
     def __init__(self, name, release, platform, summary, license, url, buildarch, description, prefix, bin_gpdb_path,
                  spec_file_path, license_file_path):
         super(RPMPackageBuilder, self).__init__(bin_gpdb_path)

@@ -14,7 +14,7 @@
 from oss.utils import Util
 
 
-class BaseSourcePackageBuilder(object):
+class BasePackageBuilder(object):
     def __init__(self, bin_gpdb_path):
         self._gpdb_version_short = None
         self.bin_gpdb_path = bin_gpdb_path
