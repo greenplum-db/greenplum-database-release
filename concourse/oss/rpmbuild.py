@@ -22,8 +22,9 @@ from oss.utils import Util
 
 
 class RPMPackageBuilder(BasePackageBuilder):
-    def __init__(self, name, release, platform, summary, license, url, buildarch, description, prefix, bin_gpdb_path,
-                 spec_file_path, license_file_path):
+    # oss: if build the Open Source gpdb, this value should be 'true', it's string type not bool
+    def __init__(self, name, release, platform, summary, license, url, buildarch, description, prefix, oss,
+                 bin_gpdb_path, spec_file_path, license_file_path):
         super(RPMPackageBuilder, self).__init__(bin_gpdb_path)
 
         self.name = name
@@ -34,6 +35,8 @@ class RPMPackageBuilder(BasePackageBuilder):
         self.buildarch = buildarch
         self.description = description
         self.prefix = prefix
+        self.oss = oss.lower()
+        self.is_oss = oss.lower() == 'true'
         self.bin_gpdb_path = bin_gpdb_path
         self.spec_file_path = spec_file_path
         self.platform = platform
@@ -42,7 +45,7 @@ class RPMPackageBuilder(BasePackageBuilder):
         self._pre_check()
 
     def _pre_check(self):
-        if self.name == "greenplum-db" and not os.path.exists(self.license_file_path):
+        if self.is_oss and not os.path.exists(self.license_file_path):
             raise Exception("Build the OpenSource GPDB need the license file!")
 
     def build(self):
@@ -82,7 +85,7 @@ class RPMPackageBuilder(BasePackageBuilder):
         for sub_dir in ["SOURCES", "SPECS"]:
             os.makedirs(os.path.join(self.rpm_build_dir, sub_dir), mode=0o755)
 
-        if self.name == "greenplum-db" and os.path.exists(self.license_file_path):
+        if self.is_oss and os.path.exists(self.license_file_path):
             temp_dir = tempfile.mkdtemp()
             print("TEMP DIR: %s" % temp_dir)
 
@@ -119,7 +122,7 @@ class RPMPackageBuilder(BasePackageBuilder):
             r'--define="gpdb_release %s"' % self.release
         ]
 
-        possible_flags = ["NAME", "SUMMARY", "LICENSE", "URL", "BUILDARCH", "DESCRIPTION", "PREFIX"]
+        possible_flags = ["NAME", "SUMMARY", "LICENSE", "URL", "BUILDARCH", "DESCRIPTION", "PREFIX", "OSS"]
 
         for flag in possible_flags:
             value = getattr(self, flag.lower(), None)

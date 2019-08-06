@@ -21,7 +21,7 @@ if __name__ == '__main__':
     license_file_path = ""
 
     gpdb_name = os.environ["GPDB_NAME"]
-    if gpdb_name == "greenplum-db":
+    if os.path.exists("license_file"):
         license_file_path = os.path.abspath(glob.glob("license_file/*.txt")[0])
 
     rpm_builder = RPMPackageBuilder(
@@ -34,6 +34,7 @@ if __name__ == '__main__':
         buildarch=os.environ["GPDB_BUILDARCH"],
         description=os.environ["GPDB_DESCRIPTION"],
         prefix=os.environ["GPDB_PREFIX"],
+        oss=os.getenv("GPDB_OSS", "false"),
         bin_gpdb_path="bin_gpdb/bin_gpdb.tar.gz",
         spec_file_path="greenplum-database-release/concourse/scripts/greenplum-db.spec",
         license_file_path=license_file_path

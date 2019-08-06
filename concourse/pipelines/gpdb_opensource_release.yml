@@ -227,6 +227,7 @@ jobs:
       GPDB_BUILDARCH: x86_64
       GPDB_DESCRIPTION: Greenplum Database
       GPDB_PREFIX: /usr/local
+      GPDB_OSS: true
   - put: gpdb_rpm_installer_centos6
     params:
       file: gpdb_rpm_installer/*.rpm
@@ -258,6 +259,7 @@ jobs:
       GPDB_BUILDARCH: x86_64
       GPDB_DESCRIPTION: Greenplum Database
       GPDB_PREFIX: /usr/local
+      GPDB_OSS: true
   - put: gpdb_rpm_installer_centos7
     params:
       file: gpdb_rpm_installer/*.rpm
