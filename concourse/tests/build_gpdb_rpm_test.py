@@ -31,6 +31,7 @@ class TestRPMPackageBuilder(TestCase):
             buildarch="x86_64",
             description="Greenplum Database",
             prefix="/usr/local",
+            oss="true",
             bin_gpdb_path="bin_gpdb/bin_gpdb.tar.gz",
             spec_file_path="greenplum-database-release/concourse/scripts/greenplum-db.spec",
             license_file_path="/tmp/lic.txt"
@@ -66,6 +67,7 @@ class TestRPMPackageBuilder(TestCase):
                    '--define="gpdb_url https://github.com/greenplum-db/gpdb" '
                    '--define="gpdb_buildarch x86_64" '
                    '--define="gpdb_description Greenplum Database" '
-                   '--define="gpdb_prefix /usr/local"'],
+                   '--define="gpdb_prefix /usr/local" '
+                   '--define="gpdb_oss true"'],
                   cwd='/root/rpmbuild')]
         )
