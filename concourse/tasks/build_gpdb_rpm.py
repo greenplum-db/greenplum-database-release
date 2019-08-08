@@ -18,11 +18,15 @@ import shutil
 from oss.rpmbuild import RPMPackageBuilder
 
 if __name__ == '__main__':
-    license_file_path = ""
+    gpdb_src_path = ""
 
     gpdb_name = os.environ["GPDB_NAME"]
-    if os.path.exists("license_file"):
-        license_file_path = os.path.abspath(glob.glob("license_file/*.txt")[0])
+    license_file_path = os.path.abspath(glob.glob("license_file/*.txt")[0])
+
+    # gpdb_src is the optional concourse input resource name
+    # only the OSS gpdb need the gpdb_src, copying the LICENSE, COPYRIGHT files from there.
+    if os.path.exists("gpdb_src"):
+        gpdb_src_path = os.path.abspath("gpdb_src")
 
     rpm_builder = RPMPackageBuilder(
         name=gpdb_name,
@@ -37,7 +41,8 @@ if __name__ == '__main__':
         oss=os.getenv("GPDB_OSS", "false"),
         bin_gpdb_path="bin_gpdb/bin_gpdb.tar.gz",
         spec_file_path="greenplum-database-release/concourse/scripts/greenplum-db.spec",
-        license_file_path=license_file_path
+        license_file_path=license_file_path,
+        gpdb_src_path=gpdb_src_path
     )
 
     rpm_builder.build()

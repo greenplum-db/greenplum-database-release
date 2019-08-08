@@ -39,3 +39,5 @@ params:
   GPDB_BUILDARCH: amd64
   GPDB_DESCRIPTION: Pivotal Greenplum Server
   GPDB_PREFIX: /usr/local
+  # build the Open Source gpdb, set this variable to 'true'
+  GPDB_OSS:

@@ -57,6 +57,29 @@ EOF
 	    cp ../license_file/*.txt "${__package_name}/usr/share/doc/greenplum-db/open_source_license_greenplum_database.txt"
 	fi
 
+	if [[ "${GPDB_OSS}" == 'true' ]];then
+		SHARE_DOC_ROOT="${__package_name}/usr/share/doc/greenplum-db"
+
+		cp ../gpdb_src/LICENSE "${SHARE_DOC_ROOT}/LICENSE"
+		cp ../gpdb_src/COPYRIGHT "${SHARE_DOC_ROOT}/COPYRIGHT"
+
+		cat <<NOTICE_EOF >"${SHARE_DOC_ROOT}/NOTICE"
+Greenplum Database
+
+Copyright (c) 2019 Pivotal Software, Inc. All Rights Reserved.
+
+This product is licensed to you under the Apache License, Version 2.0 (the "License").
+You may not use this product except in compliance with the License.
+
+This product may include a number of subcomponents with separate copyright notices
+and license terms. Your use of these subcomponents is subject to the terms and
+conditions of the subcomponent's license, as noted in the LICENSE file.
+NOTICE_EOF
+	else
+		echo "Pivotal EUAL file is here!"
+		# TODO: Pivotal EUAL file should be here!
+	fi
+
 	cat <<EOF >"${__package_name}/DEBIAN/control"
 Package: greenplum-db
 Priority: extra

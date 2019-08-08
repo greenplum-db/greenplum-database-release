@@ -20,11 +20,24 @@ from contextlib import closing
 from oss.base import BasePackageBuilder
 from oss.utils import Util
 
+NOTICE_FILE_CONTENT = '''Greenplum Database
+
+Copyright (c) 2019 Pivotal Software, Inc. All Rights Reserved.
+
+This product is licensed to you under the Apache License, Version 2.0 (the "License").
+You may not use this product except in compliance with the License.
+
+This product may include a number of subcomponents with separate copyright notices
+and license terms. Your use of these subcomponents is subject to the terms and
+conditions of the subcomponent's license, as noted in the LICENSE file.
+
+'''
+
 
 class RPMPackageBuilder(BasePackageBuilder):
     # oss: if build the Open Source gpdb, this value should be 'true', it's string type not bool
     def __init__(self, name, release, platform, summary, license, url, buildarch, description, prefix, oss,
-                 bin_gpdb_path, spec_file_path, license_file_path):
+                 bin_gpdb_path, spec_file_path, license_file_path, gpdb_src_path):
         super(RPMPackageBuilder, self).__init__(bin_gpdb_path)
 
         self.name = name
@@ -41,12 +54,13 @@ class RPMPackageBuilder(BasePackageBuilder):
         self.spec_file_path = spec_file_path
         self.platform = platform
         self.license_file_path = license_file_path
+        self.gpdb_src_path = gpdb_src_path
 
         self._pre_check()
 
     def _pre_check(self):
-        if self.is_oss and not os.path.exists(self.license_file_path):
-            raise Exception("Build the OpenSource GPDB need the license file!")
+        if self.is_oss and not os.path.exists(self.gpdb_src_path):
+            raise Exception("Building the Open-Source GPDB RPM installer need the gpdb_src repo!")
 
     def build(self):
         self._prepare_rpm_build_dir()
@@ -85,32 +99,45 @@ class RPMPackageBuilder(BasePackageBuilder):
         for sub_dir in ["SOURCES", "SPECS"]:
             os.makedirs(os.path.join(self.rpm_build_dir, sub_dir), mode=0o755)
 
-        if self.is_oss and os.path.exists(self.license_file_path):
-            temp_dir = tempfile.mkdtemp()
-            print("TEMP DIR: %s" % temp_dir)
+        temp_dir = tempfile.mkdtemp()
+        print("TEMP DIR: %s" % temp_dir)
 
-            print("Backup the bin_gpdb to %s/bin_gpdb_bak.tar.gz" % temp_dir)
-            shutil.copy(self.bin_gpdb_path, os.path.join(temp_dir, "bin_gpdb_bak.tar.gz"))
+        print("Backup the bin_gpdb to %s/bin_gpdb_bak.tar.gz" % temp_dir)
+        shutil.copy(self.bin_gpdb_path, os.path.join(temp_dir, "bin_gpdb_bak.tar.gz"))
 
-            dest = os.path.join(temp_dir, 'bin_gpdb')
-            print("Extracting the bin_gpdb.tar.gz to %s" % dest)
-            with closing(tarfile.open(self.bin_gpdb_path)) as tar:
-                tar.extractall(dest)
+        dest = os.path.join(temp_dir, 'bin_gpdb')
+        print("Extracting the bin_gpdb.tar.gz to %s" % dest)
+        with closing(tarfile.open(self.bin_gpdb_path)) as tar:
+            tar.extractall(dest)
 
-            # Save the license txt file into tar.gz file
-            print("Copy the license file to the %s/bin_gpdb/open_source_license_greenplum_database.txt" % temp_dir)
-            shutil.copy(self.license_file_path,
-                        os.path.join(temp_dir, "bin_gpdb/open_source_license_greenplum_database.txt"))
+        print("Copy the OSL license file to the %s/bin_gpdb/open_source_license_greenplum_database.txt" % temp_dir)
+        shutil.copy(self.license_file_path,
+                    os.path.join(temp_dir, "bin_gpdb/open_source_license_greenplum_database.txt"))
 
-            print("Packaging the bin_gpdb to bin_gpdb.tar.gz")
-            # These code can not work on python2.6
-            # For example on python2.7/3, the key prefix is './', eg. ./bin/initdb
-            # But on the python2.6, the key doesn't include './', eg. bin/initdb
-            # with closing(tarfile.open(self.bin_gpdb_path, 'w:gz')) as tar:
-            #     tar.add(dest, arcname="./")
+        if self.is_oss:
+            print("Copy the license file to the %s/bin_gpdb/LICENSE" % temp_dir)
+            shutil.copy(os.path.join(self.gpdb_src_path, "LICENSE"), os.path.join(temp_dir, "bin_gpdb/LICENSE"))
 
-            # It's difficult to deal with python compatibility
-            os.system("tar cvzf %s -C %s ." % (self.bin_gpdb_path, dest))
+            print("Copy the COPYRIGHT file to the %s/bin_gpdb/COPYRIGHT" % temp_dir)
+            shutil.copy(os.path.join(self.gpdb_src_path, "COPYRIGHT"), os.path.join(temp_dir, "bin_gpdb/COPYRIGHT"))
+
+            notice_file_path = "%s/bin_gpdb/NOTICE" % temp_dir
+            print("Generate the NOTICE file to the %s" % notice_file_path)
+            with open(notice_file_path, 'w') as notice_file:
+                notice_file.write(NOTICE_FILE_CONTENT)
+        else:
+            # TODO: Pivotal EUAL file should be here!
+            print("Pivotal EUAL file is here!")
+
+        print("Packaging the bin_gpdb to bin_gpdb.tar.gz")
+        # These code can not work on python2.6
+        # For example on python2.7/3, the key prefix is './', eg. ./bin/initdb
+        # But on the python2.6, the key doesn't include './', eg. bin/initdb
+        # with closing(tarfile.open(self.bin_gpdb_path, 'w:gz')) as tar:
+        #     tar.add(dest, arcname="./")
+
+        # It's difficult to deal with python compatibility
+        os.system("tar cvzf %s -C %s ." % (self.bin_gpdb_path, dest))
 
         shutil.copy(self.bin_gpdb_path, os.path.join(self.rpm_build_dir, "SOURCES/gpdb.tar.gz"))
         shutil.copy(self.spec_file_path, os.path.join(self.rpm_build_dir, "SPECS/greenplum-db.spec"))

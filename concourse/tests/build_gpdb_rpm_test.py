@@ -21,6 +21,7 @@ from oss.rpmbuild import RPMPackageBuilder
 class TestRPMPackageBuilder(TestCase):
     def setUp(self):
         os.system("rm -rf /tmp/lic.txt; echo 'license content' > /tmp/lic.txt")
+        os.system("mkdir -p /tmp/gpdb_src")
         self.rpm_package_builder = RPMPackageBuilder(
             name="greenplum-db",
             release="1",
@@ -34,7 +35,8 @@ class TestRPMPackageBuilder(TestCase):
             oss="true",
             bin_gpdb_path="bin_gpdb/bin_gpdb.tar.gz",
             spec_file_path="greenplum-database-release/concourse/scripts/greenplum-db.spec",
-            license_file_path="/tmp/lic.txt"
+            license_file_path="/tmp/lic.txt",
+            gpdb_src_path="/tmp/gpdb_src"
         )
 
     @patch('oss.base.BasePackageBuilder.gpdb_version_short', new_callable=PropertyMock)

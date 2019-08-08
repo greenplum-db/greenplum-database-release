@@ -283,6 +283,7 @@ jobs:
       bin_gpdb: bin_gpdb_ubuntu18.04
     params:
       PLATFORM: "ubuntu18.04"
+      GPDB_OSS: true
   - put: gpdb_deb_package
     params:
       file: gpdb_deb_installer/*.deb
