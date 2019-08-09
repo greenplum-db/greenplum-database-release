@@ -65,7 +65,7 @@ class TestSourcePackage(TestCase):
 
 class TestSourcePackageBuilder(TestCase):
     def setUp(self):
-        self.source_package_builder = SourcePackageBuilder('path', 'name', 'message')
+        self.source_package_builder = SourcePackageBuilder('path', 'name', 'message', "gpdb_src", "license_file")
         self.source_package_builder._gpdb_version_short = 'short-version'
         self.temp_dir = tempfile.mkdtemp()
 
@@ -93,7 +93,7 @@ class TestSourcePackageBuilder(TestCase):
 
     def test_install_contains_correct_path(self):
         install = self.source_package_builder._install()
-        self.assertEqual(install, 'bin_gpdb/* /opt/name-short-version\n')
+        self.assertEqual(install, 'bin_gpdb/* /opt/name-short-version\ndoc_files/* /usr/share/doc/greenplum-db/\n')
 
     @patch('oss.utils.Util.run_or_fail')
     def test_generate_changelog_runs_dch_command(self, mocked_run_or_fail):
@@ -104,15 +104,15 @@ class TestSourcePackageBuilder(TestCase):
                   cwd='name-short-version'),
              call(['dch', '--release', 'ignored message'], cwd='name-short-version')])
 
+    @patch('oss.ppa.SourcePackageBuilder._generate_license_files')
     @patch('oss.ppa.SourcePackageBuilder.source_dir', new_callable=PropertyMock)
-    def test_create_debian_dir(self, mock_source_dir):
+    def test_create_debian_dir(self, mock_source_dir, mock_generate_license_files):
         mock_source_dir.return_value = self.temp_dir
 
         self.source_package_builder.create_debian_dir()
         debian_dir = os.path.join(self.temp_dir, 'debian')
         self.assertTrue(os.path.isdir(debian_dir))
         self.assertTrue(os.path.isfile(os.path.join(debian_dir, 'compat')))
-        self.assertTrue(os.path.isfile(os.path.join(debian_dir, 'copyright')))
         self.assertTrue(os.path.isfile(os.path.join(debian_dir, 'rules')))
         self.assertTrue(os.path.isfile(os.path.join(debian_dir, 'control')))
 

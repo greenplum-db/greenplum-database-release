@@ -20,7 +20,9 @@ image_resource:
 
 inputs:
   - name: bin_gpdb_ubuntu18.04
+  - name: gpdb_src
   - name: greenplum-database-release
+  - name: license_file
 
 run:
   path: bash

@@ -19,7 +19,9 @@ if __name__ == '__main__':
     source_package = SourcePackageBuilder(
         bin_gpdb_path='bin_gpdb_ubuntu18.04/bin_gpdb.tar.gz',
         package_name='greenplum-db',
-        release_message=os.environ["RELEASE_MESSAGE"]
+        release_message=os.environ["RELEASE_MESSAGE"],
+        gpdb_src_path="gpdb_src",
+        license_dir_path="license_file"
     ).build()
 
     builder = DebianPackageBuilder(source_package=source_package)

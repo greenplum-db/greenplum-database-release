@@ -291,10 +291,13 @@ jobs:
 - name: publish to ppa
   plan:
   - aggregate:
+    - get: gpdb_src
+      passed: [compile_gpdb_ubuntu18.04]
     - get: greenplum-database-release
       passed: [compile_gpdb_ubuntu18.04]
     - get: bin_gpdb_ubuntu18.04
       passed: [compile_gpdb_ubuntu18.04]
+    - get: license_file
   - task: push to ppa
     file: greenplum-database-release/concourse/tasks/publish_to_ppa.yml
     params:

@@ -12,6 +12,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 import fileinput
+import glob
 import os
 import shutil
 import tarfile
@@ -59,13 +60,15 @@ class SourcePackage:
 
 
 class SourcePackageBuilder(BasePackageBuilder):
-    def __init__(self, bin_gpdb_path='', package_name='', release_message=''):
+    def __init__(self, bin_gpdb_path='', package_name='', release_message='', gpdb_src_path="", license_dir_path=""):
         super(SourcePackageBuilder, self).__init__(bin_gpdb_path)
 
         self.bin_gpdb_path = bin_gpdb_path
         self.package_name = package_name
         self.release_message = release_message
         self.debian_revision = 1
+        self.gpdb_src_path = gpdb_src_path
+        self.license_dir_path = license_dir_path
 
     def build(self):
         self.create_source()
@@ -110,11 +113,13 @@ class SourcePackageBuilder(BasePackageBuilder):
         debian_dir = os.path.join(self.source_dir, 'debian')
         os.mkdir(debian_dir)
 
+        doc_dir = os.path.join(self.source_dir, "doc_files")
+        os.makedirs(doc_dir, exist_ok=True)
+
         with open(os.path.join(debian_dir, 'compat'), mode='x') as fd:
             fd.write('9\n')
 
-        with open(os.path.join(debian_dir, 'copyright'), mode='x') as fd:
-            fd.write(self._copyright())
+        self._generate_license_files(doc_dir)
 
         with open(os.path.join(debian_dir, 'rules'), mode='x') as fd:
             fd.write(self._rules())
@@ -141,16 +146,34 @@ class SourcePackageBuilder(BasePackageBuilder):
         Util.run_or_fail(cmd, cwd=self.source_dir)
 
     def _install(self):
-        return f'bin_gpdb/* {self.install_location()}\n'
+        return f'bin_gpdb/* {self.install_location()}\ndoc_files/* /usr/share/doc/greenplum-db/\n'
 
     def install_location(self):
         return f'/opt/{self.package_name}-{self.gpdb_version_short}'
 
-    def _copyright(self):
-        return Util.strip_margin(
-            '''Portions Copyright (c) 2005-2008, Greenplum inc
-              |Portions Copyright (c) 2012-Present Pivotal Software, Inc.
-              |''')
+    def _generate_license_files(self, root_dir):
+        shutil.copy(os.path.join(self.gpdb_src_path, "LICENSE"),
+                    os.path.join(root_dir, "LICENSE"))
+
+        shutil.copy(os.path.join(self.gpdb_src_path, "COPYRIGHT"),
+                    os.path.join(root_dir, "COPYRIGHT"))
+
+        license_file_path = os.path.abspath(glob.glob(os.path.join(self.license_dir_path, "*.txt"))[0])
+        shutil.copy(license_file_path, os.path.join(root_dir, "open_source_license_greenplum_database.txt"))
+
+        notice_content = '''Greenplum Database
+
+Copyright (c) 2019 Pivotal Software, Inc. All Rights Reserved.
+
+This product is licensed to you under the Apache License, Version 2.0 (the "License").
+You may not use this product except in compliance with the License.
+
+This product may include a number of subcomponents with separate copyright notices
+and license terms. Your use of these subcomponents is subject to the terms and
+conditions of the subcomponent's license, as noted in the LICENSE file.
+'''
+        with open(os.path.join(root_dir, "NOTICE"), 'w') as notice_file:
+            notice_file.write(notice_content)
 
     def _rules(self):
         return Util.strip_margin(
