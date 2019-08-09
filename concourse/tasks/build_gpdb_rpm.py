@@ -16,6 +16,7 @@ import glob
 import shutil
 
 from oss.rpmbuild import RPMPackageBuilder
+from oss.utils import PackageTester
 
 if __name__ == '__main__':
     gpdb_src_path = ""
@@ -47,7 +48,16 @@ if __name__ == '__main__':
 
     rpm_builder.build()
 
+    rpm_file_path = os.path.abspath(glob.glob("%s/RPMS/x86_64/*.rpm" % rpm_builder.rpm_build_dir)[0])
+
+    if os.getenv("GPDB_OSS").lower() == "true":
+        print("Verify RPM package...")
+        packager_tester = PackageTester(rpm_file_path)
+        packager_tester.test_package()
+        print("All check actions passed!")
+
     # Copy the RPM package to output resource
     print("Copy the RPM package to the output resource")
-    rpm_file_path = os.path.abspath(glob.glob("%s/RPMS/x86_64/*.rpm" % rpm_builder.rpm_build_dir)[0])
     shutil.copy(rpm_file_path, os.path.join("gpdb_rpm_installer", rpm_builder.rpm_package_name))
+
+    print("Build RPM package finished!")

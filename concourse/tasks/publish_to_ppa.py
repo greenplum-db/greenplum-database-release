@@ -11,9 +11,11 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations under
 # the License.
+import glob
 import os
 
 from oss.ppa import SourcePackageBuilder, DebianPackageBuilder, LaunchpadPublisher
+from oss.utils import PackageTester
 
 if __name__ == '__main__':
     source_package = SourcePackageBuilder(
@@ -27,6 +29,12 @@ if __name__ == '__main__':
     builder = DebianPackageBuilder(source_package=source_package)
     builder.build_binary()
     builder.build_source()
+
+    deb_file_path = os.path.abspath(glob.glob("./*.deb")[0])
+    print("Verify DEB package...")
+    packager_tester = PackageTester(deb_file_path)
+    packager_tester.test_package()
+    print("All check actions passed!")
 
     ppa_repo = os.environ["PPA_REPO"]
     publisher = LaunchpadPublisher(ppa_repo, source_package)

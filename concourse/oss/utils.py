@@ -12,6 +12,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 import json
+import os
 import re
 import subprocess
 import tarfile
@@ -38,3 +39,55 @@ class Util:
         if return_code != 0:
             full_cmd = ' '.join(cmd)
             raise SystemExit('Exit %s: Command "%s" failed.\n' % (return_code, full_cmd))
+
+
+class PackageTester(object):
+
+    def __init__(self, package_path):
+        """
+        PackageTester only for testing the OSS gpdb installer
+        :param package_path: rpm/deb package path
+        """
+        self.package_path = package_path
+        self.package_ext = os.path.splitext(package_path)[1].lower()
+
+    def test_package(self):
+        if self.package_ext == ".rpm":
+            self._test_rpm()
+        elif self.package_ext == ".deb":
+            self._test_deb()
+        else:
+            raise Exception("Not support the package format: %s", self.package_ext)
+
+    def _test_rpm(self):
+        # check_output: need python>= 2.7
+        # output = subprocess.check_output(['rpm', '-qlp', self.package_path]).decode('utf-8')
+        output = self._cmd_output("rpm -qlp %s" % self.package_path)
+
+        expected_files = [
+            "/usr/local/greenplum-db-.*/COPYRIGHT",
+            "/usr/local/greenplum-db-.*/LICENSE",
+            "/usr/local/greenplum-db-.*/NOTICE",
+            "/usr/local/greenplum-db-.*/open_source_license_greenplum_database.txt"
+        ]
+        for f in expected_files:
+            assert bool(re.findall(f, output)), "Not Found: %s" % f
+
+    def _test_deb(self):
+        # output = subprocess.check_output(["dpkg", '-c', self.package_path]).decode('utf-8')
+        output = self._cmd_output("dpkg -c %s" % self.package_path)
+
+        expected_files = [
+            "/usr/share/doc/greenplum-db/COPYRIGHT",
+            "/usr/share/doc/greenplum-db/LICENSE",
+            "/usr/share/doc/greenplum-db/NOTICE",
+            "/usr/share/doc/greenplum-db/open_source_license_greenplum_database.txt"
+        ]
+
+        for f in expected_files:
+            assert output.index(f) > -1, "Not Found: %s" % f
+
+    def _cmd_output(self, cmd):
+        # These codes can run both python2.6 and python2.7
+        p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+        return p.communicate()[0].decode('utf-8')
