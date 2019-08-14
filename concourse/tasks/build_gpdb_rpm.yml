@@ -32,7 +32,7 @@ run:
   - -ec
   - |
     export PYTHONPATH=greenplum-database-release/concourse/
-    python greenplum-database-release/concourse/tasks/build_gpdb_rpm.py
+    python greenplum-database-release/concourse/scripts/build_gpdb_rpm.py
 
 params:
   # Default values passed to rpm SPEC

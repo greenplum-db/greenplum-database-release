@@ -36,7 +36,7 @@ run:
 
     export PYTHONPATH=${PWD}/greenplum-database-release/concourse
     pushd greenplum-database-release/concourse && python3 -m unittest tests/ppa_test.py && popd
-    python3 greenplum-database-release/concourse/tasks/publish_to_ppa.py
+    python3 greenplum-database-release/concourse/scripts/publish_to_ppa.py
 
 params:
   PPA_REPO:
