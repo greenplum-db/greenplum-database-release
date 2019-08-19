@@ -14,25 +14,18 @@
 set -eo pipefail
 set -x
 
-function set_gpdb_version_from_source() {
-  GPDB_VERSION=$(./gpdb_src/getversion --short | grep -Po '^[^+]*')
-  export GPDB_VERSION
-}
-
 function set_gpdb_version_from_binary() {
-  apt-get update
-  apt-get install -y jq
-
   GPDB_VERSION="$(tar xzf bin_gpdb/*.tar.gz -O ./etc/git-info.json | jq -r '.root.version')"
   export GPDB_VERSION
 }
 
 function build_deb() {
-  apt-get update -q=2
-  apt-get install -q=2 -y software-properties-common debmake equivs git
-  python3 greenplum-database-release/concourse/scripts/publish_to_ppa.py
+  local __package_name="${1}"
 
-  cp ./*.deb  gpdb_deb_installer/
+  export PYTHONPATH="${PWD}/greenplum-database-release/concourse"
+  python3 greenplum-database-release/concourse/scripts/publish_to_ppa.py --license-file license_file/*.txt
+
+  cp "./greenplum-db_${GPDB_VERSION}-1_${GPDB_BUILDARCH}.deb" "gpdb_deb_installer/${__package_name}.deb"
 }
 
 function _main() {
@@ -40,14 +33,11 @@ function _main() {
 	local __final_package_name
 	local __built_deb
 
-	if [[ -d gpdb_src ]]; then
-		set_gpdb_version_from_source
-	elif [[ -d bin_gpdb ]]; then
-		set_gpdb_version_from_binary
-	else
-		echo "[FATAL] Missing gpdb_src and bin_gpdb; needed to set GPDB_VERSION"
-		exit 1
-	fi
+	apt-get update -q=2
+	apt-get install -q=2 -y software-properties-common debmake equivs git jq
+
+	set_gpdb_version_from_binary
+
 	echo "[INFO] Building deb installer for GPDB version: ${GPDB_VERSION}"
 
 	echo "[INFO] Building for platform: ${PLATFORM}"

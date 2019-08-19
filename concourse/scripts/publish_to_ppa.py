@@ -25,7 +25,7 @@ def main(args):
         package_name='greenplum-db',
         release_message=args.release_message,
         gpdb_src_path=args.gpdb_src,
-        license_dir_path=args.license_file
+        license_file=args.license_file
     ).build()
 
     builder = DebianPackageBuilder(source_package=source_package)

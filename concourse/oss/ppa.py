@@ -60,7 +60,7 @@ class SourcePackage:
 
 
 class SourcePackageBuilder(BasePackageBuilder):
-    def __init__(self, bin_gpdb_path='', package_name='', release_message='', gpdb_src_path="", license_dir_path=""):
+    def __init__(self, bin_gpdb_path='', package_name='', release_message='', gpdb_src_path="", license_file=""):
         super(SourcePackageBuilder, self).__init__(bin_gpdb_path)
 
         self.bin_gpdb_path = bin_gpdb_path
@@ -68,7 +68,7 @@ class SourcePackageBuilder(BasePackageBuilder):
         self.release_message = release_message
         self.debian_revision = 1
         self.gpdb_src_path = gpdb_src_path
-        self.license_dir_path = license_dir_path
+        self.license_file = license_file
 
     def build(self):
         self.create_source()
@@ -158,8 +158,7 @@ class SourcePackageBuilder(BasePackageBuilder):
         shutil.copy(os.path.join(self.gpdb_src_path, "COPYRIGHT"),
                     os.path.join(root_dir, "COPYRIGHT"))
 
-        license_file_path = os.path.abspath(glob.glob(os.path.join(self.license_dir_path, "*.txt"))[0])
-        shutil.copy(license_file_path, os.path.join(root_dir, "open_source_license_greenplum_database.txt"))
+        shutil.copy(self.license_file, os.path.join(root_dir, "open_source_license_greenplum_database.txt"))
 
         notice_content = '''Greenplum Database
 
