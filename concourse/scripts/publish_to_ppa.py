@@ -11,24 +11,25 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations under
 # the License.
+import argparse
 import glob
 import os
 
 from oss.ppa import SourcePackageBuilder, DebianPackageBuilder, LaunchpadPublisher
 from oss.utils import PackageTester
 
-if __name__ == '__main__':
+
+def main(args):
     source_package = SourcePackageBuilder(
-        bin_gpdb_path='bin_gpdb_ubuntu18.04/bin_gpdb.tar.gz',
+        bin_gpdb_path=args.bin_gpdb,
         package_name='greenplum-db',
-        release_message=os.environ["RELEASE_MESSAGE"],
-        gpdb_src_path="gpdb_src",
-        license_dir_path="license_file"
+        release_message=args.release_message,
+        gpdb_src_path=args.gpdb_src,
+        license_dir_path=args.license_file
     ).build()
 
     builder = DebianPackageBuilder(source_package=source_package)
     builder.build_binary()
-    builder.build_source()
 
     deb_file_path = os.path.abspath(glob.glob("./*.deb")[0])
     print("Verify DEB package...")
@@ -36,6 +37,23 @@ if __name__ == '__main__':
     packager_tester.test_package()
     print("All check actions passed!")
 
-    ppa_repo = os.environ["PPA_REPO"]
-    publisher = LaunchpadPublisher(ppa_repo, source_package)
-    publisher.publish()
+    if args.publish:
+        builder.build_source()
+        ppa_repo = os.environ["PPA_REPO"]
+        publisher = LaunchpadPublisher(ppa_repo, source_package)
+        publisher.publish()
+
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--bin-gpdb", help="path to bin_gpdb.tar.gz", default='bin_gpdb/bin_gpdb.tar.gz')
+    parser.add_argument('--release-message', help='release message for CHANGELOG', default='missing message')
+    parser.add_argument('--gpdb-src', help='path to gpdb source code', default='gpdb_src')
+    parser.add_argument('--license-file', help='path to OSL file', default='')
+    parser.add_argument('--publish', help='publish to PPA', action='store_true', default=False)
+    return parser.parse_args()
+
+
+if __name__ == '__main__':
+    args = parse_args()
+    main(args)
