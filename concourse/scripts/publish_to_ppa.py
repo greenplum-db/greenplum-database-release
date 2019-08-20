@@ -25,7 +25,8 @@ def main(args):
         package_name='greenplum-db',
         release_message=args.release_message,
         gpdb_src_path=args.gpdb_src,
-        license_file=args.license_file
+        license_file=args.license_file,
+        prefix=args.prefix
     ).build()
 
     builder = DebianPackageBuilder(source_package=source_package)
@@ -51,6 +52,7 @@ def parse_args():
     parser.add_argument('--gpdb-src', help='path to gpdb source code', default='gpdb_src')
     parser.add_argument('--license-file', help='path to OSL file', default='')
     parser.add_argument('--publish', help='publish to PPA', action='store_true', default=False)
+    parser.add_argument('--prefix', help='publish to PPA', default='/usr/local')
     return parser.parse_args()
 
 
