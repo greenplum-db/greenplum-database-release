@@ -117,6 +117,8 @@ class TestSourcePackageBuilder(TestCase):
         self.assertTrue(os.path.isfile(os.path.join(debian_dir, 'compat')))
         self.assertTrue(os.path.isfile(os.path.join(debian_dir, 'rules')))
         self.assertTrue(os.path.isfile(os.path.join(debian_dir, 'control')))
+        self.assertTrue(os.path.isfile(os.path.join(debian_dir, 'postinst')))
+        self.assertTrue(os.path.isfile(os.path.join(debian_dir, 'postrm')))
 
     @patch('oss.ppa.SourcePackageBuilder.create_source')
     @patch('oss.ppa.SourcePackageBuilder.create_debian_dir')
@@ -205,6 +207,24 @@ class TestSourcePackageBuilder(TestCase):
             repackaged_contents_set.update(map(lambda tar_info: tar_info.name, tar.getmembers()))
         self.assertEqual(len(repackaged_contents_set.intersection(expected_contents_set)), 3)
         mock_replace_greenplum_path.assert_called()
+
+    def test_link_name(self):
+        self.assertEqual(self.source_package_builder.link_name(), '/prefix/name')
+
+    def test_postinst(self):
+        _postinst = self.source_package_builder._postinst()
+        self.assertIn('#!/bin/sh', _postinst)
+        self.assertIn('ln -sT', _postinst)
+        self.assertIn(self.source_package_builder.link_name(), _postinst)
+        self.assertIn(self.source_package_builder.install_location(), _postinst)
+
+    def test_postrm(self):
+        _postrm = self.source_package_builder._postrm()
+        self.assertIn('#!/bin/sh', _postrm)
+        self.assertIn('if [[', _postrm)
+        self.assertIn('unlink', _postrm)
+        self.assertIn(self.source_package_builder.link_name(), _postrm)
+        self.assertIn(self.source_package_builder.install_location(), _postrm)
 
 
 class TestUtil(TestCase):

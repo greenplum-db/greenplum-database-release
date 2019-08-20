@@ -132,6 +132,12 @@ class SourcePackageBuilder(BasePackageBuilder):
         with open(os.path.join(debian_dir, 'install'), mode='x') as fd:
             fd.write(self._install())
 
+        with open(os.path.join(debian_dir, 'postinst'), mode='x') as fd:
+            fd.write(self._postinst())
+
+        with open(os.path.join(debian_dir, 'postrm'), mode='x') as fd:
+            fd.write(self._postrm())
+
     def generate_changelog(self):
         debian_revision = 1
         new_version = f'{self.gpdb_version_short}-{debian_revision}'
@@ -151,6 +157,9 @@ class SourcePackageBuilder(BasePackageBuilder):
 
     def install_location(self):
         return os.path.join(self.prefix, f'{self.package_name}-{self.gpdb_version_short}')
+
+    def link_name(self):
+        return os.path.join(self.prefix, self.package_name)
 
     def _generate_license_files(self, root_dir):
         shutil.copy(os.path.join(self.gpdb_src_path, "LICENSE"),
@@ -240,3 +249,17 @@ conditions of the subcomponent's license, as noted in the LICENSE file.
                |  contributions.  For the Greenplum Database community, no contribution is too
                |  small, we encourage all types of contributions.
                |''')
+
+    def _postinst(self):
+        return Util.strip_margin(
+            f'''#!/bin/sh
+               |set -e
+               |ln -sT {self.install_location()} {self.link_name()}
+            ''')
+
+    def _postrm(self):
+        return Util.strip_margin(
+            f'''#!/bin/sh
+               |if [[ "$(readlink {self.link_name()})" == "{self.install_location()}" ]]; then
+               |  unlink {self.link_name()}
+               |fi''')
