@@ -202,6 +202,7 @@ conditions of the subcomponent's license, as noted in the LICENSE file.
                |Build-Depends: debhelper (>= 9)
                |
                |Package: {self.package_name}
+               |Homepage: https://github.com/greenplum-db/gpdb
                |Architecture: amd64
                |Depends: libapr1,
                |    libaprutil1,
