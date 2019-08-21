@@ -65,7 +65,7 @@ class TestSourcePackage(TestCase):
 
 class TestSourcePackageBuilder(TestCase):
     def setUp(self):
-        self.source_package_builder = SourcePackageBuilder('path', 'name', 'message', "gpdb_src", "license_file", "/prefix")
+        self.source_package_builder = SourcePackageBuilder('path', 'name', 'message', "gpdb_src", "license_file", "/prefix", False)
         self.source_package_builder._gpdb_version_short = 'short-version'
         self.temp_dir = tempfile.mkdtemp()
 
@@ -106,7 +106,7 @@ class TestSourcePackageBuilder(TestCase):
                   cwd='name-short-version'),
              call(['dch', '--release', 'ignored message'], cwd='name-short-version')])
 
-    @patch('oss.ppa.SourcePackageBuilder._generate_license_files')
+    @patch('oss.ppa.SourcePackageBuilder.generate_license_files')
     @patch('oss.ppa.SourcePackageBuilder.source_dir', new_callable=PropertyMock)
     def test_create_debian_dir(self, mock_source_dir, mock_generate_license_files):
         mock_source_dir.return_value = self.temp_dir
@@ -122,8 +122,9 @@ class TestSourcePackageBuilder(TestCase):
 
     @patch('oss.ppa.SourcePackageBuilder.create_source')
     @patch('oss.ppa.SourcePackageBuilder.create_debian_dir')
+    @patch('oss.ppa.SourcePackageBuilder.create_doc_files')
     @patch('oss.ppa.SourcePackageBuilder.generate_changelog')
-    def test_build(self, mock1, mock2, mock3):
+    def test_build(self, mock1, mock2, mock3, mock4):
         source_package_builder = self.source_package_builder
         source_package = source_package_builder.build()
         self.assertEqual(source_package.package_name, source_package_builder.package_name)
@@ -132,6 +133,7 @@ class TestSourcePackageBuilder(TestCase):
         mock1.assert_called()
         mock2.assert_called()
         mock3.assert_called()
+        mock4.assert_called()
 
     @patch('oss.ppa.SourcePackageBuilder.install_location')
     @patch('oss.ppa.SourcePackageBuilder.source_dir', new_callable=PropertyMock)

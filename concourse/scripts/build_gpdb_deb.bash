@@ -25,7 +25,8 @@ function build_deb() {
   export PYTHONPATH="${PWD}/greenplum-database-release/concourse"
   python3 greenplum-database-release/concourse/scripts/publish_to_ppa.py \
     --license-file license_file/*.txt \
-    --prefix /usr/local
+    --prefix /usr/local \
+    --oss "${GPDB_OSS:-false}"
 
   cp "./greenplum-db_${GPDB_VERSION}-1_${GPDB_BUILDARCH}.deb" "gpdb_deb_installer/${__package_name}.deb"
 }
