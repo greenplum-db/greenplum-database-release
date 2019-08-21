@@ -30,13 +30,13 @@ run:
   - -ec
   - |
     cp greenplum-database-release/concourse/scripts/dput.cf ~/.dput.cf
-    apt-get update -q=2
-    apt-get install -q=2 -y software-properties-common debmake equivs git
+    apt-get --quiet=3 update
+    apt-get --quiet=3 install --yes software-properties-common debmake equivs git
     gpg --import <(echo "${GPG_PRIVATE_KEY}")
 
     export PYTHONPATH=${PWD}/greenplum-database-release/concourse
     pushd greenplum-database-release/concourse && python3 -m unittest tests/ppa_test.py && popd
-    python3 greenplum-database-release/concourse/scripts/publish_to_ppa.py --prefix=/opt
+    ./greenplum-database-release/concourse/scripts/build-gpdb-deb --prefix=/opt --publish
 
 params:
   PPA_REPO:
