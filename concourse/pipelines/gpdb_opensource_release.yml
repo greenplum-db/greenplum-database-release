@@ -61,7 +61,7 @@ resources:
   source:
     bucket: ((gcs-bucket-for-oss))
     json_key: ((concourse-gcs-resources-service-account-key))
-    regexp: osl/released/gpdb6/open_source_license_greenplum-database-(.*)-[a-z0-9]+-[0-9]+.txt
+    regexp: osl/released/gpdb6/open_source_license_greenplum-database-6.0.0-97773a0-(.*).txt
 
 ## gp internal artifacts
 - name: python-centos6
