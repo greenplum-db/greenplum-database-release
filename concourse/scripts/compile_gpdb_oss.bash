@@ -68,6 +68,7 @@ build_gpdb () {
     pushd gpdb_src
         CC="gcc" CFLAGS="-O3 -fargument-noalias-global -fno-omit-frame-pointer -g" \
             ./configure \
+                --disable-debug-extensions \
                 --enable-orca \
                 --with-zstd \
                 --with-gssapi \
