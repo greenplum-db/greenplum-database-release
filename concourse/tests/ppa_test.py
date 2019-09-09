@@ -64,9 +64,10 @@ class TestSourcePackage(TestCase):
 
 
 class TestSourcePackageBuilder(TestCase):
-    def setUp(self):
+    @patch('oss.utils.Util.extract_gpdb_version')
+    def setUp(self, mock_extract_gpdb_version):
+        mock_extract_gpdb_version.return_value = 'short-version'
         self.source_package_builder = SourcePackageBuilder('path', 'name', 'message', "gpdb_src", "license_file")
-        self.source_package_builder._gpdb_version_short = 'short-version'
         self.temp_dir = tempfile.mkdtemp()
 
     def tearDown(self):
@@ -100,9 +101,10 @@ class TestSourcePackageBuilder(TestCase):
         self.source_package_builder.generate_changelog()
         self.assertEqual(
             mocked_run_or_fail.call_args_list,
-            [call(['dch', '--create', '--package', 'name', '--newversion', 'short-version-1', 'message'],
-                  cwd='name-short-version'),
-             call(['dch', '--release', 'ignored message'], cwd='name-short-version')])
+            [call(['dch', '--create', '--package', 'name', '--newversion',
+                   'short~version-%s' % self.source_package_builder.debian_revision, 'message'],
+                  cwd='name-short~version'),
+             call(['dch', '--release', 'ignored message'], cwd='name-short~version')])
 
     @patch('oss.ppa.SourcePackageBuilder._generate_license_files')
     @patch('oss.ppa.SourcePackageBuilder.source_dir', new_callable=PropertyMock)
@@ -123,7 +125,7 @@ class TestSourcePackageBuilder(TestCase):
         source_package_builder = self.source_package_builder
         source_package = source_package_builder.build()
         self.assertEqual(source_package.package_name, source_package_builder.package_name)
-        self.assertEqual(source_package.version, source_package_builder.gpdb_version_short)
+        self.assertEqual(source_package.version, source_package_builder.gpdb_upstream_version)
         self.assertEqual(source_package.debian_revision, source_package_builder.debian_revision)
         mock1.assert_called()
         mock2.assert_called()
@@ -199,7 +201,7 @@ class TestSourcePackageBuilder(TestCase):
         self.source_package_builder.create_source()
         expected_contents_set = set(map(lambda filename: f'my_src/bin_gpdb/bin/app/{filename}', filenames))
         repackaged_contents_set = set()
-        with tarfile.open(os.path.join(self.temp_dir, 'name_short-version.orig.tar.gz')) as tar:
+        with tarfile.open(os.path.join(self.temp_dir, 'name_short~version.orig.tar.gz')) as tar:
             repackaged_contents_set.update(map(lambda tar_info: tar_info.name, tar.getmembers()))
         self.assertEqual(len(repackaged_contents_set.intersection(expected_contents_set)), 3)
         mock_replace_greenplum_path.assert_called()

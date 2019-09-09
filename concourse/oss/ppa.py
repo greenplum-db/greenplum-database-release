@@ -69,6 +69,9 @@ class SourcePackageBuilder(BasePackageBuilder):
         self.debian_revision = 1
         self.gpdb_src_path = gpdb_src_path
         self.license_dir_path = license_dir_path
+        # 6.0.0-beta.7 ==> 6.0.0~beta.7
+        # ref: https://manpages.debian.org/wheezy/dpkg-dev/deb-version.5.en.html#Sorting_Algorithm
+        self.gpdb_upstream_version = self.gpdb_version_short.replace("-", "~")
 
     def build(self):
         self.create_source()
@@ -77,12 +80,12 @@ class SourcePackageBuilder(BasePackageBuilder):
 
         return SourcePackage(
             package_name=self.package_name,
-            version=self.gpdb_version_short,
+            version=self.gpdb_upstream_version,
             debian_revision=self.debian_revision)
 
     @property
     def source_dir(self):
-        return f'{self.package_name}-{self.gpdb_version_short}'
+        return f'{self.package_name}-{self.gpdb_upstream_version}'
 
     def create_source(self):
         if os.path.exists(self.source_dir) and os.path.isdir(self.source_dir):
@@ -96,7 +99,7 @@ class SourcePackageBuilder(BasePackageBuilder):
         self.replace_greenplum_path()
 
         # using _ here is debian convention
-        archive_name = f'{self.package_name}_{self.gpdb_version_short}.orig.tar.gz'
+        archive_name = f'{self.package_name}_{self.gpdb_upstream_version}.orig.tar.gz'
         with tarfile.open(archive_name, 'w:gz') as tar:
             tar.add(self.source_dir, arcname=os.path.basename(self.source_dir))
 
@@ -132,8 +135,7 @@ class SourcePackageBuilder(BasePackageBuilder):
             fd.write(self._install())
 
     def generate_changelog(self):
-        debian_revision = 1
-        new_version = f'{self.gpdb_version_short}-{debian_revision}'
+        new_version = f'{self.gpdb_upstream_version}-{self.debian_revision}'
         cmd = [
             'dch', '--create',
             '--package', self.package_name,
