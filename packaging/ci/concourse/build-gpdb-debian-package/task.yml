@@ -1,0 +1,19 @@
+---
+platform: linux
+image_resource:
+  type: docker-image
+  source:
+    repository: ubuntu
+    tag: bionic
+
+inputs:
+- name: greenplum-database-release
+- name: source-tarball
+- name: libgpopt3
+- name: libgpopt3-dev
+
+outputs:
+- name: debian-packages
+
+run:
+  path: greenplum-database-release/packaging/ci/concourse/build-gpdb-debian-package/run

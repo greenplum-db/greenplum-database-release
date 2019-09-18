@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+apk add --no-cache --no-progress git tar xz
+
+output_dir="${PWD}/source-tarball"
+version="$(tr -d v < repo/.git/ref)"
+
+pushd repo || exit
+  git archive --prefix "${PACKAGE}-${version}/" --format "tar" --output "${output_dir}/${PACKAGE}-${version}.tar" HEAD
+  git submodule foreach --recursive "git archive --prefix ${PACKAGE}-${version}/\$displaypath/ --format tar --output ${output_dir}/submodule-\$sha1.tar \$sha1"
+popd || exit
+
+pushd source-tarball || exit
+  if [[ $(find . -name 'submodule-*.tar' | wc -l ) != 0 ]]; then
+    tar --concatenate --file "${PACKAGE}-${version}.tar" submodule-*.tar
+
+    rm submodule-*.tar
+  fi
+
+  xz -9 "${PACKAGE}-${version}.tar"
+  ls -lh ./*.tar.xz
+popd || exit

@@ -1,0 +1,157 @@
+---
+resource_types:
+- name: gcs
+  type: docker-image
+  source:
+    repository: frodenas/gcs-resource
+
+resources:
+- name: gporca
+  type: git
+  icon: git
+  version: {ref: v3.65.0}
+  source:
+    uri: https://github.com/greenplum-db/gporca.git
+    branch: master
+    tag_filter: v*
+
+- name: gpdb
+  type: git
+  icon: git
+  version: {ref: 6.0.0}
+  source:
+    uri: https://github.com/greenplum-db/gpdb.git
+    branch: 6X_STABLE
+    tag_filter: '*'
+
+- name: greenplum-database-release
+  type: git
+  icon: git
+  source:
+    uri: https://github.com/greenplum-db/greenplum-database-release.git
+    branch: debian-packaging
+
+- name: ubuntu-bionic
+  type: docker-image
+  icon: docker
+  source:
+    repository: ubuntu
+    tag: "18.04"
+
+- name: debian-stable
+  type: docker-image
+  icon: docker
+  source:
+    repository: debian
+    tag: stable
+
+- name: gporca-source-tarball
+  type: gcs
+  source:
+    bucket: gp-releng-scratch
+    json_key: ((gp-releng-scratch-gcs-key))
+    regexp: dev/source/gporca-(.*).tar.xz
+
+- name: gpdb-source-tarball
+  type: gcs
+  source:
+    bucket: gp-releng-scratch
+    json_key: ((gp-releng-scratch-gcs-key))
+    regexp: dev/source/gpdb-(.*).tar.xz
+
+- name: libgpopt3
+  type: gcs
+  icon: package
+  source:
+    bucket: gp-releng-scratch
+    json_key: ((gp-releng-scratch-gcs-key))
+    regexp: dev/binary/libgpopt3_(.*)_amd64.deb
+
+- name: libgpopt3-dev
+  type: gcs
+  icon: package
+  source:
+    bucket: gp-releng-scratch
+    json_key: ((gp-releng-scratch-gcs-key))
+    regexp: dev/binary/libgpopt3-dev_(.*)_amd64.deb
+
+jobs:
+- name: archive gporca release
+  plan:
+  - in_parallel:
+    - get: gporca
+      trigger: true
+    - get: greenplum-database-release
+  - task: create source tarball
+    file: greenplum-database-release/packaging/ci/concourse/create-source-tarball/task.yml
+    input_mapping: {repo: gporca}
+    params:
+      PACKAGE: gporca
+  - put: gporca-source-tarball
+    params:
+      file: source-tarball/gporca-*.tar.xz
+
+- name: archive gpdb release
+  plan:
+  - in_parallel:
+    - get: gpdb
+      trigger: true
+    - get: greenplum-database-release
+  - task: create source tarball
+    file: greenplum-database-release/packaging/ci/concourse/create-source-tarball/task.yml
+    input_mapping: {repo: gpdb}
+    params:
+      PACKAGE: gpdb
+  - put: gpdb-source-tarball
+    params:
+      file: source-tarball/gpdb-*.tar.xz
+
+- name: build gporca packages
+  plan:
+  - in_parallel:
+    - get: source-tarball
+      resource: gporca-source-tarball
+      trigger: true
+      passed: [archive gporca release]
+    - get: greenplum-database-release
+    - get: debian-stable
+    - get: ubuntu-bionic
+  - in_parallel:
+    - task: build ubuntu-bionic binary package
+      file: greenplum-database-release/packaging/ci/concourse/build-debian-package/task.yml
+      image: ubuntu-bionic
+      output_mapping: {debian-packages: bionic-debian-packages}
+    - task: build debian-stable binary package
+      file: greenplum-database-release/packaging/ci/concourse/build-debian-package/task.yml
+      image: debian-stable
+  - in_parallel:
+    - put: libgpopt3
+      params:
+        file: bionic-debian-packages/libgpopt3_*.deb
+    - put: libgpopt3-dev
+      params:
+        file: bionic-debian-packages/libgpopt3-dev_*.deb
+
+- name: build gpdb packages
+  plan:
+  - in_parallel:
+    - get: source-tarball
+      resource: gpdb-source-tarball
+      trigger: true
+      passed: [archive gpdb release]
+    - get: greenplum-database-release
+      # passed:
+      # - build gporca packages
+    - get: libgpopt3
+      passed: [build gporca packages]
+    - get: libgpopt3-dev
+      passed: [build gporca packages]
+    - get: debian-stable
+    - get: ubuntu-bionic
+  - in_parallel:
+    - task: build ubuntu-bionic binary package
+      file: greenplum-database-release/packaging/ci/concourse/build-gpdb-debian-package/task.yml
+      image: ubuntu-bionic
+    - task: build debian-stable binary package
+      file: greenplum-database-release/packaging/ci/concourse/build-gpdb-debian-package/task.yml
+      image: debian-stable

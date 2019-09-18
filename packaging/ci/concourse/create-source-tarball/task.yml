@@ -1,0 +1,20 @@
+---
+platform: linux
+image_resource:
+  type: docker-image
+  source:
+    repository: bash
+    tag: latest
+
+inputs:
+- name: repo
+- name: greenplum-database-release
+
+outputs:
+- name: source-tarball
+
+params:
+  PACKAGE:
+
+run:
+  path: greenplum-database-release/packaging/ci/concourse/create-source-tarball/run

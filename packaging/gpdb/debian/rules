@@ -1,0 +1,9 @@
+#!/usr/bin/make -f
+%:
+	dh $@
+
+# TODO: how to properly clean gpdb source
+override_dh_auto_clean:
+
+# TODO: how to test
+override_dh_auto_test:

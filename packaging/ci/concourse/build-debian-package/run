@@ -1,0 +1,49 @@
+#!/bin/bash
+
+apt-get -q=2 update
+apt-get -q=2 --no-install-recommends install -y equivs devscripts quilt xz-utils
+
+pushd source-tarball || exit
+  re="(.+)-(.+).tar.xz"
+  [[ "$(ls ./*.tar.xz)" =~ $re ]] || exit
+  archive="${BASH_REMATCH[0]}"
+  pkg_name="${BASH_REMATCH[1]}"
+  version="${BASH_REMATCH[2]}"
+
+  # Debian requires upstream to be-renamed as follows
+  ln -sf "${archive}" "${pkg_name}_${version}.orig.tar.xz"
+
+  tar -xJf ./*.orig.tar.xz
+popd || exit
+
+cp -a greenplum-database-release/packaging/${pkg_name}/debian source-tarball/${pkg_name}-${version}/
+
+# setup quilt
+alias dquilt="quilt --quiltrc=${PWD}/.quiltrc-dpkg"
+cat > .quiltrc-dpkg <<"EOF"
+d=. ; while [ ! -d $d/debian -a $(readlink -e $d) != / ]; do d=$d/..; done
+if [ -d $d/debian ] && [ -z $QUILT_PATCHES ]; then
+    # if in Debian packaging tree with unset $QUILT_PATCHES
+    QUILT_PATCHES="debian/patches"
+    QUILT_PATCH_OPTS="--reject-format=unified"
+    QUILT_DIFF_ARGS="-p ab --no-timestamps --no-index --color=auto"
+    QUILT_REFRESH_ARGS="-p ab --no-timestamps --no-index"
+    QUILT_COLORS="diff_hdr=1;32:diff_add=1;34:diff_rem=1;31:diff_hunk=1;33:diff_ctx=35:diff_cctx=33"
+    if ! [ -d $d/debian/patches ]; then mkdir $d/debian/patches; fi
+fi
+EOF
+
+pushd source-tarball/${pkg_name}-${version} || exit
+  # apply the Debian-specific patches
+  while dquilt push; do dquilt refresh; done
+  DEBIAN_FRONTEND=noninteractive mk-build-deps --install --remove --tool "apt-get -q=2 --no-install-recommends"
+  dpkg-buildpackage -us -uc
+popd || exit
+
+cp -a source-tarball/*.deb debian-packages
+
+ls -lh debian-packages/*.deb
+for deb in debian-packages/*.deb; do
+  dpkg-deb --info "$deb"
+  dpkg-deb --contents "$deb"
+done

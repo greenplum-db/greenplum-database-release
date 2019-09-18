@@ -1,0 +1,65 @@
+Update C++ standard to C++11
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -3,7 +3,9 @@
+ cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
+ project(gpopt LANGUAGES CXX C)
+
+-set(CMAKE_CXX_STANDARD 98)
++include(GNUInstallDirs)
++
++set(CMAKE_CXX_STANDARD 11)
+ set(GPORCA_VERSION_MAJOR 3)
+ set(GPORCA_VERSION_MINOR 65)
+ set(GPORCA_VERSION_PATCH 0)
+--- a/server/src/unittest/dxl/CParseHandlerCostModelTest.cpp
++++ b/server/src/unittest/dxl/CParseHandlerCostModelTest.cpp
+@@ -45,7 +45,7 @@
+ 		private:
+ 			CAutoMemoryPool m_amp;
+ 			gpos::CAutoP<CDXLMemoryManager> m_apmm;
+-			std::auto_ptr<SAX2XMLReader> m_apxmlreader;
++			std::unique_ptr<SAX2XMLReader> m_apxmlreader;
+ 			gpos::CAutoP<CParseHandlerManager> m_apphm;
+ 			gpos::CAutoP<CParseHandlerCostModel> m_apphCostModel;
+ 
+--- a/libnaucrates/CMakeLists.txt
++++ b/libnaucrates/CMakeLists.txt
+@@ -30,5 +30,5 @@
+                       SOVERSION ${GPORCA_ABI_VERSION}
+                       VERSION ${GPORCA_VERSION_STRING})
+ 
+-install(TARGETS naucrates DESTINATION lib)
++install(TARGETS naucrates DESTINATION ${CMAKE_INSTALL_LIBDIR})
+ install(DIRECTORY include/naucrates DESTINATION include)
+--- a/libgpdbcost/CMakeLists.txt
++++ b/libgpdbcost/CMakeLists.txt
+@@ -30,5 +30,5 @@
+                       SOVERSION ${GPORCA_ABI_VERSION}
+                       VERSION ${GPORCA_VERSION_STRING})
+ 
+-install(TARGETS gpdbcost DESTINATION lib)
++install(TARGETS gpdbcost DESTINATION ${CMAKE_INSTALL_LIBDIR})
+ install(DIRECTORY include/gpdbcost DESTINATION include)
+--- a/libgpopt/CMakeLists.txt
++++ b/libgpopt/CMakeLists.txt
+@@ -31,7 +31,7 @@
+                       SOVERSION ${GPORCA_ABI_VERSION}
+                       VERSION ${GPORCA_VERSION_STRING})
+ 
+-install(TARGETS gpopt DESTINATION lib)
++install(TARGETS gpopt DESTINATION ${CMAKE_INSTALL_LIBDIR})
+ install(DIRECTORY include/gpopt DESTINATION include)
+ install(FILES "${PROJECT_BINARY_DIR}/libgpopt/include/libgpopt/version.h"
+         DESTINATION include/gpopt)
+--- a/libgpos/CMakeLists.txt
++++ b/libgpos/CMakeLists.txt
+@@ -68,7 +68,7 @@
+   install(FILES "${PROJECT_BINARY_DIR}/libgpos/include/gpos/config.h" DESTINATION "${installpath}/include/gpos")
+ else()
+   get_filename_component(full_install_name_dir "${CMAKE_INSTALL_PREFIX}/lib" ABSOLUTE)
+-  install(TARGETS gpos DESTINATION lib)
++  install(TARGETS gpos DESTINATION ${CMAKE_INSTALL_LIBDIR})
+   install(DIRECTORY include/gpos DESTINATION include)
+   install(FILES "${PROJECT_BINARY_DIR}/libgpos/include/gpos/config.h" DESTINATION include/gpos)
+ endif()

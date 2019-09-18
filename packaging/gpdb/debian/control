@@ -1,0 +1,12 @@
+Source: gpdb
+Maintainer: Pivotal Greenplum Release Engineering <gp-releng@pivotal.io>
+Section: misc
+Priority: optional
+Standards-Version: 3.9.2
+Build-Depends: debhelper (>= 9), libreadline-dev, zlib1g-dev, libzstd-dev, libapr1-dev, libevent-dev, libcurl4-openssl-dev, libbz2-dev, bison, flex, libxml2-dev, libssl-dev, python, libpython-dev, libgpopt3-dev, libxerces-c-dev
+
+Package: greenplum-db
+Architecture: any
+Multi-Arch: same
+Description: Greenplum Database
+ TODO

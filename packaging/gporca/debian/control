@@ -1,0 +1,20 @@
+Source: gporca
+Maintainer: Maintainer: Pivotal Greenplum Release Engineering <gp-releng@pivotal.io>
+Section: misc
+Priority: optional
+Standards-Version: 3.9.2
+Build-Depends: cmake, debhelper (>= 9), libxerces-c-dev
+
+Package: libgpopt3-dev
+Architecture: any
+Multi-Arch: same
+Depends: libgpopt3 (= ${binary:Version}), ${misc:Depends}
+Description: GPORCA is a modular query optimizer for big data
+ gporca is the Greenplum Next Generation Query Optimizer
+
+Package: libgpopt3
+Architecture: any
+Multi-Arch: same
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: GPORCA is a modular query optimizer for big data
+ gporca is the Greenplum Next Generation Query Optimizer
