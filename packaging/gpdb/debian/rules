@@ -5,5 +5,23 @@
 # TODO: how to properly clean gpdb source
 override_dh_auto_clean:
 
+override_dh_auto_configure:
+	dh_auto_configure -- \
+            --enable-tap-tests \
+            --disable-gpperfmon \
+            --with-gssapi \
+            --enable-mapreduce \
+            --enable-orafce \
+            --enable-orca \
+            --with-libxml \
+            --with-pgport=5432 \
+            --with-libedit-preferred \
+            --disable-debug-extensions \
+            --with-perl \
+            --with-python \
+            --with-openssl \
+            --with-pam \
+            --with-ldap
+
 # TODO: how to test
 override_dh_auto_test:
