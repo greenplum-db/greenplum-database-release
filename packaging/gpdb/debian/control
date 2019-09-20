@@ -29,6 +29,6 @@ Build-Depends:
 
 Package: greenplum-db
 Architecture: any
-Multi-Arch: same
+Depends: ${shlibs:Depends}, python
 Description: Greenplum Database
  TODO

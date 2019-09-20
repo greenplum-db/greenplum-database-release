@@ -2,4 +2,4 @@ gpdb (6.0.0-1) UNRELEASED; urgency=medium
 
   * Initial release
 
- -- root <root@2a44efdb1706>  Mon, 09 Sep 2019 01:24:03 +0000
+ -- Greenplum Release Engineering <gp-releng@pivotal.io>  Mon, 09 Sep 2019 01:24:03 +0000

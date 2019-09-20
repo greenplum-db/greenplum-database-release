@@ -1,6 +1,15 @@
 Fix missing usages of DESTDIR
 --- a/gpMgmt/bin/Makefile
 +++ b/gpMgmt/bin/Makefile
+@@ -27,7 +27,7 @@
+ 	done
+ 	# Symlink gpcheckcat from bin to bin/lib to maintain backward compatibility
+ 	if [ ! -L $(DESTDIR)$(bindir)/lib/gpcheckcat  ]; then \
+-		$(LN_S) $(DESTDIR)$(bindir)/gpcheckcat $(DESTDIR)$(bindir)/lib/gpcheckcat; \
++		$(LN_S) $(bindir)/gpcheckcat $(DESTDIR)$(bindir)/lib/gpcheckcat; \
+ 	fi
+ 	$(INSTALL_DATA) gpload.bat '$(DESTDIR)$(bindir)/gpload.bat'
+ 
 @@ -55,7 +55,7 @@
  PYLIB_DIR=$(SRC)/ext
 
