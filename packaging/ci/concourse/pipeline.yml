@@ -75,6 +75,14 @@ resources:
     json_key: ((gp-releng-scratch-gcs-key))
     regexp: dev/binary/libgpopt3-dev_(.*)_amd64.deb
 
+- name: greenplum-db
+  type: gcs
+  icon: package
+  source:
+    bucket: gp-releng-scratch
+    json_key: ((gp-releng-scratch-gcs-key))
+    regexp: dev/binary/greenplum-db_(.*)_amd64.deb
+
 jobs:
 - name: archive gporca release
   plan:
@@ -152,6 +160,10 @@ jobs:
     - task: build ubuntu-bionic binary package
       file: greenplum-database-release/packaging/ci/concourse/build-gpdb-debian-package/task.yml
       image: ubuntu-bionic
+      output_mapping: {debian-packages: bionic-gpdb-debian-packages}
     - task: build debian-stable binary package
       file: greenplum-database-release/packaging/ci/concourse/build-gpdb-debian-package/task.yml
       image: debian-stable
+  - put: greenplum-db
+    params:
+      file: bionic-gpdb-debian-packages/greenplum-db_*.deb
