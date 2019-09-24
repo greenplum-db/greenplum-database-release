@@ -67,21 +67,21 @@ resources:
 - name: python-centos6
   type: gcs
   source:
-    json_key: {{concourse-gcs-resources-service-account-key}}
+    json_key: ((concourse-gcs-resources-service-account-key))
     bucket: pivotal-gpdb-concourse-resources-prod
     regexp: gp-internal-artifacts/centos6/python-(2\.7\.12-.*).tar.gz
 
 - name: python-centos7
   type: gcs
   source:
-    json_key: {{concourse-gcs-resources-service-account-key}}
+    json_key: ((concourse-gcs-resources-service-account-key))
     bucket: pivotal-gpdb-concourse-resources-prod
     regexp: gp-internal-artifacts/centos7/python-(2\.7\.12-.*).tar.gz
 
 - name: python-ubuntu18.04
   type: gcs
   source:
-    json_key: {{concourse-gcs-resources-service-account-key}}
+    json_key: ((concourse-gcs-resources-service-account-key))
     bucket: pivotal-gpdb-concourse-resources-prod
     regexp: gp-internal-artifacts/ubuntu18.04/python-(2\.7\.12-.*).tar.gz
 
@@ -89,8 +89,8 @@ resources:
 - name: bin_gpdb_centos6
   type: gcs
   source:
-    json_key: {{concourse-gcs-resources-service-account-key}}
-    bucket: {{gcs-bucket-intermediates-for-oss}}
+    json_key: ((concourse-gcs-resources-service-account-key))
+    bucket: ((gcs-bucket-intermediates-for-oss))
     versioned_file: ((pipeline-name))/bin_gpdb_centos6/bin_gpdb.tar.gz
 
 - name: bin_gpdb_centos6_release
@@ -111,8 +111,8 @@ resources:
 - name: bin_gpdb_centos7
   type: gcs
   source:
-    json_key: {{concourse-gcs-resources-service-account-key}}
-    bucket: {{gcs-bucket-intermediates-for-oss}}
+    json_key: ((concourse-gcs-resources-service-account-key))
+    bucket: ((gcs-bucket-intermediates-for-oss))
     versioned_file: ((pipeline-name))/bin_gpdb_centos7/bin_gpdb.tar.gz
 
 - name: bin_gpdb_centos7_release
@@ -133,8 +133,8 @@ resources:
 - name: bin_gpdb_ubuntu18.04
   type: gcs
   source:
-    json_key: {{concourse-gcs-resources-service-account-key}}
-    bucket: {{gcs-bucket-intermediates-for-oss}}
+    json_key: ((concourse-gcs-resources-service-account-key))
+    bucket: ((gcs-bucket-intermediates-for-oss))
     versioned_file: ((pipeline-name))/bin_gpdb_ubuntu18.04/bin_gpdb.tar.gz
 
 - name: bin_gpdb_ubuntu18.04_release
