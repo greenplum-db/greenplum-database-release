@@ -69,21 +69,21 @@ resources:
   source:
     json_key: {{concourse-gcs-resources-service-account-key}}
     bucket: pivotal-gpdb-concourse-resources-prod
-    regexp: gp-internal-artifacts/centos6/python-(.*).tar.gz
+    regexp: gp-internal-artifacts/centos6/python-(2\.7\.12-.*).tar.gz
 
 - name: python-centos7
   type: gcs
   source:
     json_key: {{concourse-gcs-resources-service-account-key}}
     bucket: pivotal-gpdb-concourse-resources-prod
-    regexp: gp-internal-artifacts/centos7/python-(.*).tar.gz
+    regexp: gp-internal-artifacts/centos7/python-(2\.7\.12-.*).tar.gz
 
 - name: python-ubuntu18.04
   type: gcs
   source:
     json_key: {{concourse-gcs-resources-service-account-key}}
     bucket: pivotal-gpdb-concourse-resources-prod
-    regexp: gp-internal-artifacts/ubuntu18.04/python-(.*).tar.gz
+    regexp: gp-internal-artifacts/ubuntu18.04/python-(2\.7\.12-.*).tar.gz
 
 ## RHEL6 Resources
 - name: bin_gpdb_centos6
