@@ -150,6 +150,7 @@ export_gpdb() {
 
 	pushd "${greenplum_install_dir}"
 	(
+		# shellcheck disable=SC1091
 		source greenplum_path.sh
 		python -m compileall -q -x test .
 	)
@@ -158,10 +159,12 @@ export_gpdb() {
 }
 
 _main() {
-	export ORCA_TAG="$(grep 'ORCA_TAG:' gpdb_src/concourse/tasks/compile_gpdb.yml | cut -d ':' -f 2 | tr -d '[:space:]')"
-	fetch_orca_src "${ORCA_TAG}"
+	local orca_tag
+	orca_tag="$(grep 'ORCA_TAG:' gpdb_src/concourse/tasks/compile_gpdb.yml | cut -d ':' -f 2 | tr -d '[:space:]')"
+	fetch_orca_src "${orca_tag}"
 
 	if [ -e /opt/gcc_env.sh ]; then
+		# shellcheck disable=SC1091
 		. /opt/gcc_env.sh
 	fi
 

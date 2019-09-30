@@ -18,7 +18,7 @@ apk update && apk add --no-progress git
 BASE_DIR="$(pwd)"
 
 GPDB_RELEASE_COMMIT_SHA="$(cat gpdb_src/.git/ref)"
-GPDB_RELEASE_TAG="$(git --git-dir gpdb_src/.git describe --tags ${GPDB_RELEASE_COMMIT_SHA})"
+GPDB_RELEASE_TAG="$(git --git-dir gpdb_src/.git describe --tags "${GPDB_RELEASE_COMMIT_SHA}")"
 
 function build_gpdb_binaries_tarball() {
 	pushd "${BASE_DIR}/gpdb_src"
