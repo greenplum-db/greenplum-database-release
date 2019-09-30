@@ -47,12 +47,12 @@ set-dev: set-pipeline-dev
 
 set-pipeline-dev:
 
-	sed -e 's|tag_filter: *|## tag_filter: |g' concourse/pipelines/gpdb_opensource_release.yml > concourse/pipelines/${PIPELINE_NAME}.yml
+	sed -e 's|tag_filter: *|## tag_filter: |g' ci/concourse/pipelines/gpdb_opensource_release.yml > ci/concourse/pipelines/${PIPELINE_NAME}.yml
 
 	$(FLY_CMD) --target=${CONCOURSE} \
     set-pipeline \
     --pipeline=${PIPELINE_NAME} \
-    --config=concourse/pipelines/${PIPELINE_NAME}.yml \
+    --config=ci/concourse/pipelines/${PIPELINE_NAME}.yml \
     --load-vars-from=${HOME}/workspace/gp-continuous-integration/secrets/gpdb-oss-release.dev.yml \
     --load-vars-from=${HOME}/workspace/gp-continuous-integration/secrets/ppa-debian-release-secrets-dev.yml \
     --var=greenplum-database-release-git-branch=${BRANCH} \
@@ -82,12 +82,12 @@ destroy-pipeline-dev:
 set-prod: set-pipeline-prod
 
 set-pipeline-prod:
-	sed -e 's|commitish: release_artifacts/commitish|## commitish: release_artifacts/commitish|g' concourse/pipelines/gpdb_opensource_release.yml > concourse/pipelines/gpdb_opensource_release_prod.yml
+	sed -e 's|commitish: release_artifacts/commitish|## commitish: release_artifacts/commitish|g' ci/concourse/pipelines/gpdb_opensource_release.yml > ci/concourse/pipelines/gpdb_opensource_release_prod.yml
 
 	$(FLY_CMD) --target=prod \
     set-pipeline \
     --pipeline=greenplum-database-release \
-    --config=concourse/pipelines/gpdb_opensource_release_prod.yml \
+    --config=ci/concourse/pipelines/gpdb_opensource_release_prod.yml \
     --load-vars-from=${HOME}/workspace/gp-continuous-integration/secrets/gpdb-oss-release.prod.yml \
     --load-vars-from=${HOME}/workspace/gp-continuous-integration/secrets/ppa-debian-release-secrets.yml \
     --var=pipeline-name=greenplum-database-release \
