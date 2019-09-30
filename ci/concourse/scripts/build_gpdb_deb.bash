@@ -15,16 +15,16 @@ set -eo pipefail
 set -x
 
 function set_gpdb_version_from_source() {
-  GPDB_VERSION=$(./gpdb_src/getversion --short | grep -Po '^[^+]*')
-  export GPDB_VERSION
+	GPDB_VERSION=$(./gpdb_src/getversion --short | grep -Po '^[^+]*')
+	export GPDB_VERSION
 }
 
 function set_gpdb_version_from_binary() {
-  apt-get update
-  apt-get install -y jq
+	apt-get update
+	apt-get install -y jq
 
-  GPDB_VERSION="$(tar xzf bin_gpdb/*.tar.gz -O ./etc/git-info.json | jq -r '.root.version')"
-  export GPDB_VERSION
+	GPDB_VERSION="$(tar xzf bin_gpdb/*.tar.gz -O ./etc/git-info.json | jq -r '.root.version')"
+	export GPDB_VERSION
 }
 
 function build_deb() {
@@ -54,14 +54,14 @@ EOF
 	chmod 0775 "${__package_name}/DEBIAN/postrm"
 	mkdir -p "${__package_name}/usr/share/doc/greenplum-db/"
 	if [ -d ../license_file ]; then
-		if [[ "${GPDB_OSS}" == 'true' ]];then
+		if [[ "${GPDB_OSS}" == 'true' ]]; then
 			cp ../license_file/*.txt "${__package_name}/usr/share/doc/greenplum-db/open_source_license_greenplum_database.txt"
 		else
 			cp ../license_file/*.txt "${__package_name}/usr/share/doc/greenplum-db/open_source_license_pivotal_greenplum.txt"
 		fi
 	fi
 
-	if [[ "${GPDB_OSS}" == 'true' ]];then
+	if [[ "${GPDB_OSS}" == 'true' ]]; then
 		SHARE_DOC_ROOT="${__package_name}/usr/share/doc/greenplum-db"
 
 		cp ../gpdb_src/LICENSE "${SHARE_DOC_ROOT}/LICENSE"
@@ -151,13 +151,13 @@ function _main() {
 
 	# Strip the last .deb from the __final_deb_name
 	__final_package_name="${__final_deb_name%.*}"
-	
+
 	# depending on the context in which this script is called, the contents of the `bin_gpdb` directory are slightly different
 	# in one case, `bin_gpdb` is expected to contain a file `server-rc-<semver>-<platform>-<arch>.tar.gz` and in the other
 	# case `bin_gpdb` is expected to contain files `bin_gpdb.tar.gz` and `QAUtils-<platform>-<arch>.tar.gz`
 	if [[ -f bin_gpdb/bin_gpdb.tar.gz ]]; then
 		build_deb "${__final_package_name}" bin_gpdb/bin_gpdb.tar.gz
-    	else
+	else
 		build_deb "${__final_package_name}" bin_gpdb/server-*.tar.gz
 	fi
 	# Export the built deb and include a sha256 hash
