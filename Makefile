@@ -103,3 +103,26 @@ set-pipeline-prod:
 
 	@echo using the following command to unpause the pipeline:
 	@echo "\t$(FLY_CMD) -t prod unpause-pipeline --pipeline greenplum-database-release"
+
+## ----------------------------------------------------------------------
+## Lint targets
+## ----------------------------------------------------------------------
+.PHONY: check
+check:
+	$(MAKE) lint
+
+.PHONY: lint
+lint:
+	$(MAKE) shfmt shellcheck yamllint
+
+.PHONY: shfmt
+shfmt:
+	docker run --rm -v ${PWD}:/code mvdan/shfmt:v2.6.4 -d /code
+
+.PHONY: shellcheck
+shellcheck:
+	docker run --rm -v ${PWD}:/code mvdan/shfmt:v2.6.4 -f /code | xargs docker run --rm -v ${PWD}:/code koalaman/shellcheck:v0.7.0
+
+.PHONY: yamllint
+yamllint:
+	docker run --rm -v ${PWD}:/code cytopia/yamllint /code -c /code/.yamllint
