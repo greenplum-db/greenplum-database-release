@@ -11,7 +11,7 @@
 # the License.
 
 /**/*.pyc
-concourse/pipelines/greenplum-database-release-*.yml
-concourse/pipelines/gpdb_opensource_release_prod.yml
-concourse/oss/__pycache__/
-concourse/tests/__pycache__/
+ci/concourse/pipelines/greenplum-database-release-*.yml
+ci/concourse/pipelines/gpdb_opensource_release_prod.yml
+ci/concourse/oss/__pycache__/
+ci/concourse/tests/__pycache__/
