@@ -25,12 +25,12 @@ PIPELINE_NAME              = greenplum-database-release-${BRANCH}-${USER}
 FLY_CMD                    = fly
 FLY_OPTION_NON-INTERACTIVE =
 
-.PHONY: set-dev set-pipeline-dev destroy-dev destroy-pipeline-dev set-prod set-pipeline-prod
 
 ## ----------------------------------------------------------------------
 ## List explicit rules
 ## ----------------------------------------------------------------------
 
+.PHONY: list
 list:
 	@sh -c "$(MAKE) -p no_targets__ 2>/dev/null | \
 	awk -F':' '/^[a-zA-Z0-9][^\$$#\/\\t=]*:([^=]|$$)/ {split(\$$1,A,/ /);for(i in A)print A[i]}' | \
@@ -43,8 +43,10 @@ list:
 ## Set Development Pipeline
 ## ----------------------------------------------------------------------
 
+.PHONY: set-dev
 set-dev: set-pipeline-dev
 
+.PHONY: set-pipeline-dev
 set-pipeline-dev:
 
 	sed -e 's|tag_filter: *|## tag_filter: |g' ci/concourse/pipelines/gpdb_opensource_release.yml > ci/concourse/pipelines/${PIPELINE_NAME}.yml
@@ -67,8 +69,10 @@ set-pipeline-dev:
 ## Destroy Development Pipeline
 ## ----------------------------------------------------------------------
 
+.PHONY: destroy-dev
 destroy-dev: destroy-pipeline-dev
 
+.PHONY: destroy-pipeline-dev
 destroy-pipeline-dev:
 	$(FLY_CMD) --target=${CONCOURSE} \
     destroy-pipeline \
@@ -79,8 +83,10 @@ destroy-pipeline-dev:
 ## Set Production Pipeline
 ## ----------------------------------------------------------------------
 
+.PHONY: set-prod
 set-prod: set-pipeline-prod
 
+.PHONY: set-pipeline-prod
 set-pipeline-prod:
 	sed -e 's|commitish: release_artifacts/commitish|## commitish: release_artifacts/commitish|g' ci/concourse/pipelines/gpdb_opensource_release.yml > ci/concourse/pipelines/gpdb_opensource_release_prod.yml
 
