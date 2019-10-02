@@ -1,6 +1,7 @@
 ---
 name: code-style-check
 
+# yamllint disable-line rule:truthy
 on: [pull_request]
 
 jobs:
