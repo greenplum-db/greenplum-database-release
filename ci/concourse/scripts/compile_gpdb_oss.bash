@@ -69,6 +69,7 @@ build_gpdb() {
 	CC="gcc" CFLAGS="-O3 -fargument-noalias-global -fno-omit-frame-pointer -g" \
 		./configure \
 		--disable-debug-extensions \
+		--disable-tap-tests \
 		--enable-orca \
 		--with-zstd \
 		--with-gssapi \
