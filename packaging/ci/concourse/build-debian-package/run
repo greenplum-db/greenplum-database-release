@@ -3,21 +3,6 @@
 apt-get -q=2 update
 apt-get -q=2 --no-install-recommends install -y equivs devscripts quilt xz-utils
 
-pushd source-tarball || exit
-  re="(.+)-(.+).tar.xz"
-  [[ "$(ls ./*.tar.xz)" =~ $re ]] || exit
-  archive="${BASH_REMATCH[0]}"
-  pkg_name="${BASH_REMATCH[1]}"
-  version="${BASH_REMATCH[2]}"
-
-  # Debian requires upstream to be-renamed as follows
-  ln -sf "${archive}" "${pkg_name}_${version}.orig.tar.xz"
-
-  tar -xJf ./*.orig.tar.xz
-popd || exit
-
-cp -a greenplum-database-release/packaging/${pkg_name}/debian source-tarball/${pkg_name}-${version}/
-
 # setup quilt
 alias dquilt="quilt --quiltrc=${PWD}/.quiltrc-dpkg"
 cat > .quiltrc-dpkg <<"EOF"
@@ -33,14 +18,14 @@ if [ -d $d/debian ] && [ -z $QUILT_PATCHES ]; then
 fi
 EOF
 
-pushd source-tarball/${pkg_name}-${version} || exit
-  # apply the Debian-specific patches
-  while dquilt push; do dquilt refresh; done
+pushd greenplum-database-release/packaging/${PKG_NAME} || exit
+  origtargz
   DEBIAN_FRONTEND=noninteractive mk-build-deps --install --remove --tool "apt-get -q=2 --no-install-recommends"
   dpkg-buildpackage -us -uc
 popd || exit
 
-cp -a source-tarball/*.deb debian-packages
+
+cp -a greenplum-database-release/packaging/*.deb debian-packages
 
 ls -lh debian-packages/*.deb
 for deb in debian-packages/*.deb; do

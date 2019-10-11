@@ -8,10 +8,12 @@ image_resource:
 
 inputs:
 - name: greenplum-database-release
-- name: source-tarball
 
 outputs:
 - name: debian-packages
+
+PARAMS:
+  PKG_NAME:
 
 run:
   path: greenplum-database-release/packaging/ci/concourse/build-debian-package/run
