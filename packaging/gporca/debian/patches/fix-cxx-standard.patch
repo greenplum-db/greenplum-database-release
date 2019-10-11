@@ -10,7 +10,7 @@ Update C++ standard to C++11
 +
 +set(CMAKE_CXX_STANDARD 11)
  set(GPORCA_VERSION_MAJOR 3)
- set(GPORCA_VERSION_MINOR 65)
+ set(GPORCA_VERSION_MINOR 74)
  set(GPORCA_VERSION_PATCH 0)
 --- a/server/src/unittest/dxl/CParseHandlerCostModelTest.cpp
 +++ b/server/src/unittest/dxl/CParseHandlerCostModelTest.cpp
