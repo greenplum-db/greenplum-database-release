@@ -6,24 +6,6 @@ resource_types:
     repository: frodenas/gcs-resource
 
 resources:
-- name: gporca
-  type: git
-  icon: git
-  version: {ref: v3.65.0}
-  source:
-    uri: https://github.com/greenplum-db/gporca.git
-    branch: master
-    tag_filter: v*
-
-- name: gpdb
-  type: git
-  icon: git
-  version: {ref: 6.0.0}
-  source:
-    uri: https://github.com/greenplum-db/gpdb.git
-    branch: 6X_STABLE
-    tag_filter: '*'
-
 - name: greenplum-database-release
   type: git
   icon: git
@@ -74,6 +56,7 @@ jobs:
   plan:
   - in_parallel:
     - get: greenplum-database-release
+      trigger: true
     - get: debian-stable
     - get: ubuntu-bionic
   - in_parallel:
