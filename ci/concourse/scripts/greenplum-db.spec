@@ -9,6 +9,8 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations under
 # the License.
+%global productname greenplum-db
+%global productnamewithversion %{productname}-%{gpdb_version}
 Name: %{gpdb_name}
 Version: %{rpm_gpdb_version}
 Release: %{gpdb_release}%{?dist}
@@ -98,11 +100,12 @@ rm -rf %{buildroot}
 
 %post
 # handle properly if /usr/local/greenplum-db already exists
-ln -sT $RPM_INSTALL_PREFIX/%{name}-%{gpdb_version} $RPM_INSTALL_PREFIX/%{name} || true
+ln -sT $RPM_INSTALL_PREFIX/%{productnamewithversion} $RPM_INSTALL_PREFIX/%{name} || true
 # Update greenplum_path.sh for ${bin_gpdb}
-sed -i -e "1 s~^\(GPHOME=\).*~\1$RPM_INSTALL_PREFIX/%{name}-%{gpdb_version}~" $RPM_INSTALL_PREFIX/%{name}-%{gpdb_version}/greenplum_path.sh
+sed -i -e "1 s~^\(GPHOME=\).*~\1$RPM_INSTALL_PREFIX/%{productnamewithversion}~" $RPM_INSTALL_PREFIX/%{productnamewithversion}/greenplum_path.sh
+sed -i -e "s~\(\${GPHOME}/\.\./\)greenplum-db~\1%{gpdb_name}~g" $RPM_INSTALL_PREFIX/%{productnamewithversion}/greenplum_path.sh
 
 %postun
-if [[ $(readlink $RPM_INSTALL_PREFIX/%{name}) == $RPM_INSTALL_PREFIX/%{name}-%{gpdb_version} ]]; then
+if [[ $(readlink $RPM_INSTALL_PREFIX/%{name}) == $RPM_INSTALL_PREFIX/%{productnamewithversion} ]]; then
   unlink $RPM_INSTALL_PREFIX/%{name}
 fi
