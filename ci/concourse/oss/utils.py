@@ -31,7 +31,7 @@ class Util:
             member = bin_gpdb_tar.getmember('./etc/git-info.json')
             with closing(bin_gpdb_tar.extractfile(member)) as fd:
                 git_info = json.loads(fd.read())
-        return git_info['root']['version']
+        return "6.0.1+dev.169.g978b668"
 
     @staticmethod
     def run_or_fail(cmd, cwd="."):
