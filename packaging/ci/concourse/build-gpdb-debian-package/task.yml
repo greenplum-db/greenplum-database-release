@@ -8,7 +8,6 @@ image_resource:
 
 inputs:
 - name: greenplum-database-release
-- name: source-tarball
 - name: libgpopt3
 - name: libgpopt3-dev
 
