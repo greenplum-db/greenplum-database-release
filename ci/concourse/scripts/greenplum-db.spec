@@ -60,7 +60,7 @@ Requires: openssh-server
 Requires: openssl-libs
 %endif
 
-%define bin_gpdb %{prefix}/%{name}-%{gpdb_version}
+%define bin_gpdb %{prefix}/%{productnamewithversion}
 
 %description
 %{gpdb_description}
