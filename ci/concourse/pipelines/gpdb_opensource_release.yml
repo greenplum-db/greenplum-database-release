@@ -316,6 +316,7 @@ jobs:
       passed: [compile_gpdb_ubuntu18.04]
     - get: bin_gpdb_ubuntu18.04
       passed: [compile_gpdb_ubuntu18.04]
+      trigger: true
     - get: license_file
   - task: push to ppa
     file: greenplum-database-release/ci/concourse/tasks/publish_to_ppa.yml
@@ -401,16 +402,18 @@ jobs:
   plan:
   - in_parallel:
     - get: gpdb_src
-
       passed: [release]
     - get: license_file
       passed: [release]
     - get: gpdb_rpm_installer_centos6
       passed: [release]
+      trigger: true
     - get: gpdb_rpm_installer_centos7
       passed: [release]
+      trigger: true
     - get: gpdb_deb_package
       passed: [release]
+      trigger: true
     - get: greenplum-database-release
       passed: [release]
   - task: gpdb_github_release
