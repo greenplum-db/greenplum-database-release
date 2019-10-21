@@ -13,20 +13,44 @@
 
 set -euo pipefail
 
-apk update && apk add --no-progress git
+apk update && apk add --no-progress git tar zip
 
 BASE_DIR="$(pwd)"
 
 GPDB_RELEASE_COMMIT_SHA="$(cat gpdb_src/.git/ref)"
 GPDB_RELEASE_TAG="$(git --git-dir gpdb_src/.git describe --tags "${GPDB_RELEASE_COMMIT_SHA}")"
 
+PACKAGE="gpdb"
+OUTPUT_DIR="${BASE_DIR}/release_artifacts"
+ARCHIVE_TMP_DIR="${BASE_DIR}/source_tmp"
+ARCHIVE_TMP_EXTRACT_DIR="${ARCHIVE_TMP_DIR}/extract"
+
 function build_gpdb_binaries_tarball() {
+	rm -rf "${ARCHIVE_TMP_DIR}" && mkdir -p "${ARCHIVE_TMP_EXTRACT_DIR}"
+
 	pushd "${BASE_DIR}/gpdb_src"
 	git --no-pager show --summary refs/tags/"${GPDB_RELEASE_TAG}"
 
-	git archive -o "${BASE_DIR}/release_artifacts/${GPDB_RELEASE_TAG}.tar.gz" --prefix="gpdb-${GPDB_RELEASE_TAG}/" --format=tar.gz refs/tags/"${GPDB_RELEASE_TAG}"
-	git archive -o "${BASE_DIR}/release_artifacts/${GPDB_RELEASE_TAG}.zip" --prefix="gpdb-${GPDB_RELEASE_TAG}/" --format=zip -9 refs/tags/"${GPDB_RELEASE_TAG}"
+	git archive --prefix "${PACKAGE}-${GPDB_RELEASE_TAG}/" --format "tar" --output "${ARCHIVE_TMP_DIR}/gpdb_src.tar" HEAD
+	git submodule foreach --recursive "echo \$displaypath: \$sha1: \$toplevel;
+	git archive --prefix=${PACKAGE}-${GPDB_RELEASE_TAG}/\$displaypath/ \
+		--format tar \$sha1 \
+		--output $ARCHIVE_TMP_DIR/submodule-\$sha1.tar"
+
+	# Extract all the compressed package to one location.
+	tar -C "${ARCHIVE_TMP_EXTRACT_DIR}" -xf "${ARCHIVE_TMP_DIR}/gpdb_src.tar"
+	for tar_file in "${ARCHIVE_TMP_DIR}"/submodule*.tar; do
+		tar -C "${ARCHIVE_TMP_EXTRACT_DIR}" -xf "${tar_file}"
+	done
 	popd
+
+	# repackage all things.
+	pushd "${ARCHIVE_TMP_EXTRACT_DIR}"
+	tar -czf "${OUTPUT_DIR}/${PACKAGE}-${GPDB_RELEASE_TAG}-full.tar.gz" \
+		"${PACKAGE}-${GPDB_RELEASE_TAG}"
+	zip -r -q "${OUTPUT_DIR}/${PACKAGE}-${GPDB_RELEASE_TAG}-full.zip" "${PACKAGE}-${GPDB_RELEASE_TAG}"
+	popd
+
 	echo "Created the release binaries successfully! [tar.gz, zip]"
 }
 
