@@ -28,8 +28,8 @@ function build_gpdb_binaries_tarball() {
 	git clean -fdx
 	popd
 
-	tar --exclude '.git*' --exclude '.travis.yml' -czf "${OUTPUT_DIR}/${GPDB_RELEASE_TAG}-full.tar.gz" gpdb_src
-	zip -r -q "${OUTPUT_DIR}/${GPDB_RELEASE_TAG}-full.zip" gpdb_src -x '*.git*' -x '*.travis.yml'
+	tar --exclude '.git*' -czf "${OUTPUT_DIR}/${GPDB_RELEASE_TAG}-full.tar.gz" gpdb_src
+	zip -r -q "${OUTPUT_DIR}/${GPDB_RELEASE_TAG}-full.zip" gpdb_src -x '*.git*'
 	echo "Created the release binaries successfully! [tar.gz, zip]"
 }
 
