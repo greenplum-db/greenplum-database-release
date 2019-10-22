@@ -13,3 +13,7 @@ Note: if you would like to submit an "_obvious fix_" for something like a typo, 
 ## Code reviews
 
 All submissions, including submissions by project members, require review and we use GitHub's pull requests for this purpose. Please consult [GitHub Help](https://help.github.com/articles/about-pull-requests/) if you need more information about using pull requests.
+
+## Direct commits to the repository
+
+On occasion you will see core team members committing directly to the repository without going through the pull request workflow. This is reserved for small changes only and the rule of thumb we use is this: if the change touches any functionality that may result in a test failure, then it has to go through a pull request workflow. If, on the other hand, the change is in the non-functional part of the code base (such as fixing a typo inside of a comment block) core team members can decide to just commit to the repository directly.
