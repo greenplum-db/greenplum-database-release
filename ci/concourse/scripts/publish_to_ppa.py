@@ -18,14 +18,19 @@ from oss.ppa import SourcePackageBuilder, DebianPackageBuilder, LaunchpadPublish
 from oss.utils import PackageTester
 
 if __name__ == '__main__':
-    source_package = SourcePackageBuilder(
+    package_builder = SourcePackageBuilder(
         bin_gpdb_path='bin_gpdb_ubuntu18.04/bin_gpdb.tar.gz',
         package_name='greenplum-db',
         release_message=os.environ["RELEASE_MESSAGE"],
         gpdb_src_path="gpdb_src",
         license_dir_path="license_file"
-    ).build()
+    )
 
+    gpdb_ppa_version = f'{package_builder.gpdb_upstream_version}-{package_builder.debian_revision}'
+    with open("ppa_release/version.txt", "w") as f:
+        f.write(gpdb_ppa_version)
+
+    source_package = package_builder.build()
     builder = DebianPackageBuilder(source_package=source_package)
     builder.build_binary()
     builder.build_source()

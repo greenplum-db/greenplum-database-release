@@ -16,6 +16,11 @@ resource_types:
   source:
     repository: frodenas/gcs-resource
 
+- name: ppa
+  type: docker-image
+  source:
+    repository: seveas/concourse-ppa-resource
+
 resources:
 ## Image Resources
 - name: gpdb6-centos6-build
@@ -169,6 +174,21 @@ resources:
     bucket: ((gcs-bucket-for-oss))
     json_key: ((concourse-gcs-resources-service-account-key))
     regexp: greenplum-oss-server/released/gpdb6/greenplum-db-(.*)-ubuntu18.04-amd64.deb
+
+- name: ppa_release_version
+  type: gcs
+  icon: google
+  source:
+    json_key: ((concourse-gcs-resources-service-account-key))
+    bucket: ((gcs-bucket-intermediates-for-oss))
+    versioned_file: ((pipeline-name))/ppa_release_version/version.txt
+
+- name: greenplum_db_ppa
+  type: ppa
+  source:
+    ppa: ((ppa-login))
+    package: ((ppa-package-name))
+    api_token: ((ppa-api-token))
 
 jobs:
 - name: compile_gpdb_centos6
@@ -326,6 +346,22 @@ jobs:
       RELEASE_MESSAGE: ((release-message))
       DEBFULLNAME: ((debian-package-maintainer-fullname))
       DEBEMAIL: ((debian-package-maintainer-email))
+  - put: ppa_release_version
+    params:
+      file: ppa_release/version.txt
+
+- name: verify ppa release
+  plan:
+  - in_parallel:
+    - get: greenplum-database-release
+      passed: [publish to ppa]
+    - get: greenplum_db_ppa
+      trigger: true
+    - get: ppa_release_version
+      passed: [publish to ppa]
+      trigger: true
+  - task: verify ppa release status
+    file: greenplum-database-release/ci/concourse/tasks/verify_ppa_release.yml
 
 - name: release
   plan:
@@ -335,7 +371,7 @@ jobs:
       - rhel6 packaging
       - rhel7 packaging
       - ubuntu18.04 packaging
-      - publish to ppa
+      - verify ppa release
     - get: gpdb_src
       passed:
       - rhel6 packaging

@@ -19,32 +19,30 @@ image_resource:
     tag: 18.04
 
 inputs:
-- name: bin_gpdb_ubuntu18.04
-- name: gpdb_src
-- name: greenplum-database-release
-- name: license_file
-
-outputs:
-- name: ppa_release
+- name: ppa_release_version
+- name: greenplum_db_ppa
 
 run:
   path: bash
   args:
   - -ec
   - |
-    cp greenplum-database-release/ci/concourse/scripts/dput.cf ~/.dput.cf
     apt-get update -q=2
-    apt-get install -q=2 -y software-properties-common debmake equivs git
-    gpg --import <(echo "${GPG_PRIVATE_KEY}")
+    apt-get install -q=2 -y jq
 
-    export PYTHONPATH=${PWD}/greenplum-database-release/ci/concourse
-    pushd greenplum-database-release/ci/concourse && python3 -m unittest tests/ppa_test.py && popd
-    python3 greenplum-database-release/ci/concourse/scripts/publish_to_ppa.py
+    version=$(jq -r .version.version greenplum_db_ppa/data.json)
+    target_version=$(cat ppa_release_version/version.txt)
 
-params:
-  PPA_REPO:
-  GPG_PRIVATE_KEY:
-  RELEASE_MESSAGE:
-  # The DEBFULLNAME and DEBMAIL environment variables are expected in the .deb building process
-  DEBFULLNAME:
-  DEBEMAIL:
+    if [ "${version}" != "${target_version}" ]; then
+            cat <<EOF
+        "${version}" != "${target_version}"
+        The latest greeenplum-db version on PPA does not match current release version!
+        This may be temporary due to delay release on PPA, Waiting a few miniutes and
+        manually re-triggering is suggested.
+    EOF
+            exit 1
+        else
+            cat <<EOF
+        Verified the release status successfully!
+    EOF
+    fi
