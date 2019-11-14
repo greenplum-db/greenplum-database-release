@@ -17,8 +17,6 @@ image_resource:
 
 inputs:
 - name: bin_gpdb
-- name: gpdb_src
-  optional: true
 - name: greenplum-database-release
 - name: license_file
   optional: true

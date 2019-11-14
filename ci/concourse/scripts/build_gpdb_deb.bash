@@ -14,11 +14,6 @@
 set -eo pipefail
 set -x
 
-function set_gpdb_version_from_source() {
-	GPDB_VERSION=$(./gpdb_src/getversion --short | grep -Po '^[^+]*')
-	export GPDB_VERSION
-}
-
 function set_gpdb_version_from_binary() {
 	apt-get update
 	apt-get install -y jq
@@ -133,14 +128,8 @@ function _main() {
 	local __final_package_name
 	local __built_deb
 
-	if [[ -d gpdb_src ]]; then
-		set_gpdb_version_from_source
-	elif [[ -d bin_gpdb ]]; then
-		set_gpdb_version_from_binary
-	else
-		echo "[FATAL] Missing gpdb_src and bin_gpdb; needed to set GPDB_VERSION"
-		exit 1
-	fi
+	set_gpdb_version_from_binary
+
 	echo "[INFO] Building deb installer for GPDB version: ${GPDB_VERSION}"
 
 	echo "[INFO] Building for platform: ${PLATFORM}"
