@@ -119,8 +119,8 @@ Documenation of how a user is expected to to interact with the Greenplum Server 
    Repo        : installed
    From repo   : /greenplum-db-6.1.0-rhel7-x86_64
    Summary     : Greenplum-DB
-   URL         : https://network.pivotal.io/products/pivotal-gpdb/
-   License     : Pivotal Software EULA
+   URL         : https://greenplum.org/
+   License     : Apache 2.0
    Description : Greenplum Database
    ```
 
@@ -190,8 +190,8 @@ Documenation of how a user is expected to to interact with the Greenplum Server 
    Repo        : installed
    From repo   : /greenplum-db-6.1.0-rhel7-x86_64
    Summary     : Greenplum-DB
-   URL         : https://network.pivotal.io/products/pivotal-gpdb/
-   License     : Pivotal Software EULA
+   URL         : https://greenplum.org/
+   License     : Apache 2.0
    Description : Greenplum Database
    ```
 
@@ -265,8 +265,8 @@ Documenation of how a user is expected to to interact with the Greenplum Server 
    Repo        : installed
    From repo   : /greenplum-db-6.1.0-rhel7-x86_64
    Summary     : Greenplum-DB
-   URL         : https://network.pivotal.io/products/pivotal-gpdb/
-   License     : Pivotal Software EULA
+   URL         : https://greenplum.org/
+   License     : Apache 2.0
    Description : Greenplum Database
    ```
 
@@ -354,8 +354,8 @@ Unknown
    Repo        : installed
    From repo   : /greenplum-db-6.1.0-rhel7-x86_64
    Summary     : Greenplum-DB
-   URL         : https://network.pivotal.io/products/pivotal-gpdb/
-   License     : Pivotal Software EULA
+   URL         : https://greenplum.org/
+   License     : Apache 2.0
    Description : Greenplum Database
    ```
 
