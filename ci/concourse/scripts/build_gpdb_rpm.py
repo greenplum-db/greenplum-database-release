@@ -41,7 +41,7 @@ if __name__ == '__main__':
         prefix=os.environ["GPDB_PREFIX"],
         oss=os.getenv("GPDB_OSS", "false"),
         bin_gpdb_path="bin_gpdb/bin_gpdb.tar.gz",
-        spec_file_path="greenplum-database-release/ci/concourse/scripts/greenplum-db.spec",
+        spec_file_path="greenplum-database-release/ci/concourse/scripts/" + gpdb_name + ".spec",
         license_file_path=license_file_path,
         gpdb_src_path=gpdb_src_path
     )

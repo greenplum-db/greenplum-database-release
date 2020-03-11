@@ -45,6 +45,7 @@ class TestRPMPackageBuilder(TestCase):
         self.assertEqual(self.rpm_package_builder.rpm_build_dir, "/root/rpmbuild")
         self.assertEqual(self.rpm_package_builder.rpm_gpdb_version, "gpdb_6.0.0_beta.5+dev.18.g6a02f28")
         self.assertEqual(self.rpm_package_builder.platform, "rhel6")
+        self.assertEqual(self.rpm_package_builder.rpm_package_name, "greenplum-db-gpdb_6.0.0_beta.5+dev.18.g6a02f28-rhel6-x86_64.rpm")
         with self.assertRaisesRegex(Exception, 'The platform only support rhel6, rhel7'):
             self.rpm_package_builder.platform = "ubuntu18.04"
         self.assertEqual(self.rpm_package_builder.rpm_package_name,
