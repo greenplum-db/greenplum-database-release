@@ -31,7 +31,7 @@ _Packaging Layer_
 - The package shall be named based on [Greenplum Filename Specifications](https://github.com/pivotal/gp-releng/blob/master/docs/Greenplum-Filename-Specifications.md)
 - The package shall be [relocatable](http://ftp.rpm.org/api/4.4.2.2/relocatable.html)
 - The package shall not create nor modify any `/usr/local/greenplum-db` symbolic link
-- When performing an upgrade, downgrade, or uninstall of the RPM package, any changes to the installed `${installation prefix}/greenplum-db-[package-version]/greenplum_path.sh` file shall not be removed. (Note: This does not include transferring changes; It is only for saving changes)
+- When performing an upgrade, downgrade of the RPM package, any changes to the installed `${installation prefix}/greenplum-db-[package-version]/greenplum_path.sh` file shall not be removed. (Note: This does not include transferring changes; It is only for saving changes)
 
 _Greenplum Path Layer_
 - `greenplum-path.sh` shall be installed to `${installation prefix}/greenplum-db-[package-version]/greenplum_path.sh`
