@@ -13,6 +13,12 @@
 
 set -euox pipefail
 
+INTEGRATE_GPORCA=0
+
+if [[ -d "gpdb_src/src/backend/gporca" ]]; then
+	INTEGRATE_GPORCA=1
+fi
+
 fetch_orca_src() {
 	local orca_tag="${1}"
 
@@ -25,8 +31,16 @@ fetch_orca_src() {
 build_xerces() {
 	echo "Building Xerces-C"
 	mkdir -p xerces_patch/concourse
-	cp -r orca_src/concourse/xerces-c xerces_patch/concourse
-	cp -r orca_src/patches/ xerces_patch
+	if [[ ${INTEGRATE_GPORCA} == 0 ]]; then
+		cp -r orca_src/concourse/xerces-c xerces_patch/concourse
+		cp -r orca_src/patches/ xerces_patch
+	elif [[ ${INTEGRATE_GPORCA} == 1 ]]; then
+		cp -r gpdb_src/src/backend/gporca/concourse/xerces-c xerces_patch/concourse
+		cp -r gpdb_src/src/backend/gporca/patches/ xerces_patch
+	else
+		echo "INTEGRATE GPORCA set error number!"
+		exit 1
+	fi
 	/usr/bin/python xerces_patch/concourse/xerces-c/build_xerces.py --output_dir="/usr/local"
 	rm -rf build
 }
@@ -160,9 +174,11 @@ export_gpdb() {
 }
 
 _main() {
-	local orca_tag
-	orca_tag="$(grep 'ORCA_TAG:' gpdb_src/concourse/tasks/compile_gpdb.yml | cut -d ':' -f 2 | tr -d '[:space:]')"
-	fetch_orca_src "${orca_tag}"
+	if [[ ${INTEGRATE_GPORCA} == 0 ]]; then
+		local orca_tag
+		orca_tag="$(grep 'ORCA_TAG:' gpdb_src/concourse/tasks/compile_gpdb.yml | cut -d ':' -f 2 | tr -d '[:space:]')"
+		fetch_orca_src "${orca_tag}"
+	fi
 
 	if [ -e /opt/gcc_env.sh ]; then
 		# shellcheck disable=SC1091
@@ -170,7 +186,10 @@ _main() {
 	fi
 
 	build_xerces
-	build_orca
+
+	if [[ ${INTEGRATE_GPORCA} == 0 ]]; then
+		build_orca
+	fi
 
 	install_python
 
