@@ -31,16 +31,19 @@ fetch_orca_src() {
 build_xerces() {
 	echo "Building Xerces-C"
 	mkdir -p xerces_patch/concourse
-	if [[ ${INTEGRATE_GPORCA} == 0 ]]; then
-		cp -r orca_src/concourse/xerces-c xerces_patch/concourse
-		cp -r orca_src/patches/ xerces_patch
-	elif [[ ${INTEGRATE_GPORCA} == 1 ]]; then
-		cp -r gpdb_src/src/backend/gporca/concourse/xerces-c xerces_patch/concourse
-		cp -r gpdb_src/src/backend/gporca/patches/ xerces_patch
-	else
+
+	case ${INTEGRATE_GPORCA} in
+	0) orca_src="orca_src" ;;
+	1) orca_src="gpdb_src/src/backend/gporca" ;;
+	*)
 		echo "INTEGRATE GPORCA set error number!"
 		exit 1
-	fi
+		;;
+	esac
+
+	cp -r "${orca_src}/concourse/xerces-c" xerces_patch/concourse
+	cp -r "${orca_src}/patches/" xerces_patch
+
 	/usr/bin/python xerces_patch/concourse/xerces-c/build_xerces.py --output_dir="/usr/local"
 	rm -rf build
 }
