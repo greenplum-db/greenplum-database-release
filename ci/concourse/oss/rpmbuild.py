@@ -66,7 +66,7 @@ class RPMPackageBuilder(BasePackageBuilder):
         self._prepare_rpm_build_dir()
 
         build_flags = self._build_rpm_build_flags()
-        spec_file_path = os.path.join(self.rpm_build_dir, "SPECS/" + self.name + ".spec")
+        spec_file_path = os.path.join(self.rpm_build_dir, "SPECS",  self.name + ".spec")
 
         command_str = "rpmbuild -bb %s %s" % (spec_file_path, build_flags)
         cmd = ['/bin/bash', '-c', command_str]
@@ -142,7 +142,7 @@ class RPMPackageBuilder(BasePackageBuilder):
         os.system("tar cvzf %s -C %s ." % (self.bin_gpdb_path, dest))
 
         shutil.copy(self.bin_gpdb_path, os.path.join(self.rpm_build_dir, "SOURCES/gpdb.tar.gz"))
-        shutil.copy(self.spec_file_path, os.path.join(self.rpm_build_dir, "SPECS/" + self.name + ".spec"))
+        shutil.copy(self.spec_file_path, os.path.join(self.rpm_build_dir, "SPECS", self.name + ".spec"))
 
     def _build_rpm_build_flags(self):
         flags = [
