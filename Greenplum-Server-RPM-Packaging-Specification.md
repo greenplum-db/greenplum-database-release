@@ -60,6 +60,8 @@ _Runtime Linking Layer_
   - Exception (Greenplum 6, Greenplum 5): `${GPHOME}/lib/python/pygresql/_pg.so` shall have its `RUNPATH` set to `${ORIGIN}/../../../lib`
 - (Greenplum 5): The `elf` formatted file `${GPHOME}/ext/python/lib/python2.7/lib-dynload/_hashlib.so`, that relied on `${LD_LIBRARY_PATH}` being set for runtime linking, shall now rely on `RUNPATH` being set to `${ORIGIN}/../../../../../lib`
 - In all situations where `RUNPATH` is involved, if it is already set it shall be updated, if it is not set it shall be added
+- When setting `${RUNPATH}` to the specified value, it **MUST** be done by setting the appropriate linker flags (e.g., `-Wl,-rpath,'$ORIGIN/../lib`) with the following exception:
+  - `${GPHOME}/lib/libkrb5.so.3.3` (Greenplum 5) will have its `RUNPATH` modified with `patchelf`
 
 # Usage
 
