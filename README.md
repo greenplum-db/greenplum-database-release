@@ -9,3 +9,47 @@ Currently this mostly consists of a Concourse based application (task yaml, task
 The full behavior and user experience of the packages involves many code bases and components coming together. The following is documentation that captures in one location the topics relates to a Greenplum Server package.
 
 1. [Greenplum Server RPM Packaging Specification](Greenplum-Server-RPM-Packaging-Specification.md)
+
+## How to use the application to create a RPM package locally
+
+1.For rhel6
+```bash
+bash workspace/greenplum-database-release/ci/concourse/scripts/create_rpm_package.bash 6
+```
+The output like:
+```
+Creating Centos6 RPM Package...
+Cloning into '/tmp/create-package/greenplum-database-release'...
+...
+...
+Complete!
+passed check
+```
+
+2.For rhel7
+```bash
+bash workspace/greenplum-database-release/ci/concourse/scripts/create_rpm_package.bash 7
+```
+The output like:
+```
+Creating Centos7 RPM Package...
+Cloning into '/tmp/create-package/greenplum-database-release'...
+...
+...
+Complete!
+passed check
+```
+
+## How to use the application to create a DEB package locally
+```bash
+bash workspace/greenplum-database-release/ci/concourse/scripts/create_deb_package.bash
+```
+The output like:
+```
+Creating DEB Package...
+Cloning into '/tmp/create-package/greenplum-database-release'...
+...
+...
+done.
+passed check
+```
