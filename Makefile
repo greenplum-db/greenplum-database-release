@@ -125,8 +125,14 @@ shfmt:
 
 .PHONY: shellcheck
 shellcheck:
-	docker run --rm -v ${PWD}:/code mvdan/shfmt:v2.6.4 -f /code | xargs docker run --rm -v ${PWD}:/code koalaman/shellcheck:v0.7.0
+	docker run --rm -v ${PWD}:/code mvdan/shfmt:v2.6.4 -f /code | xargs docker run --rm -v ${PWD}:/code koalaman/shellcheck:v0.7.1
 
 .PHONY: yamllint
 yamllint:
 	docker run --rm -v ${PWD}:/code cytopia/yamllint /code -c /code/.yamllint
+
+local-build-deb:
+	bin/create_deb_package.bash
+
+local-build-rpm:
+	bin/create_rpm_package.bash

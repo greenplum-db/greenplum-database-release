@@ -14,7 +14,7 @@ The full behavior and user experience of the packages involves many code bases a
 
 1.For rhel6
 ```bash
-bash workspace/greenplum-database-release/ci/concourse/scripts/create_rpm_package.bash 6
+BIN_GPDB_TARGZ=/path/to/bin_gpdb.tar.gz CENTOS_VERSION=6 make local-build-rpm
 ```
 The output like:
 ```
@@ -23,12 +23,12 @@ Cloning into '/tmp/create-package/greenplum-database-release'...
 ...
 ...
 Complete!
-passed check
+Passed check! Install /tmp/build/gpdb_rpm_installer/greenplum-db-<gpdb_version>-rhel6-x86_64.rpm package successfully.
 ```
 
 2.For rhel7
 ```bash
-bash workspace/greenplum-database-release/ci/concourse/scripts/create_rpm_package.bash 7
+BIN_GPDB_TARGZ=/path/to/bin_gpdb.tar.gz CENTOS_VERSION=7 make local-build-rpm
 ```
 The output like:
 ```
@@ -37,12 +37,12 @@ Cloning into '/tmp/create-package/greenplum-database-release'...
 ...
 ...
 Complete!
-passed check
+Passed check! Install /tmp/build/gpdb_rpm_installer/greenplum-db-<gpdb_version>-rhel7-x86_64.rpm package successfully.
 ```
 
 ## How to use the application to create a DEB package locally
 ```bash
-bash workspace/greenplum-database-release/ci/concourse/scripts/create_deb_package.bash
+BIN_GPDB_TARGZ=/path/to/bin_gpdb.tar.gz make local-build-deb
 ```
 The output like:
 ```
@@ -51,5 +51,5 @@ Cloning into '/tmp/create-package/greenplum-database-release'...
 ...
 ...
 done.
-passed check
+Passed check! Install /tmp/build/gpdb_deb_installer/greenplum-db-<gpdb_version>-ubuntu18.04-amd64.deb package successfully.
 ```
