@@ -30,7 +30,7 @@ python /tmp/greenplum-database-release/ci/concourse/scripts/build_gpdb_rpm.py
 EOF
 	chmod a+x "${BUILD_SCRIPT}"
 	echo "Creating Centos${CENTOS_VERSION} RPM Package..."
-	BUILD_IMAGE=centos:${CENTOS_VERSION} build_gpdb
+	build_gpdb
 	echo "${BUILD_DIR}"/gpdb_rpm_installer/*.rpm
 }
 
