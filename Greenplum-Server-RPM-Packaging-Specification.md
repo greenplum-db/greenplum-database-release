@@ -41,7 +41,8 @@ Description of the expected behavior as it relates to RPM packaging for the Gree
 
 4. Packages of different minor or patch version numbers can be installed at the same time using `rpm --install`
 
-  Some users may wish to simultanously run multiple versions of Greenplum concurrently or otherwise with the ability to easily choose a different version of Greenplum. The package installation prefix is unique for every package, `%{prefix}/greenplum-db-[major version]-[version]`, and the package does not attempt to create a `/usr/local/greenplum-db` symlink. This choices prevent file conflicts between packages and allows a user to `rpm --install` to install many versions of the package. Note: When using **rpm** for package installation, automatic dependency resolution does not occur.
+  Some users may wish to simultanously run multiple versions of Greenplum concurrently or otherwise with the ability to easily choose a different version of Greenplum. Note: When using **rpm** for package installation, automatic dependency resolution does not occur.
+
 
 ## Detailed Package Behavior
 
