@@ -4,6 +4,9 @@ Description of the expected behavior as it relates to RPM packaging for the Gree
 
 1. [Supported Features](#supported-features)
 2. [Detailed Package Behavior](#detailed-package-behavior)
+	1. [_Packaging Layer_](#_packaging-layer_)
+	2. [_Greenplum Path Layer_](#_greenplum-path-layer_)
+	3. [_Runtime Linking Layer_](#_runtime-linking-layer_)
 3. [Usage](#usage)
 	1. [How to perform an installation](#how-to-perform-an-installation)
 	2. [How to perform a Minor or Maintenance Version Upgrade](#how-to-perform-a-minor-or-maintenance-version-upgrade)
@@ -12,11 +15,9 @@ Description of the expected behavior as it relates to RPM packaging for the Gree
 	5. [How to perform an uninstallation](#how-to-perform-an-uninstallation)
 	6. [How to perform an installation to a non-default location](#how-to-perform-an-installation-to-a-non-default-location)
 4. [Symbolic Links and Installation Directory](#symbolic-links-and-installation-directory)
-	1. [Current Behavior](#current-behavior)
-		1. [Greenplum 5](#greenplum-5)
-		2. [Greenplum 6](#greenplum-6)
-	2. [Expected Behavior](#expected-behavior)
-		1. [All Major Versions](#all-major-versions)
+	1. [Greenplum 5 Current Behavior](#greenplum-5-current-behavior)
+	2. [Greenplum 6 Current Behavior](#greenplum-6-current-behavior)
+	3. [Expected Behavior for All Major Versions](#expected-behavior-for-all-major-versions)
 
 ## Supported Features
 
@@ -24,23 +25,23 @@ Description of the expected behavior as it relates to RPM packaging for the Gree
 
 2. The package installation root is relocatable.
 
-  Some users have IT and platform requirements regarding where software is installed. The default installation directory is `/usr/local/` but it can be changed during installation by using `rpm --prefix=[dir]`. Note: When using **rpm** for package installation, automatic dependency resolution does not occur.
+   Some users have IT and platform requirements regarding where software is installed. The default installation directory is `/usr/local/` but it can be changed during installation by using `rpm --prefix=[dir]`. Note: When using **rpm** for package installation, automatic dependency resolution does not occur.
 
 3. Packages of different major versions can be installed at the same time.
 
-  Data migration for a Major version upgrade require both major versions to be installed. Additionally, some users may wish to simultanously run multiple versions of Greenplum concurrently or otherwise with the ability to easily choose a different version of Greenplum. The package names are suffixed with a major version number, which prevents conflict and allows both `greenplum-db-5` and `greenplum-db-6` to be installed simultaneously.
+   Data migration for a Major version upgrade require both major versions to be installed. Additionally, some users may wish to simultanously run multiple versions of Greenplum concurrently or otherwise with the ability to easily choose a different version of Greenplum. The package names are suffixed with a major version number, which prevents conflict and allows both `greenplum-db-5` and `greenplum-db-6` to be installed simultaneously.
 
 4. Packages of different minor or patch version numbers can be installed at the same time using `rpm --install`
 
-  Some users may wish to simultanously run multiple versions of Greenplum concurrently or otherwise with the ability to easily choose a different version of Greenplum. Note: When using **rpm** for package installation, automatic dependency resolution does not occur.
+   Some users may wish to simultanously run multiple versions of Greenplum concurrently or otherwise with the ability to easily choose a different version of Greenplum. Note: When using **rpm** for package installation, automatic dependency resolution does not occur.
 
 5. A symbolic link is created that points to the most recently installed Greenplum
 
-  Users configure environments and tools to be Greenplum version inspecific by relying on a symbolic link to the Greenplum installation.
+   Users configure environments and tools to be Greenplum version inspecific by relying on a symbolic link to the Greenplum installation.
 
 ## Detailed Package Behavior
 
-_Packaging Layer_
+### _Packaging Layer_
 - The `Name` metadata field of the RPM package shall be `greenplum-db-[x]`, such that `[x]` is the Greenplum Major version number
 - The filename of the resulting file shall be `greenplum-db-[x.y.z]-[PLATFORM]-x86_64.rpm`, such that `[x.y.z]` is the Greenplum Server version string and `[PLATFORM]` is one of `rhel6`, `rhel7`, `sles11`, `sles12`
 - The package shall make any installed `greenplum-db` package, of the same Major version, obsolete upon installation. Examples:
@@ -54,7 +55,7 @@ _Packaging Layer_
   - If a `${installation prefix}/greenplum-db` symbolic link already exists, then it should be removed and the expected link created
 - When performing an upgrade, downgrade, or uninstall of the RPM package, any changes to the installed `${installation prefix}/greenplum-db-[package-version]/greenplum_path.sh` file shall not be removed. (Note: This does not include transferring changes; It is only for saving changes)
 
-_Greenplum Path Layer_
+### _Greenplum Path Layer_
 - `greenplum-path.sh` shall be installed to `${installation prefix}/greenplum-db-[package-version]/greenplum_path.sh`
 - `${GPHOME}` shall by default be set to `%{installation prefix}/greenplum-db-[version]`
   - If the installation prefix for a package is changed from the default by a user, then `%{installation prefix` shall be updated during installation to reflect the user's preference
@@ -67,7 +68,7 @@ _Greenplum Path Layer_
 - [A portable bash shebang shall be set](https://stackoverflow.com/questions/10376206/what-is-the-preferred-bash-shebang)
 - The `greenplum_path.sh` file shall pass [ShellCheck](https://github.com/koalaman/shellcheck)
 
-_Runtime Linking Layer_
+### _Runtime Linking Layer_
 - Any of the `elf` formatted files within the package at `${GPHOME}/bin`, that relied on `${LD_LIBRARY_PATH}` being set for runtime linking, shall now rely on `${RUNPATH}` being set to `${ORIGIN}/../lib`
   - Exception: The following exceptions are golang binaries that shall not have `RUNPATH` set:
     - `bin/gpkafka` (Greenplum 6, Greenplum 5)
@@ -187,9 +188,7 @@ Documenation of how a user is expected to to interact with the Greenplum Server 
 
 ## Symbolic Links and Installation Directory
 
-### Current Behavior
-
-#### Greenplum 5
+### Greenplum 5 Current Behavior
 
 **Install**
 ```sh
@@ -310,7 +309,7 @@ $ ls -l /opt/greenplum-db-5.27.0 | awk {'print $1" "$3" "$4" "$9" "$10" "$11'} |
 lrwxrwxrwx root root greenplum-db-5.27.1 -> /opt/greenplum-db-5.27.1
 ```
 
-#### Greenplum 6
+### Greenplum 6 Current Behavior
 
 **Install**
 ```sh
@@ -447,9 +446,7 @@ drwxr-xr-x root root greenplum-db-6.8.0
 drwxr-xr-x root root greenplum-db-6.8.1
 ```
 
-### Expected Behavior
-
-#### All Major Versions
+### Expected Behavior for All Major Versions
 
 **Install**
 ```sh
