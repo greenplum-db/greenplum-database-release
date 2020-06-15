@@ -2,7 +2,7 @@
 
 Description of the expected behavior as it relates to RPM packaging for the Greenplum Server component
 
-# Supported Features
+## Supported Features
 
 1. All of the basic functionality offered by the RPM specifications
 
@@ -18,7 +18,7 @@ Description of the expected behavior as it relates to RPM packaging for the Gree
 
   Some users may wish to simultanously run multiple versions of Greenplum concurrently or otherwise with the ability to easily choose a different version of Greenplum. The package installation prefix is unique for every package, `%{prefix}/greenplum-db-[major version]-[version]`, and the package does not attempt to create a `/usr/local/greenplum-db` symlink. This choices prevent file conflicts between packages and allows a user to `rpm --install` to install many versions of the package. Note: When using **rpm** for package installation, automatic dependency resolution does not occur.
 
-# Detailed Package Behavior
+## Detailed Package Behavior
 
 _Packaging Layer_
 - The `Name` metadata field of the RPM package shall be `greenplum-db-[x]`, such that `[x]` is the Greenplum Major version number
@@ -65,13 +65,13 @@ _Runtime Linking Layer_
 - When setting `${RUNPATH}` to the specified value, it **MUST** be done by setting the appropriate linker flags (e.g., `-Wl,-rpath,'$ORIGIN/../lib`) with the following exceptions:
   - (Greenplum 5) The `elf` formatted files contained within the vendored krb5 dependency will have its `RUNPATH` modified with `patchelf`
 
-# Usage
+## Usage
 
 Documenation of how a user is expected to to interact with the Greenplum Server package. Each package state transition should end with a running cluster with a psql prompt (with the exception of uninstallation or currently unsupported state transitions).
 
-## Installation
+### Installation
 
-### How to perform an installation
+#### How to perform an installation
 
 1. Follow the Pivotal Greenplum documentation for ["Configuring Your System"](https://gpdb.docs.pivotal.io/6-1/install_guide/prep_os.html) and ["Creating the Data Storage Areas"](https://gpdb.docs.pivotal.io/6-1/install_guide/create_data_dirs.html)
 
@@ -104,7 +104,7 @@ Documenation of how a user is expected to to interact with the Greenplum Server 
    psql -d postgres
    ```
 
-### The state of the environment after installation
+##### The state of the environment after installation
 
    ```sh
    $ ls -l /usr/local/ | grep greenplum
@@ -128,11 +128,11 @@ Documenation of how a user is expected to to interact with the Greenplum Server 
    Description : Greenplum Database
    ```
 
-## Upgrade
+### Upgrade
 
-### Major version upgrade
+#### Major version upgrade
 
-#### How to perform a Major version upgrade
+##### How to perform a Major version upgrade
 
 1. Perform the installation steps above for Greenplum 5
 
@@ -175,7 +175,7 @@ Documenation of how a user is expected to to interact with the Greenplum Server 
   yum remove greenplum-db-5
   ```
 
-#### The state of the environment after a Major version upgrade
+###### The state of the environment after a Major version upgrade
 
    ```sh
    $ ls -l /usr/local/ | grep greenplum
@@ -199,9 +199,9 @@ Documenation of how a user is expected to to interact with the Greenplum Server 
    Description : Greenplum Database
    ```
 
-### Minor/Maintenance upgrade
+#### Minor/Maintenance upgrade
 
-#### How to perform a Minor/Maintenance version upgrade
+##### How to perform a Minor/Maintenance version upgrade
 
 1. Download the new Greenplum Server binary RPM package installer from https://network.pivotal.io
 
@@ -250,7 +250,7 @@ Documenation of how a user is expected to to interact with the Greenplum Server 
    gpstart
    ```
 
-#### The state of the environment after a Minor/Maintenance version upgrade
+###### The state of the environment after a Minor/Maintenance version upgrade
 
    ```sh
    $ ls -l /usr/local/ | grep greenplum
@@ -274,21 +274,21 @@ Documenation of how a user is expected to to interact with the Greenplum Server 
    Description : Greenplum Database
    ```
 
-## Downgrade
+### Downgrade
 
-### Major version downgrade
+#### Major version downgrade
 
-#### How to perform a Major version downgrade
-
-Unknown
-
-#### The state of the environment after a Major version downgrade
+##### How to perform a Major version downgrade
 
 Unknown
 
-### Minor/Maintenance downgrade
+###### The state of the environment after a Major version downgrade
 
-#### How to perform a Minor/Maintenance version downgrade
+Unknown
+
+#### Minor/Maintenance downgrade
+
+##### How to perform a Minor/Maintenance version downgrade
 
 1. Perform the installation steps for a Greenplum cluster
 
@@ -338,7 +338,7 @@ Unknown
    gpstart
    ```
 
-#### The state of the environment after a Minor/Maintenance version downgrade
+###### The state of the environment after a Minor/Maintenance version downgrade
 
    ```sh
    $ ls -l /usr/local/ | grep greenplum
@@ -363,9 +363,9 @@ Unknown
    Description : Greenplum Database
    ```
 
-## Uninstallation
+### Uninstallation
 
-### How to perform an uninstallation
+#### How to perform an uninstallation
 
 1. Perform the installation steps for a Greenplum cluster
 
@@ -396,7 +396,7 @@ Unknown
    yum remove greenplum-db-5
    ```
 
-### The state of the environment after an uninstallation
+##### The state of the environment after an uninstallation
 
    The installation directory may still exist if any files contained within were not managed by the RPM package installer or if the `greenplum_path.sh` configuration contained modifications from what was initially installed
 
