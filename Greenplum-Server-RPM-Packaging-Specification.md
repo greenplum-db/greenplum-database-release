@@ -5,22 +5,13 @@ Description of the expected behavior as it relates to RPM packaging for the Gree
 1. [Supported Features](#supported-features)
 2. [Detailed Package Behavior](#detailed-package-behavior)
 3. [Usage](#usage)
-	1. [Installation](#installation)
-		1. [How to perform an installation](#how-to-perform-an-installation)
-	2. [Upgrade](#upgrade)
-		1. [Major version upgrade](#major-version-upgrade)
-			1. [How to perform a Major version upgrade](#how-to-perform-a-major-version-upgrade)
-		2. [Minor/Maintenance upgrade](#minormaintenance-upgrade)
-			1. [How to perform a Minor/Maintenance version upgrade](#how-to-perform-a-minormaintenance-version-upgrade)
-	2. [Downgrade](#downgrade)
-		1. [Major version downgrade](#major-version-downgrade)
-			1. [How to perform a Major version downgrade](#how-to-perform-a-major-version-downgrade)
-		2. [Minor/Maintenance downgrade](#minormaintenance-downgrade)
-			1. [How to perform a Minor/Maintenance version downgrade](#how-to-perform-a-minormaintenance-version-downgrade)
-	2. [Uninstallation](#uninstallation)
-		1. [How to perform an uninstallation](#how-to-perform-an-uninstallation)
-			1. [The state of the environment after an uninstallation](#the-state-of-the-environment-after-an-uninstallation)
-2. [Symbolic Links and Installation Directory](#symbolic-links-and-installation-directory)
+	1. [How to perform an installation](#how-to-perform-an-installation)
+	2. [How to perform a Minor or Maintenance Version Upgrade](#how-to-perform-a-minor-or-maintenance-version-upgrade)
+	3. [How to perform a Major version upgrade](#how-to-perform-a-major-version-upgrade)
+	4. [How to perform a Minor or Maintenance version downgrade](#how-to-perform-a-minor-or-maintenance-version-downgrade)
+	5. [How to perform an uninstallation](#how-to-perform-an-uninstallation)
+	6. [How to perform an installation to a non-default location](#how-to-perform-an-installation-to-a-non-default-location)
+4. [Symbolic Links and Installation Directory](#symbolic-links-and-installation-directory)
 	1. [Current Behavior](#current-behavior)
 		1. [Greenplum 5](#greenplum-5)
 		2. [Greenplum 6](#greenplum-6)
@@ -98,9 +89,7 @@ _Runtime Linking Layer_
 
 Documenation of how a user is expected to to interact with the Greenplum Server package.
 
-### Installation
-
-#### How to perform an installation
+### How to perform an installation
 
 1. Download the Greenplum Server binary RPM package installer from https://network.pivotal.io
 
@@ -151,7 +140,7 @@ Documenation of how a user is expected to to interact with the Greenplum Server 
    yum remove greenplum-db-[major version]
    ```
 
-##### How to perform a Minor or Maintenance version downgrade
+### How to perform a Minor or Maintenance version downgrade
 
 1. Download the downgraded Greenplum Server binary RPM package installer from https://network.pivotal.io
 
@@ -165,7 +154,7 @@ Documenation of how a user is expected to to interact with the Greenplum Server 
 
    **Note**: The previous Greenplum version installation directory may still exist
 
-#### How to perform an uninstallation
+### How to perform an uninstallation
 
 1. On every host, as a **root** user, uninstall the Greenplum RPM package.
 
@@ -176,7 +165,7 @@ Documenation of how a user is expected to to interact with the Greenplum Server 
    yum remove greenplum-db-5
    ```
 
-#### How to perform an installation to a non-default location
+### How to perform an installation to a non-default location
 
 1. Download the Greenplum Server binary RPM package installer from https://network.pivotal.io
 
