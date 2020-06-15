@@ -43,6 +43,9 @@ Description of the expected behavior as it relates to RPM packaging for the Gree
 
   Some users may wish to simultanously run multiple versions of Greenplum concurrently or otherwise with the ability to easily choose a different version of Greenplum. Note: When using **rpm** for package installation, automatic dependency resolution does not occur.
 
+5. A symbolic link is created that points to the most recently installed Greenplum
+
+  Users configure environments and tools to be Greenplum version inspecific by relying on a symbolic link to the Greenplum installation.
 
 ## Detailed Package Behavior
 
