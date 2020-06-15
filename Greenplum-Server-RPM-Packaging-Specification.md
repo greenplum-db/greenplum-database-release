@@ -405,3 +405,384 @@ Unknown
    drwxr-xr-x  10 root root 127 Dec 24 06:12 greenplum-db-6.1.0
    ```
 
+## Symbolic Links and Installation Directory
+
+### Current Behavior
+
+#### Greenplum 5
+
+**Install**
+```sh
+$ yum install -y -d0 ./greenplum-db-5.27.0-rhel7-x86_64.rpm
+
+$ ls -l /usr/local/ | awk {'print $1" "$3" "$4" "$9" "$10" "$11'} | grep green
+lrwxrwxrwx root root greenplum-db -> /usr/local/greenplum-db-5.27.0
+drwxr-xr-x root root greenplum-db-5.27.0
+```
+
+**Upgrade**
+```sh
+$ yum install -y -d0 ./greenplum-db-5.27.0-rhel7-x86_64.rpm
+
+# Same behavior between 'upgrade' and 'install'
+$ yum upgrade -y -d0 ./greenplum-db-5.27.1-rhel7-x86_64.rpm
+
+# Missing expected symlink
+$ ls -l /usr/local/ | awk {'print $1" "$3" "$4" "$9" "$10" "$11'} | grep green
+drwxr-xr-x root root greenplum-db-5.27.0
+drwxr-xr-x root root greenplum-db-5.27.1
+
+# Unexpected symlink
+# Directory is empty except for symlink
+$ ls -l /usr/local/greenplum-db-5.27.0/ | awk {'print $1" "$3" "$4" "$9" "$10" "$11'}
+lrwxrwxrwx root root greenplum-db-5.27.1 -> /usr/local/greenplum-db-5.27.1
+```
+
+**Downgrade**
+```sh
+$ yum install -y -d0 ./greenplum-db-5.27.0-rhel7-x86_64.rpm
+
+$ yum upgrade -y -d0 ./greenplum-db-5.27.1-rhel7-x86_64.rpm
+
+$ yum downgrade -y -d0 ./greenplum-db-5.27.0-rhel7-x86_64.rpm
+
+# Missing expected symlink
+$ ls -l /usr/local/ | awk {'print $1" "$3" "$4" "$9" "$10" "$11'} | grep green
+drwxr-xr-x root root greenplum-db-5.27.0
+
+# Unexpected symlink
+$ ls -l /usr/local/greenplum-db-5.27.0/ | awk {'print $1" "$3" "$4" "$9" "$10" "$11'} | grep greenplum-db
+lrwxrwxrwx root root greenplum-db-5.27.1 -> /usr/local/greenplum-db-5.27.1
+```
+
+**Relocated Install**
+```sh
+$ rpm -i ./greenplum-db-5.27.0-rhel7-x86_64.rpm --prefix=/opt
+$ ls -l /opt/ | awk {'print $1" "$3" "$4" "$9" "$10" "$11'} | grep green
+lrwxrwxrwx root root greenplum-db -> /opt/greenplum-db-5.27.0
+drwxr-xr-x root root greenplum-db-5.27.0
+```
+
+**Relocated Upgrade**
+```sh
+$ rpm -i ./greenplum-db-5.27.0-rhel7-x86_64.rpm --prefix=/opt
+
+$ rpm -U ./greenplum-db-5.27.1-rhel7-x86_64.rpm --prefix=/opt
+
+# Missing expected symlink
+$ ls -l /opt | awk {'print $1" "$3" "$4" "$9" "$10" "$11'} | grep green
+drwxr-xr-x root root greenplum-db-5.27.0
+drwxr-xr-x root root greenplum-db-5.27.1
+
+# Unexpected symlink
+$ ls -l /opt/greenplum-db-5.27.0/ | awk {'print $1" "$3" "$4" "$9" "$10" "$11'}
+lrwxrwxrwx root root greenplum-db-5.27.1 -> /opt/greenplum-db-5.27.1
+```
+
+**Relocated Downgrade**
+```sh
+$ rpm -i ./greenplum-db-5.27.0-rhel7-x86_64.rpm --prefix=/opt
+
+$ rpm -U ./greenplum-db-5.27.1-rhel7-x86_64.rpm --prefix=/opt
+
+$ rpm -U --oldpackage ./greenplum-db-5.27.0-rhel7-x86_64.rpm --prefix=/opt
+
+# Missing expected symlink
+$ ls -l /opt/ | awk {'print $1" "$3" "$4" "$9" "$10" "$11'} | grep green
+drwxr-xr-x root root greenplum-db-5.27.0
+
+# Unexpected symlink
+$ ls -l /opt/greenplum-db-5.27.0/ | awk {'print $1" "$3" "$4" "$9" "$10" "$11'} | grep greenplum-db
+lrwxrwxrwx root root greenplum-db-5.27.1 -> /opt/greenplum-db-5.27.1
+```
+
+**Dual Install (same package major version)**
+```sh
+$ rpm -i ./greenplum-db-5.27.0-rhel7-x86_64.rpm
+
+$ rpm -i ./greenplum-db-5.27.1-rhel7-x86_64.rpm
+
+# Symlink exists for previous version
+$ ls -l /usr/local/ | awk {'print $1" "$3" "$4" "$9" "$10" "$11'} | grep green
+lrwxrwxrwx root root greenplum-db -> /usr/local/greenplum-db-5.27.0
+drwxr-xr-x root root greenplum-db-5.27.0
+drwxr-xr-x root root greenplum-db-5.27.1
+
+# Unexpected symlink
+$ ls -l /usr/local/greenplum-db-5.27.0/ | awk {'print $1" "$3" "$4" "$9" "$10" "$11'} | grep greenplum-db
+lrwxrwxrwx root root greenplum-db-5.27.1 -> /usr/local/greenplum-db-5.27.1
+```
+
+**Relocated Dual Install (same package major version)**
+```sh
+$ rpm -i ./greenplum-db-5.27.0-rhel7-x86_64.rpm --prefix=/opt
+
+$ rpm -i ./greenplum-db-5.27.1-rhel7-x86_64.rpm --prefix=/opt
+
+# Symlink exists for previous version
+$ ls -l /opt/ | awk {'print $1" "$3" "$4" "$9" "$10" "$11'} | grep green
+lrwxrwxrwx root root greenplum-db -> /opt/greenplum-db-5.27.0
+drwxr-xr-x root root greenplum-db-5.27.0
+drwxr-xr-x root root greenplum-db-5.27.1
+
+# Unexpected symlink
+$ ls -l /opt/greenplum-db-5.27.0 | awk {'print $1" "$3" "$4" "$9" "$10" "$11'} | grep greenplum-db
+lrwxrwxrwx root root greenplum-db-5.27.1 -> /opt/greenplum-db-5.27.1
+```
+
+#### Greenplum 6
+
+**Install**
+```sh
+$ yum install -y -d0 ./greenplum-db-6.8.0-rhel7-x86_64.rpm
+
+$ ls -l /usr/local/ | awk {'print $1" "$3" "$4" "$9" "$10" "$11'} | grep green
+lrwxrwxrwx root root greenplum-db -> /usr/local/greenplum-db-6.8.0
+drwxr-xr-x root root greenplum-db-6.8.0
+```
+
+**Upgrade**
+```sh
+$ yum install -y -d0 ./greenplum-db-6.8.0-rhel7-x86_64.rpm
+
+# Same behavior between 'upgrade' and 'install'
+# Unexpected error to stdout
+$ yum upgrade -y -d0 ./greenplum-db-6.8.1-rhel7-x86_64.rpm
+ln: failed to create symbolic link '/usr/local/greenplum-db': File exists
+
+# Missing expected symlink
+$ ls -l /usr/local/ | awk {'print $1" "$3" "$4" "$9" "$10" "$11'} | grep green
+drwxr-xr-x root root greenplum-db-6.8.1
+```
+
+**Downgrade**
+```sh
+$ yum install -y -d0 ./greenplum-db-6.8.0-rhel7-x86_64.rpm
+
+# Unexpected error to stdout
+$ yum upgrade -y -d0 ./greenplum-db-6.8.1-rhel7-x86_64.rpm
+ln: failed to create symbolic link '/usr/local/greenplum-db': File exists
+
+$ yum downgrade -y -d0 ./greenplum-db-6.8.0-rhel7-x86_64.rpm
+
+$ ls -l /usr/local/ | awk {'print $1" "$3" "$4" "$9" "$10" "$11'} | grep green
+lrwxrwxrwx root root greenplum-db -> /usr/local/greenplum-db-6.8.0
+drwxr-xr-x root root greenplum-db-6.8.0
+```
+
+**Relocated Install**
+```sh
+$ rpm -i ./greenplum-db-6.8.0-rhel7-x86_64.rpm --prefix=/opt
+error: Failed dependencies:
+
+# Method to install dependencies if not met
+$ yum deplist ./greenplum-db-6.8.0-rhel7-x86_64.rpm | awk '/provider:/ {print $2}' | sort -u | xargs yum -y -d0 install
+
+$ rpm -i ./greenplum-db-6.8.0-rhel7-x86_64.rpm --prefix=/opt
+
+$ ls -l /opt/ | awk {'print $1" "$3" "$4" "$9" "$10" "$11'} | grep green
+lrwxrwxrwx root root greenplum-db -> /opt/greenplum-db-6.8.0
+drwxr-xr-x root root greenplum-db-6.8.0
+```
+
+**Relocated Upgrade**
+```sh
+$ rpm -i ./greenplum-db-6.8.0-rhel7-x86_64.rpm --prefix=/opt
+error: Failed dependencies:
+
+# Method to install dependencies if not met
+$ yum deplist ./greenplum-db-6.8.0-rhel7-x86_64.rpm | awk '/provider:/ {print $2}' | sort -u | xargs yum -y -d0 install
+
+$ rpm -i ./greenplum-db-6.8.0-rhel7-x86_64.rpm --prefix=/opt
+
+# Unexpected error to stdout
+$ rpm -U ./greenplum-db-6.8.1-rhel7-x86_64.rpm --prefix=/opt
+ln: failed to create symbolic link '/opt/greenplum-db': File exists
+
+# Missing expected symlink
+$ ls -l /opt | awk {'print $1" "$3" "$4" "$9" "$10" "$11'} | grep green
+drwxr-xr-x root root greenplum-db-6.8.1
+```
+
+**Relocated Downgrade**
+```sh
+$ rpm -i ./greenplum-db-6.8.0-rhel7-x86_64.rpm --prefix=/opt
+error: Failed dependencies:
+
+# Method to install dependencies if not met
+$ yum deplist ./greenplum-db-6.8.0-rhel7-x86_64.rpm | awk '/provider:/ {print $2}' | sort -u | xargs yum -y -d0 install
+
+$ rpm -i ./greenplum-db-6.8.0-rhel7-x86_64.rpm --prefix=/opt
+# Unexpected error to stdout
+
+$ rpm -U ./greenplum-db-6.8.1-rhel7-x86_64.rpm --prefix=/opt
+ln: failed to create symbolic link '/opt/greenplum-db': File exists
+
+$ rpm -U --oldpackage ./greenplum-db-6.8.0-rhel7-x86_64.rpm --prefix=/opt
+
+$ ls -l /opt/ | awk {'print $1" "$3" "$4" "$9" "$10" "$11'} | grep green
+lrwxrwxrwx root root greenplum-db -> /opt/greenplum-db-6.8.0
+drwxr-xr-x root root greenplum-db-6.8.0
+```
+
+**Dual Install (same package major version)**
+```sh
+$ rpm -i ./greenplum-db-6.8.0-rhel7-x86_64.rpm
+error: Failed dependencies:
+
+# Method to install dependencies if not met
+$ yum deplist ./greenplum-db-6.8.0-rhel7-x86_64.rpm | awk '/provider:/ {print $2}' | sort -u | xargs yum -y -d0 install
+
+$ rpm -i ./greenplum-db-6.8.0-rhel7-x86_64.rpm
+
+# Unexpected error to stdout
+$ rpm -i ./greenplum-db-6.8.1-rhel7-x86_64.rpm
+ln: failed to create symbolic link '/usr/local/greenplum-db': File exists
+
+# Symlink unexpectedly points to first installation
+$ ls -l /usr/local/ | awk {'print $1" "$3" "$4" "$9" "$10" "$11'} | grep green
+lrwxrwxrwx root root greenplum-db -> /usr/local/greenplum-db-6.8.0
+drwxr-xr-x root root greenplum-db-6.8.0
+drwxr-xr-x root root greenplum-db-6.8.1
+```
+
+**Relocated Dual Install (same package major version)**
+```sh
+$ rpm -i ./greenplum-db-6.8.0-rhel7-x86_64.rpm --prefix=/opt
+error: Failed dependencies:
+
+# Method to install dependencies if not met
+$ yum deplist ./greenplum-db-6.8.0-rhel7-x86_64.rpm | awk '/provider:/ {print $2}' | sort -u | xargs yum -y -d0 install
+
+$ rpm -i ./greenplum-db-6.8.0-rhel7-x86_64.rpm --prefix=/opt
+# Unexpected error to stdout
+
+$ rpm -i ./greenplum-db-6.8.1-rhel7-x86_64.rpm --prefix=/opt
+ln: failed to create symbolic link '/opt/greenplum-db': File exists
+
+# Symlink unexpectedly points to first installation
+$ ls -l /opt/ | awk {'print $1" "$3" "$4" "$9" "$10" "$11'} | grep green
+lrwxrwxrwx root root greenplum-db -> /opt/greenplum-db-6.8.0
+drwxr-xr-x root root greenplum-db-6.8.0
+drwxr-xr-x root root greenplum-db-6.8.1
+```
+
+### Expected Behavior
+
+#### All Major Versions
+
+**Install**
+```sh
+$ yum install -y -d0 ./greenplum-db-6.8.0-rhel7-x86_64.rpm
+
+$ ls -l /usr/local/ | awk {'print $1" "$3" "$4" "$9" "$10" "$11'} | grep green
+lrwxrwxrwx root root greenplum-db -> /usr/local/greenplum-db-6.8.0
+drwxr-xr-x root root greenplum-db-6.8.0
+```
+
+**Upgrade**
+```sh
+$ yum install -y -d0 ./greenplum-db-6.8.0-rhel7-x86_64.rpm
+
+$ yum upgrade -y -d0 ./greenplum-db-6.8.1-rhel7-x86_64.rpm
+
+$ ls -l /usr/local/ | awk {'print $1" "$3" "$4" "$9" "$10" "$11'} | grep green
+lrwxrwxrwx root root greenplum-db -> /usr/local/greenplum-db-6.8.1
+drwxr-xr-x root root greenplum-db-6.8.1
+# The 6.8.0 installation directory may still exist
+```
+
+**Downgrade**
+```sh
+$ yum install -y -d0 ./greenplum-db-6.8.0-rhel7-x86_64.rpm
+
+$ yum upgrade -y -d0 ./greenplum-db-6.8.1-rhel7-x86_64.rpm
+
+$ yum downgrade -y -d0 ./greenplum-db-6.8.0-rhel7-x86_64.rpm
+
+$ ls -l /usr/local/ | awk {'print $1" "$3" "$4" "$9" "$10" "$11'} | grep green
+lrwxrwxrwx root root greenplum-db -> /usr/local/greenplum-db-6.8.0
+drwxr-xr-x root root greenplum-db-6.8.0
+# The 6.8.1 installation directory may still exist
+```
+
+**Relocated Install**
+```sh
+# First, install dependencies as needed
+$ rpm -i ./greenplum-db-6.8.0-rhel7-x86_64.rpm --prefix=/opt
+
+$ ls -l /opt/ | awk {'print $1" "$3" "$4" "$9" "$10" "$11'} | grep green
+lrwxrwxrwx root root greenplum-db -> /opt/greenplum-db-6.8.0
+drwxr-xr-x root root greenplum-db-6.8.0
+```
+
+**Relocated Upgrade**
+```sh
+# First, install dependencies as needed
+
+$ rpm -i ./greenplum-db-6.8.0-rhel7-x86_64.rpm --prefix=/opt
+
+$ rpm -U ./greenplum-db-6.8.1-rhel7-x86_64.rpm --prefix=/opt
+
+$ ls -l /opt | awk {'print $1" "$3" "$4" "$9" "$10" "$11'} | grep green
+lrwxrwxrwx root root greenplum-db -> /usr/local/greenplum-db-6.8.1
+drwxr-xr-x root root greenplum-db-6.8.1
+# The 6.8.0 installation directory may still exist
+```
+
+**Relocated Downgrade**
+```sh
+# First, install dependencies as needed
+
+$ rpm -i ./greenplum-db-6.8.0-rhel7-x86_64.rpm --prefix=/opt
+
+$ rpm -U ./greenplum-db-6.8.1-rhel7-x86_64.rpm --prefix=/opt
+
+$ rpm -U --oldpackage ./greenplum-db-6.8.0-rhel7-x86_64.rpm --prefix=/opt
+
+$ ls -l /opt/ | awk {'print $1" "$3" "$4" "$9" "$10" "$11'} | grep green
+lrwxrwxrwx root root greenplum-db -> /opt/greenplum-db-6.8.0
+drwxr-xr-x root root greenplum-db-6.8.0
+# The 6.8.1 installation directory may still exist
+```
+
+**Dual Install (same package major version)**
+```sh
+# First, install dependencies as needed
+
+$ rpm -i ./greenplum-db-6.8.0-rhel7-x86_64.rpm
+
+$ rpm -i ./greenplum-db-6.8.1-rhel7-x86_64.rpm
+
+$ ls -l /usr/local/ | awk {'print $1" "$3" "$4" "$9" "$10" "$11'} | grep green
+lrwxrwxrwx root root greenplum-db -> /usr/local/greenplum-db-6.8.1
+drwxr-xr-x root root greenplum-db-6.8.0
+drwxr-xr-x root root greenplum-db-6.8.1
+```
+
+**Relocated Dual Install (same package major version)**
+```sh
+# First, install dependencies as needed
+
+$ rpm -i ./greenplum-db-6.8.0-rhel7-x86_64.rpm --prefix=/opt
+
+$ rpm -i ./greenplum-db-6.8.0-rhel7-x86_64.rpm --prefix=/opt
+
+$ rpm -i ./greenplum-db-6.8.1-rhel7-x86_64.rpm --prefix=/opt
+
+$ ls -l /opt/ | awk {'print $1" "$3" "$4" "$9" "$10" "$11'} | grep green
+lrwxrwxrwx root root greenplum-db -> /opt/greenplum-db-6.8.1
+drwxr-xr-x root root greenplum-db-6.8.0
+drwxr-xr-x root root greenplum-db-6.8.1
+```
+
+**Dual Install (different package major version)**
+```sh
+$ yum install -y -d0 ./greenplum-db-5.27.0-rhel7-x86_64.rpm
+$ yum install -y -d0 ./greenplum-db-6.8.0-rhel7-x86_64.rpm
+
+$ ls -l /opt/ | awk {'print $1" "$3" "$4" "$9" "$10" "$11'} | grep green
+lrwxrwxrwx root root greenplum-db -> /opt/greenplum-db-6.8.0
+drwxr-xr-x root root greenplum-db-5.27.0
+drwxr-xr-x root root greenplum-db-6.8.0
+```
