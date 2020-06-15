@@ -96,327 +96,78 @@ _Runtime Linking Layer_
 
 ## Usage
 
-Documenation of how a user is expected to to interact with the Greenplum Server package. Each package state transition should end with a running cluster with a psql prompt (with the exception of uninstallation or currently unsupported state transitions).
+Documenation of how a user is expected to to interact with the Greenplum Server package.
 
 ### Installation
 
 #### How to perform an installation
 
-1. Follow the Pivotal Greenplum documentation for ["Configuring Your System"](https://gpdb.docs.pivotal.io/6-1/install_guide/prep_os.html) and ["Creating the Data Storage Areas"](https://gpdb.docs.pivotal.io/6-1/install_guide/create_data_dirs.html)
+1. Download the Greenplum Server binary RPM package installer from https://network.pivotal.io
 
-2. Download the Greenplum Server binary RPM package installer from https://network.pivotal.io
+2. Transfer the RPM package to all hosts being used for the Greenplum cluster
 
-3. Transfer the RPM package to all hosts being used for the Greenplum cluster
-
-4. On every host, as a **root** user, install the RPM package and any necessary dependencies
+3. On every host, as a **root** user, install the RPM package. Any necessary dependencies will be automatically installed.
 
    ```sh
-   sudo yum install ./greenplum-db-[version]-[platform]-[arch].rpm
+   yum install ./greenplum-db-[version]-[platform]-[arch].rpm
    ```
 
-5. Follow the Pivotal Greenplum documentation for  ["Initializing a Greenplum Database System"](https://gpdb.docs.pivotal.io/6-4/install_guide/init_gpdb.html)
-
-6. Download any optional Greenplum extensions from https://network.pivotal.io
-
-7. Follow the Pivotal Greenplum documentation for ["Installing Optional Extensions"](https://gpdb.docs.pivotal.io/6-1/install_guide/data_sci_pkgs.html)
-
-8. On the host designated as the **master** host, as the **gpadmin** user, ensure the necessary environment variables are set
-
-   ```sh
-   source /usr/local/greenplum-db-[version]/greenplum_path.sh
-   export MASTER_DATA_DIRECTORY=[data directory designated during cluster initialization]
-   ```
-
-9. On the host designated as the **master** host, as the **gpadmin** user, start a client connection to the running Greenplum cluster
-
-   ```sh
-   psql -d postgres
-   ```
-
-##### The state of the environment after installation
-
-   ```sh
-   $ ls -l /usr/local/ | grep greenplum
-   drwxr-xr-x  10 root root 127 Dec 24 06:12 greenplum-db-6.1.0
-   ```
-
-   ```sh
-   $ yum info greenplum-db-6
-   ...
-   Installed Packages
-   Name        : greenplum-db
-   Arch        : x86_64
-   Version     : 6.1.0
-   Release     : 1.el7
-   Size        : 498 M
-   Repo        : installed
-   From repo   : /greenplum-db-6.1.0-rhel7-x86_64
-   Summary     : Greenplum-DB
-   URL         : https://greenplum.org/
-   License     : Apache 2.0
-   Description : Greenplum Database
-   ```
-
-### Upgrade
-
-#### Major version upgrade
-
-##### How to perform a Major version upgrade
-
-1. Perform the installation steps above for Greenplum 5
-
-2. Download the Greenplum 6 Server binary RPM package installer from https://network.pivotal.io
-
-3. Transfer the RPM package to all hosts being used for the Greenplum cluster
-
-4. On every host, as a **root** user, install the Greenplum 6 RPM package and any necessary dependencies
-
-   ```sh
-   sudo yum install ./greenplum-db-[version]-[platform]-[arch].rpm
-   ```
-
-5. On the host designated as the **master** host, as the **gpadmin** user, set the necessary environment variables for the Greenplum 5 cluster
-
-   ```sh
-   source /usr/local/greenplum-db-5-[full version]/greenplum_path.sh
-   ```
-
-6. On the host designated as the **master** host, as the **gpadmin** user, set the necessary environment variables for any intialized Greenplum 5 database
-
-   ```sh
-   export MASTER_DATA_DIRECTORY=[data directory designated during cluster initialization]
-   ```
-
-7. Ensure the Greenplum 5 cluster being upgraded is stopped
-
-   ```sh
-   gpstop -a
-   ```
-
-8. Follow the documented steps for [Migrating Data from Greenplum 4.3 or 5](https://gpdb.docs.pivotal.io/6-1/install_guide/migrate.html)
-
-9. Uninstall the Greenplum 5 package
-
-  ```sh
-  # If the Greenplum 5 version is <= [XXX]
-  yum remove greenplum-db
-  # If the Greenplum 5 version is > [XXX]
-  yum remove greenplum-db-5
-  ```
-
-###### The state of the environment after a Major version upgrade
-
-   ```sh
-   $ ls -l /usr/local/ | grep greenplum
-   drwxr-xr-x  10 root root 127 Dec 24 06:12 greenplum-db-6.1.0
-   ```
-
-   ```sh
-   $ yum info greenplum-db-6
-   ...
-   Installed Packages
-   Name        : greenplum-db
-   Arch        : x86_64
-   Version     : 6.1.0
-   Release     : 1.el7
-   Size        : 498 M
-   Repo        : installed
-   From repo   : /greenplum-db-6.1.0-rhel7-x86_64
-   Summary     : Greenplum-DB
-   URL         : https://greenplum.org/
-   License     : Apache 2.0
-   Description : Greenplum Database
-   ```
-
-#### Minor/Maintenance upgrade
-
-##### How to perform a Minor/Maintenance version upgrade
+### How to perform a Minor or Maintenance Version Upgrade
 
 1. Download the new Greenplum Server binary RPM package installer from https://network.pivotal.io
 
 2. Transfer the RPM package to all hosts being used for the Greenplum cluster
 
-3. On the host designated as the **master** host, as the **gpadmin** user, set the necessary environment variables for the **existing** Greenplum Server installation
+3. On every host, as a **root** user, Upgrade the RPM package. Any necessary dependencies will be automatically installed.
 
    ```sh
-   source /usr/local/greenplum-db-[major version]-[full version]/greenplum_path.sh
+   yum upgrade ./greenplum-db-[version]-[platform]-[arch].rpm
    ```
 
-4. On the host designated as the **master** host, as the **gpadmin** user, set the necessary environment variables for the location of the **existing**, initalized cluster that is being upgraded
+   **Note**: The previous installation directory may still exist if `greenplum_path.sh` was modified or extra Greenplum components installed
+
+### How to perform a Major version upgrade
+
+1. Download the new Greenplum Server binary RPM package installer from https://network.pivotal.io
+
+2. Transfer the RPM package to all hosts being used for the Greenplum cluster
+
+3. On every host, as a **root** user, Install the Greenplum RPM package. Any necessary dependencies will be automatically installed.
 
    ```sh
-   export MASTER_DATA_DIRECTORY=[data directory designated during cluster initialization]
+   yum install ./greenplum-db-[version]-[platform]-[arch].rpm
    ```
 
-5. Ensure the **existing** Greenplum cluster being upgraded is stopped
+   **Note**: The previous Greenplum Major version installation directory will still exist
+
+4. Follow the documented steps for [Migrating Data from Greenplum 4.3 or 5](https://gpdb.docs.pivotal.io/6-1/install_guide/migrate.html)
+
+5. Uninstall the previous Greenplum Major version RPM package
 
    ```sh
-   gpstop -a
+   # If the Greenplum version is <= 5.28.0
+   yum remove greenplum-db
+   # If the Greenplum 5 version is > 5.28.0
+   yum remove greenplum-db-[major version]
    ```
 
-6. On every host, as a **root** user, install the RPM package and any necessary dependencies
+##### How to perform a Minor or Maintenance version downgrade
+
+1. Download the downgraded Greenplum Server binary RPM package installer from https://network.pivotal.io
+
+2. Transfer the RPM package to all hosts being used for the Greenplum cluster
+
+3. On every host, as a **root** user, downgrade the Greenplum RPM package.
 
    ```sh
-   sudo yum install ./greenplum-db-[version]-[platform]-[arch].rpm
+   yum downgrade ./greenplum-db-[version]-[platform]-[arch].rpm
    ```
 
-7. On the host designated as the **master** host, as the **gpadmin** user, ensure any necessary modifications to the `greenplum_path.sh` configuration file from the **existing** Greenplum Server installation are transfered to the configuration file of the **upgraded** Greenplum server installation
-
-   ```sh
-   vim /usr/local/greenplum-db-[existing version]/greenplum_path.sh.rpmsave
-   vim /usr/local/greenplum-db-[upgraded version]/greenplum_path.sh
-   ```
-
-8. On the host designated as the **master** host, as the **gpadmin** user, set the necessary environment variables for the **upgraded** Greenplum Server installation
-
-   ```sh
-   source /usr/local/greenplum-db-[major version]-[full version]/greenplum_path.sh
-   ```
-
-9. Start any **upgraded** Greenplum cluster database
-
-   ```sh
-   gpstart
-   ```
-
-###### The state of the environment after a Minor/Maintenance version upgrade
-
-   ```sh
-   $ ls -l /usr/local/ | grep greenplum
-   drwxr-xr-x  10 root root 127 Dec 24 06:12 greenplum-db-6.1.0
-   ```
-
-   ```sh
-   $ yum info greenplum-db-6
-   ...
-   Installed Packages
-   Name        : greenplum-db
-   Arch        : x86_64
-   Version     : 6.1.0
-   Release     : 1.el7
-   Size        : 498 M
-   Repo        : installed
-   From repo   : /greenplum-db-6.1.0-rhel7-x86_64
-   Summary     : Greenplum-DB
-   URL         : https://greenplum.org/
-   License     : Apache 2.0
-   Description : Greenplum Database
-   ```
-
-### Downgrade
-
-#### Major version downgrade
-
-##### How to perform a Major version downgrade
-
-Unknown
-
-###### The state of the environment after a Major version downgrade
-
-Unknown
-
-#### Minor/Maintenance downgrade
-
-##### How to perform a Minor/Maintenance version downgrade
-
-1. Perform the installation steps for a Greenplum cluster
-
-2. Download the downgraded Greenplum Server binary RPM package installer from https://network.pivotal.io
-
-3. Transfer the RPM package to all hosts being used for the Greenplum cluster
-
-4. On the host designated as the **master** host, set the necessary environment variables as the **gpadmin** user for the **existing** Greenplum Server installation
-
-   ```sh
-   source /usr/local/greenplum-db-[major version]-[full version]/greenplum_path.sh
-   ```
-
-5. On the host designated as the **master** host, set the necessary environment variables as the **gpadmin** user for the location of the **existing**, initalized cluster that is being upgraded
-
-   ```sh
-   export MASTER_DATA_DIRECTORY=[data directory designated during cluster initialization]
-   ```
-
-6. Ensure the **existing** Greenplum cluster being upgraded is stopped
-
-   ```sh
-   gpstop -a
-   ```
-
-7. On every host, downgrade the RPM package and any necessary dependencies
-
-   ```sh
-   sudo yum downgrade ./greenplum-db-[version]-[platform]-[arch].rpm
-   ```
-
-8. Ensure any necessary modifications to the `greenplum_path.sh` configuration file from the **existing** Greenplum Server installation are transfered to the **downgraded** configuration file 
-
-   ```sh
-   vim -p /usr/local/greenplum-db-[existing version]/greenplum_path.sh.rpmsave /usr/local/greenplum-db-[downgraded version]/greenplum_path.sh
-   ```
-
-9. On the host designated as the **master** host, set the necessary environment variables as the **gpadmin** user for the **downgraded** Greenplum Server installation
-
-   ```sh
-   source /usr/local/greenplum-db-[major version]-[full version]/greenplum_path.sh
-   ```
-
-10. Start the downgraded Greenplum cluster
-
-   ```sh
-   gpstart
-   ```
-
-###### The state of the environment after a Minor/Maintenance version downgrade
-
-   ```sh
-   $ ls -l /usr/local/ | grep greenplum
-   lrwxrwxrwx   1 root root  30 Dec 24 06:12 greenplum-db -> /etc/alternatives/greenplum-db
-   drwxr-xr-x  10 root root 127 Dec 24 06:12 greenplum-db-6.1.0
-   ```
-
-   ```sh
-   $ yum info greenplum-db-6
-   ...
-   Installed Packages
-   Name        : greenplum-db
-   Arch        : x86_64
-   Version     : 6.1.0
-   Release     : 1.el7
-   Size        : 498 M
-   Repo        : installed
-   From repo   : /greenplum-db-6.1.0-rhel7-x86_64
-   Summary     : Greenplum-DB
-   URL         : https://greenplum.org/
-   License     : Apache 2.0
-   Description : Greenplum Database
-   ```
-
-### Uninstallation
+   **Note**: The previous Greenplum version installation directory may still exist
 
 #### How to perform an uninstallation
 
-1. Perform the installation steps for a Greenplum cluster
-
-2. On the host designated as the **master** host, set the necessary environment variables as the **gpadmin** user for the **existing** Greenplum Server installation
-
-   ```sh
-   source /usr/local/greenplum-db-[major version]-[full version]/greenplum_path.sh
-   ```
-
-3. On the host designated as the **master** host, set the necessary environment variables as the **gpadmin** user for the location of the **existing**, initalized cluster that is being upgraded
-
-   ```sh
-   export MASTER_DATA_DIRECTORY=[data directory designated during cluster initialization]
-   ```
-
-4. Ensure the **existing** Greenplum cluster being upgraded is stopped
-
-   ```sh
-   gpstop -a
-   ```
-
-5. On every host, uninstall the RPM package and any necessary dependencies
+1. On every host, as a **root** user, uninstall the Greenplum RPM package.
 
    ```sh
    # If the Greenplum 5 versions is <= [XXX]
@@ -425,13 +176,24 @@ Unknown
    yum remove greenplum-db-5
    ```
 
-##### The state of the environment after an uninstallation
+#### How to perform an installation to a non-default location
 
-   The installation directory may still exist if any files contained within were not managed by the RPM package installer or if the `greenplum_path.sh` configuration contained modifications from what was initially installed
+1. Download the Greenplum Server binary RPM package installer from https://network.pivotal.io
+
+2. Transfer the RPM package to all hosts being used for the Greenplum cluster
+
+3. On every host, as a **root** user, install any necessary dependencies
 
    ```sh
-   $ ls -l /usr/local/ | grep greenplum
-   drwxr-xr-x  10 root root 127 Dec 24 06:12 greenplum-db-6.1.0
+   # List required dependencies
+   yum deplist ./greenplum-db-[version]-[platform]-[arch].rpm
+   yum install [dependencies]
+   ```
+
+4. On every host, as a **root** user, install the RPM package and specify the desired installation location
+
+   ```sh
+   rpm --install ./greenplum-db-[version]-[platform]-[arch].rpm --prefix=[desired installation location]
    ```
 
 ## Symbolic Links and Installation Directory
