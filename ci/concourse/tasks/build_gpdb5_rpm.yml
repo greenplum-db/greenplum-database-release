@@ -1,0 +1,30 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+
+inputs:
+- name: bin_gpdb
+- name: greenplum-database-release
+- name: gpdb_src
+  optional: true
+
+outputs:
+- name: gpdb_rpm_installer
+
+run:
+  path: greenplum-database-release/ci/concourse/scripts/build_gpdb5_rpm.sh
+
+params:
+  PLATFORM:
+  GPDB_VERSION:
+  GPDB_RELEASE:
+  GPDB_NAME:
+  GPDB_SUMMARY:
+  GPDB_GROUP:
+  GPDB_LICENSE:
+  GPDB_URL:
+  GPDB_BUILDARCH:
+  GPDB_DESCRIPTION:
+  GPDB_PREFIX:
