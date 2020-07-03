@@ -1,0 +1,87 @@
+#!/usr/bin/make -f
+
+# see EXAMPLES in dpkg-buildflags(1) and read /usr/share/dpkg/*
+DH_VERBOSE = 1
+DPKG_EXPORT_BUILDFLAGS = 1
+
+# assumes that CWD is root of gpdb source
+GPDB_SRC_DIR := $(shell pwd)
+GPDB_VERSION := $(shell ./getversion | tr " " ".")
+PACKAGE := $(shell cat debian/control | egrep "^Package: " | cut -d " " -f 2)
+
+IS_GPDB6 := $(shell expr ${GPDB_VERSION} : "\(^6\.[0-9]\+\.[0-9]\+\)")
+IS_GPDB7 := $(shell expr ${GPDB_VERSION} : "\(^7\.[0-9]\+\.[0-9]\+\)")
+
+ifdef IS_GPDB7
+        EXTRA_CONFIGURE_FLAGS := --without-zstd
+endif
+
+ifdef IS_GPDB6
+        EXTRA_CONFIGURE_FLAGS := --without-zstd
+endif
+
+# This destination should NOT be debian/tmp, where certain packaging info stored and erased via dh_prep
+# Also, this directory is duplicated in the "debian/install" file
+DEBIAN_DESTINATION := ${GPDB_SRC_DIR}/debian/build
+ORCA_SRC := ${GPDB_SRC_DIR}/gporca
+ORCA_BUILD_DIR_NAME := build
+
+include /usr/share/dpkg/default.mk
+
+orca:
+	mkdir -p ${DEBIAN_DESTINATION}
+	cd ${ORCA_SRC} && \
+        cmake -GNinja -D CMAKE_INSTALL_PREFIX=${DEBIAN_DESTINATION} -H. -B${ORCA_BUILD_DIR_NAME} && \
+        ninja install -C ${ORCA_BUILD_DIR_NAME}
+
+override_dh_auto_configure: orca
+	./configure --with-perl --with-python --with-libxml --enable-mapreduce --with-gssapi \
+		--with-extra-version="-oss" \
+        --with-libs=${DEBIAN_DESTINATION}/lib \
+        --with-includes=${DEBIAN_DESTINATION}/include \
+        --prefix=${DEBIAN_DESTINATION} \
+        --with-ldap \
+        ${EXTRA_CONFIGURE_FLAGS}
+
+%:
+	dh $@ --parallel
+
+override_dh_auto_install:
+	make install
+	# the staging directory for creating a debian is NOT the right GPHOME.
+	# change GPHOME to point to the post-install target install directory.
+	sed -i "s#GPHOME=.*#GPHOME=/opt/gpdb#g" ${DEBIAN_DESTINATION}/greenplum_path.sh
+	# remove bundled python from open-source package
+	rm -rf ${DEBIAN_DESTINATION}/lib/python/Crypto
+	rm -rf ${DEBIAN_DESTINATION}/lib/python/lockfile
+	rm -rf ${DEBIAN_DESTINATION}/lib/python/paramiko
+	rm -rf ${DEBIAN_DESTINATION}/lib/python/psutil
+	rm -rf ${DEBIAN_DESTINATION}/lib/python/yaml
+	# Remove fault injector and other packages
+	while read file; do\
+      if [ -f "${DEBIAN_DESTINATION}/$${file}" ]; then\
+        echo "Deleting: ${DEBIAN_DESTINATION}/$${file}"; \
+        rm "${DEBIAN_DESTINATION}/$${file}"; \
+      else\
+        echo "File $${file} does not exist. Skipping." ; \
+      fi;\
+    done < ${GPDB_SRC_DIR}/gpAux/releng/NON_PRODUCTION_FILES.txt
+
+
+# since we need orca to build before configuring, and configuring happens before dh_auto_clean,
+# we can either add a make dependency here, which will cause and orca/configure to happen multiple times,
+# or, since we assume that this build is happening in concourse on a brand new container,
+# we can  make this step into a no-op: the container is clean to begin with.
+override_dh_auto_clean:
+	echo "Skipping clean"
+
+override_dh_gencontrol:
+	echo "using version ${GPDB_VERSION} for binary"
+	dpkg-gencontrol -v${GPDB_VERSION} -Pdebian/${PACKAGE}
+
+override_dh_shlibdeps:
+	LD_LIBRARY_PATH=${DEBIAN_DESTINATION}/lib dh_shlibdeps --dpkg-shlibdeps-params=--ignore-missing-info
+
+clean_dev_local:
+	rm -rf gporca/build
+	rm -rf ${DEBIAN_DESTINATION}

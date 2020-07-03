@@ -40,9 +40,9 @@ Complete!
 Passed check! Install /tmp/build/gpdb_rpm_installer/greenplum-db-<gpdb_version>-rhel7-x86_64.rpm package successfully.
 ```
 
-## How to use the application to create a DEB package locally
+## How to use the application to create a GPDB6 DEB package locally
 ```bash
-BIN_GPDB_TARGZ=/path/to/bin_gpdb.tar.gz make local-build-deb
+BIN_GPDB_TARGZ=/path/to/bin_gpdb.tar.gz make local-build-gpdb6-deb
 ```
 The output like:
 ```
@@ -73,4 +73,17 @@ For rhel7
 
 ```bash
 GPDB_VERSION=<GPDB_VERSION> make local-build-gpdb5-centos7-rpm
+```
+
+## How to use the open source code to create a GPDB5 source DEB package locally
+
+1. Install yq, please refer to the [installation guide](https://github.com/mikefarah/yq#install)
+2. ```make local-build-gpdb5-deb```
+
+The output like:
+```
+Creating DEB Package...
+...
+...
+Done. Please find the source package under /tmp/build/debian_source_files
 ```

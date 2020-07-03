@@ -131,8 +131,8 @@ shellcheck:
 yamllint:
 	docker run --rm -v ${PWD}:/code cytopia/yamllint /code -c /code/.yamllint
 
-local-build-deb:
-	bin/create_deb_package.bash
+local-build-gpdb6-deb:
+	bin/create_gpdb6_deb_package.bash
 
 local-build-rpm:
 	bin/create_rpm_package.bash
@@ -149,3 +149,5 @@ local-build-gpdb5-centos7-rpm:
 	-w /tmp/greenplum-database-release \
 	pivotaldata/centos-gpdb-dev:7-gcc6.2-llvm3.7 /tmp/greenplum-database-release/bin/create_gpdb5_rpm_package.sh
 
+local-build-gpdb5-deb:
+	bin/create_gpdb5_deb_package.bash

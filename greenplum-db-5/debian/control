@@ -1,0 +1,62 @@
+Source: greenplum-db-5
+Maintainer: Omitted <no-reply@example.com>
+Section: database
+Build-Depends: debhelper (>= 9),
+    bison,
+    cmake,
+    flex,
+    gcc,
+    g++,
+    git,
+    libapr1-dev,
+    libbz2-dev,
+    libcurl4-gnutls-dev,
+    libevent-dev,
+    libkrb5-dev,
+    libldap2-dev,
+    libperl-dev,
+    libreadline6-dev,
+    libssl-dev,
+    libxerces-c-dev,
+    libxml2-dev,
+    libyaml-dev,
+    ninja-build,
+    python-dev,
+    python-setuptools,
+    zlib1g-dev
+
+Package: greenplum-db-5
+Architecture: amd64
+Depends: bison,
+    curl,
+    iputils-ping,
+    less,
+    libapr1,
+    libbz2-1.0,
+    libcurl3-gnutls,
+    libevent-2.0-5,
+    libreadline6,
+    libxerces-c3.1,
+    libxml2-dev,
+    locales,
+    net-tools,
+    openssh-client,
+    openssh-server,
+    openssl,
+    python-lockfile,
+    python-paramiko,
+    python-psutil,
+    python-yaml,
+    python-pip,
+    rsync,
+    zlib1g
+Description: Pivotal Greenplum Database
+  Greenplum Database is an advanced, fully featured, open source data platform.
+  It provides powerful and rapid analytics on petabyte scale data volumes.
+  Uniquely geared toward big data analytics, Greenplum Database is powered by
+  the world's most advanced cost-based query optimizer delivering high
+  analytical query performance on large data volumes.The Greenplum Database®
+  project is released under the Apache 2 license.  We want to thank all our
+  current community contributors and all who are interested in new
+  contributions.  For the Greenplum Database community, no contribution is too
+  small, we encourage all types of contributions.
