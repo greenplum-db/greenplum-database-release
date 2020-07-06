@@ -97,10 +97,14 @@ exit 0
 rm -rf %{buildroot}
 
 %post
-# handle properly if /usr/local/greenplum-db already exists
-ln -sT $RPM_INSTALL_PREFIX/%{name}-%{gpdb_version} $RPM_INSTALL_PREFIX/%{name} || true
-# Update greenplum_path.sh for ${bin_gpdb}
-sed -i -e "1 s~^\(GPHOME=\).*~\1$RPM_INSTALL_PREFIX/%{name}-%{gpdb_version}~" $RPM_INSTALL_PREFIX/%{name}-%{gpdb_version}/greenplum_path.sh
+if [ ! -e "$RPM_INSTALL_PREFIX/%{name}" ] || [ -L "$RPM_INSTALL_PREFIX/%{name}" ];then
+  # handle properly if /usr/local/greenplum-db already exists
+  ln -sT $RPM_INSTALL_PREFIX/%{name}-%{gpdb_version} $RPM_INSTALL_PREFIX/%{name} || true
+  # Update greenplum_path.sh for ${bin_gpdb}
+  sed -i -e "1 s~^\(GPHOME=\).*~\1$RPM_INSTALL_PREFIX/%{name}-%{gpdb_version}~" $RPM_INSTALL_PREFIX/%{name}-%{gpdb_version}/greenplum_path.sh
+else
+  echo "the expected symlink was not created because a file exists at that location"
+fi
 
 %postun
 if [[ $(readlink $RPM_INSTALL_PREFIX/%{name}) == $RPM_INSTALL_PREFIX/%{name}-%{gpdb_version} ]]; then
