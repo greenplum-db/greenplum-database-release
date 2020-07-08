@@ -32,7 +32,6 @@ Requires: curl
 # krb5-devel provides libgssapi_krb5.so
 Requires: krb5-devel
 Requires: libcurl
-Requires: libevent
 Requires: libxml2
 Requires: libyaml
 Requires: zlib
@@ -53,6 +52,11 @@ Requires: iproute
 Requires: openssh-server
 %if 0%{?rhel} == 7
 Requires: openssl-libs
+%endif
+%if 0%{?rhel} == 6
+Requires: libevent2
+%else
+Requires: libevent
 %endif
 
 %description
