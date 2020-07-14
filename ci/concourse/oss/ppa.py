@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Copyright (C) 2019-Present Pivotal Software, Inc. All rights reserved.
+# Copyright (C) 2019-Present VMware, and affiliates Inc. All rights reserved.
 # This program and the accompanying materials are made available under the
 # terms of the under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain a
@@ -165,7 +165,7 @@ class SourcePackageBuilder(BasePackageBuilder):
 
         notice_content = '''Greenplum Database
 
-Copyright (c) 2019 Pivotal Software, Inc. All Rights Reserved.
+Copyright (c) 2019 VMware, and affiliates Inc. All Rights Reserved.
 
 This product is licensed to you under the Apache License, Version 2.0 (the "License").
 You may not use this product except in compliance with the License.
