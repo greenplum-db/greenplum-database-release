@@ -26,12 +26,22 @@ main() {
 
 	docker run -it \
 		-v "${PWD}":/tmp/greenplum-database-release \
-		-v "${bin_gpdb_path}":/tmp/greenplum-database-release/bin_gpdb/bin_gpdb.tar.gz \
-		-w /tmp/greenplum-database-release \
+		-v "${bin_gpdb_path}":/tmp/bin_gpdb/bin_gpdb.tar.gz \
+		-v "${PWD}":/tmp/gpdb_rpm_installer \
+		-w /tmp \
 		-e GPDB_VERSION="${GPDB_VERSION}" \
 		-e PLATFORM="${platform}" \
+		-e GPDB_BUILDARCH="x86_64" \
+		-e GPDB_DESCRIPTION="Greenplum Database" \
+		-e GPDB_GROUP="Applications/Databases" \
+		-e GPDB_LICENSE="Pivotal Software EULA" \
+		-e GPDB_NAME="greenplum-db-5" \
+		-e GPDB_PREFIX="/usr/local" \
+		-e GPDB_RELEASE=1 \
+		-e GPDB_SUMMARY="Greenplum-DB" \
+		-e GPDB_URL="https://network.pivotal.io/products/pivotal-gpdb/" \
 		pivotaldata/centos-gpdb-dev:"${docker_image_tag}" \
-		/tmp/greenplum-database-release/bin/create_gpdb5_rpm_package.sh
+		/tmp/greenplum-database-release/ci/concourse/scripts/build_gpdb5_rpm.sh
 }
 
 main "${@}"
