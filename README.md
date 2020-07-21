@@ -14,7 +14,7 @@ The full behavior and user experience of the packages involves many code bases a
 
 1.For rhel6
 ```bash
-BIN_GPDB_TARGZ=/path/to/bin_gpdb.tar.gz CENTOS_VERSION=6 make local-build-rpm
+BIN_GPDB_TARGZ=/path/to/bin_gpdb.tar.gz make local-build-gpdb6-centos6-rpm
 ```
 The output like:
 ```
@@ -28,7 +28,7 @@ Passed check! Install /tmp/build/gpdb_rpm_installer/greenplum-db-<gpdb_version>-
 
 2.For rhel7
 ```bash
-BIN_GPDB_TARGZ=/path/to/bin_gpdb.tar.gz CENTOS_VERSION=7 make local-build-rpm
+BIN_GPDB_TARGZ=/path/to/bin_gpdb.tar.gz make local-build-gpdb6-centos7-rpm
 ```
 The output like:
 ```
