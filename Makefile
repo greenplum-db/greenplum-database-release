@@ -135,7 +135,7 @@ local-build-gpdb6-deb:
 	bin/create_gpdb6_deb_package.bash
 
 local-build-rpm:
-	bin/create_rpm_package.bash
+	bin/create_gpdb6_rpm_package.bash
 
 .PHONY: local-build-gpdb5-centos6-rpm
 local-build-gpdb5-centos6-rpm: CENTOS_VERSION=6
@@ -147,7 +147,7 @@ local-build-gpdb5-centos7-rpm: local-build-gpdb5-rpm
 
 .PHONY: local-build-gpdb5-rpm
 local-build-gpdb5-rpm :
-		CENTOS_VERSION=$(CENTOS_VERSION) ./bin/run_docker_gpdb5_rpm_package.sh
+		CENTOS_VERSION=$(CENTOS_VERSION) ./bin/create_gpdb5_rpm_package.bash
 
 
 local-build-gpdb5-deb:
