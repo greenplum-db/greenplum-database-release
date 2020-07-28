@@ -4,6 +4,15 @@ A repository for code related to creating packages of the [Greenplum Server](htt
 
 Currently this mostly consists of a Concourse based application (task yaml, task scripts) that is capable of taking as input a binary tarball (bin_gpdb.tar.gz) and creating either an RPM or DEB package.
 
+## Pipeline Setup
+
+| | |
+|-|-|
+| Name: | greenplum-database-release |
+| Exposed: | No |
+| Production: | `make set-prod` |
+| Developer: | `make set-dev` |
+
 ## Packaging Specifications
 
 The full behavior and user experience of the packages involves many code bases and components coming together. The following is documentation that captures in one location the topics relates to a Greenplum Server package.
