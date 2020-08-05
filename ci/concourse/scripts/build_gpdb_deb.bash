@@ -52,7 +52,7 @@ EOF
 		if [[ "${GPDB_OSS}" == 'true' ]]; then
 			cp ../license_file/*.txt "${__package_name}/usr/share/doc/greenplum-db/open_source_license_greenplum_database.txt"
 		else
-			cp ../license_file/*.txt "${__package_name}/usr/share/doc/greenplum-db/open_source_license_pivotal_greenplum.txt"
+			cp ../license_file/*.txt "${__package_name}/usr/share/doc/greenplum-db/open_source_licenses.txt"
 		fi
 	fi
 

@@ -110,7 +110,7 @@ class RPMPackageBuilder(BasePackageBuilder):
         with closing(tarfile.open(self.bin_gpdb_path)) as tar:
             tar.extractall(dest)
 
-        osl_file_name = "open_source_license_greenplum_database.txt" if self.is_oss else "open_source_license_pivotal_greenplum.txt"
+        osl_file_name = "open_source_license_greenplum_database.txt" if self.is_oss else "open_source_licenses.txt"
 
         print("Copy the OSL license file to the %s/bin_gpdb/%s" % (temp_dir, osl_file_name))
         shutil.copy(self.license_file_path,
