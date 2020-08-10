@@ -23,25 +23,25 @@ class TestRPMPackageBuilder(TestCase):
         os.system("rm -rf /tmp/lic.txt; echo 'license content' > /tmp/lic.txt")
         os.system("mkdir -p /tmp/gpdb_src")
         self.rpm_package_builder = RPMPackageBuilder(
-            name="greenplum-db",
+            name="greenplum-db-6",
             release="1",
             platform="rhel6",
             license="Pivotal Software EULA",
             url="https://github.com/greenplum-db/gpdb",
             oss="true",
             bin_gpdb_path="bin_gpdb/bin_gpdb.tar.gz",
-            spec_file_path="greenplum-database-release/ci/concourse/scripts/greenplum-db.spec",
+            spec_file_path="greenplum-database-release/ci/concourse/scripts/greenplum-db-6.spec",
             license_file_path="/tmp/lic.txt",
             gpdb_src_path="/tmp/gpdb_src"
         )
 
     @patch('oss.base.BasePackageBuilder.gpdb_version_short', new_callable=PropertyMock)
-    def test_build_package_builder_settings(self, mock):
+    def test_build_package_builder_settings_aa(self, mock):
         mock.return_value = "gpdb-6.0.0-beta.5+dev.18.g6a02f28"
         self.assertEqual(self.rpm_package_builder.rpm_build_dir, "/root/rpmbuild")
         self.assertEqual(self.rpm_package_builder.rpm_gpdb_version, "gpdb_6.0.0_beta.5+dev.18.g6a02f28")
         self.assertEqual(self.rpm_package_builder.platform, "rhel6")
-        self.assertEqual(self.rpm_package_builder.rpm_package_name, "greenplum-db-gpdb_6.0.0_beta.5+dev.18.g6a02f28-rhel6-x86_64.rpm")
+        self.assertEqual(self.rpm_package_builder.rpm_package_name, "greenplum-db-gpdb-6.0.0-beta.5+dev.18.g6a02f28-rhel6-x86_64.rpm")
         with self.assertRaisesRegex(Exception, 'The platform only support rhel6, rhel7'):
             self.rpm_package_builder.platform = "ubuntu18.04"
         self.assertEqual(self.rpm_package_builder.rpm_package_name,
@@ -56,7 +56,7 @@ class TestRPMPackageBuilder(TestCase):
         self.assertEqual(
             run_or_fail_mock.call_args_list,
             [call(['/bin/bash', '-c',
-                   'rpmbuild -bb /root/rpmbuild/SPECS/greenplum-db.spec '
+                   'rpmbuild -bb /root/rpmbuild/SPECS/greenplum-db-6.spec '
                    '--define="rpm_gpdb_version gpdb_6.0.0_beta.5+dev.18.g6a02f28" '
                    '--define="gpdb_version gpdb-6.0.0-beta.5+dev.18.g6a02f28" '
                    '--define="gpdb_release 1" '
