@@ -36,18 +36,14 @@ conditions of the subcomponent's license, as noted in the LICENSE file.
 
 class RPMPackageBuilder(BasePackageBuilder):
     # oss: if build the Open Source gpdb, this value should be 'true', it's string type not bool
-    def __init__(self, name, release, platform, summary, license, url, buildarch, description, prefix, oss,
+    def __init__(self, name, release, platform, license, url, oss,
                  bin_gpdb_path, spec_file_path, license_file_path, gpdb_src_path):
         super(RPMPackageBuilder, self).__init__(bin_gpdb_path)
 
         self.name = name
         self.release = release
-        self.summary = summary
         self.license = license
         self.url = url
-        self.buildarch = buildarch
-        self.description = description
-        self.prefix = prefix
         self.oss = oss.lower()
         self.is_oss = oss.lower() == 'true'
         self.bin_gpdb_path = bin_gpdb_path
@@ -151,7 +147,7 @@ class RPMPackageBuilder(BasePackageBuilder):
             r'--define="gpdb_release %s"' % self.release
         ]
 
-        possible_flags = ["NAME", "SUMMARY", "LICENSE", "URL", "BUILDARCH", "DESCRIPTION", "PREFIX", "OSS"]
+        possible_flags = ["LICENSE", "URL", "OSS"]
 
         for flag in possible_flags:
             value = getattr(self, flag.lower(), None)

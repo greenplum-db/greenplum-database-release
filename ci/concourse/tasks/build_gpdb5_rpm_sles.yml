@@ -25,11 +25,6 @@ params:
   # Default values passed to rpm SPEC
   #  To override, please do so in pipeline
   GPDB_NAME: greenplum-db-5
-  GPDB_SUMMARY: Greenplum-DB
-  GPDB_GROUP: Applications/Databases
   GPDB_LICENSE: Pivotal Software EULA
   GPDB_URL: https://network.pivotal.io/products/pivotal-gpdb/
-  GPDB_BUILDARCH: x86_64
-  GPDB_DESCRIPTION: Greenplum Database
-  GPDB_PREFIX: /usr/local
   GPDB_RELEASE: "1"

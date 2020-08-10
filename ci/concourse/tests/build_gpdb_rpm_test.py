@@ -26,12 +26,8 @@ class TestRPMPackageBuilder(TestCase):
             name="greenplum-db",
             release="1",
             platform="rhel6",
-            summary="Greenplum-DB",
             license="Pivotal Software EULA",
             url="https://github.com/greenplum-db/gpdb",
-            buildarch="x86_64",
-            description="Greenplum Database",
-            prefix="/usr/local",
             oss="true",
             bin_gpdb_path="bin_gpdb/bin_gpdb.tar.gz",
             spec_file_path="greenplum-database-release/ci/concourse/scripts/greenplum-db.spec",
@@ -64,13 +60,8 @@ class TestRPMPackageBuilder(TestCase):
                    '--define="rpm_gpdb_version gpdb_6.0.0_beta.5+dev.18.g6a02f28" '
                    '--define="gpdb_version gpdb-6.0.0-beta.5+dev.18.g6a02f28" '
                    '--define="gpdb_release 1" '
-                   '--define="gpdb_name greenplum-db" '
-                   '--define="gpdb_summary Greenplum-DB" '
                    '--define="gpdb_license Pivotal Software EULA" '
                    '--define="gpdb_url https://github.com/greenplum-db/gpdb" '
-                   '--define="gpdb_buildarch x86_64" '
-                   '--define="gpdb_description Greenplum Database" '
-                   '--define="gpdb_prefix /usr/local" '
                    '--define="gpdb_oss true"'],
                   cwd='/root/rpmbuild')]
         )

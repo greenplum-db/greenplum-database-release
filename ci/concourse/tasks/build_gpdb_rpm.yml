@@ -40,11 +40,7 @@ params:
   PLATFORM:
   GPDB_NAME:
   GPDB_RELEASE:
-  GPDB_SUMMARY:
   GPDB_LICENSE:
   GPDB_URL:
-  GPDB_BUILDARCH:
-  GPDB_DESCRIPTION:
-  GPDB_PREFIX:
   # build the Open Source gpdb, set this variable to 'true'
   GPDB_OSS:
