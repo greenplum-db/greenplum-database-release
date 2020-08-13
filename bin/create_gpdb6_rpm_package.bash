@@ -9,7 +9,7 @@ export BUILD_IMAGE=centos:${CENTOS_VERSION}
 build_rpm_env_file() {
 	cat <<EOF >>"${BUILD_ENV_FILE}"
 PLATFORM=rhel${CENTOS_VERSION}
-GPDB_NAME=greenplum-db
+GPDB_NAME=greenplum-db-6
 GPDB_RELEASE=1
 GPDB_SUMMARY=Greenplum-DB
 GPDB_LICENSE=Pivotal\ Software\ EULA
