@@ -17,85 +17,45 @@ Currently this mostly consists of a Concourse based application (task yaml, task
 
 The full behavior and user experience of the packages involves many code bases and components coming together. The following is documentation that captures in one location the topics relates to a Greenplum Server package.
 
-1. [Greenplum Server RPM Packaging Specification](Greenplum-Server-RPM-Packaging-Specification.md)
+[Greenplum Server RPM Packaging Specification](Greenplum-Server-RPM-Packaging-Specification.md)
 
-## How to use the application to create a RPM package locally
+## Build a RPM package locally
 
-1. For rhel6
-
-    ```bash
-    BIN_GPDB_TARGZ=/path/to/bin_gpdb.tar.gz make local-build-gpdb6-centos6-rpm
-    ```
-
-    The output like:
-
-    ```console
-    Creating Centos6 RPM Package...
-    Cloning into '/tmp/create-package/greenplum-database-release'...
-    ...
-    ...
-    Complete!
-    Passed check! Install /tmp/build/gpdb_rpm_installer/greenplum-db-<gpdb_version>-rhel6-x86_64.rpm package successfully.
-    ```
-
-2. For rhel7
-
-    ```bash
-    BIN_GPDB_TARGZ=/path/to/bin_gpdb.tar.gz make local-build-gpdb6-centos7-rpm
-    ```
-
-    The output like:
-
-    ```console
-    Creating Centos7 RPM Package...
-    Cloning into '/tmp/create-package/greenplum-database-release'...
-    ...
-    ...
-    Complete!
-    Passed check! Install /tmp/build/gpdb_rpm_installer/greenplum-db-<gpdb_version>-rhel7-x86_64.rpm package successfully.
-    ```
-
-## How to use the application to create a GPDB6 DEB package locally
-
-```bash
-BIN_GPDB_TARGZ=/path/to/bin_gpdb.tar.gz make local-build-gpdb6-deb
+Remember the tarball to be used for the build
+```console
+export BIN_GPDB_TARGZ=/path/bin/bin_gpdb.tar.gz
 ```
 
-The output like:
+### for CentOs 7
 
 ```console
-Creating DEB Package...
-Cloning into '/tmp/create-package/greenplum-database-release'...
-...
-...
-done.
-Passed check! Install /tmp/build/gpdb_deb_installer/greenplum-db-<gpdb_version>-ubuntu18.04-amd64.deb package successfully.
+export CENTOS_VERSION=7
+
+GPDB_VERSION=6.x.x make local-build-gpdb-rpm
 ```
 
-## How to use the application to create a RPM package for gpdb5 locally
+### for CentOs 6
 
-For rhel6
+Just change the `CENTOS_VERSION` to `6`, like:
 
-```bash
-GPDB_VERSION=<GPDB_VERSION> BIN_GPDB_TARGZ=<path-to-tar-archive> make local-build-gpdb5-centos6-rpm
+```console
+export CENTOS_VERSION=6
 ```
 
-For rhel7
+## Build a DEB package locally
 
-```bash
-GPDB_VERSION=<GPDB_VERSION> BIN_GPDB_TARGZ=<path-to-tar-archive> make local-build-gpdb5-centos7-rpm
+## for GP6 using binary tarball
+
+```console
+export BIN_GPDB_TARGZ=/path/to/bin_gpdb.tar.gz
+
+GPDB_VERSION=6.x.x make local-build-gpdb6-deb
 ```
 
-## How to use the open source code to create a GPDB5 source DEB package locally
+## for GP5 using source code
 
-1. Install yq, please refer to the [installation guide](https://github.com/mikefarah/yq#install)
-2. `make local-build-gpdb5-deb`
+`yq` is required, please refer to the [installation guide](https://github.com/mikefarah/yq#install)
 
-    The output like:
-
-    ```console
-    Creating DEB Package...
-    ...
-    ...
-    Done. Please find the source package under /tmp/build/debian_source_files
-    ```
+```console
+GPDB_VERSION=5.x.x make local-build-gpdb5-deb
+```

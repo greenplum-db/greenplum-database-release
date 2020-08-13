@@ -24,6 +24,9 @@ main() {
 		exit 1
 	}
 
+	local gpdb_major_version
+	gpdb_major_version="$(echo "${GPDB_VERSION}" | cut -d '.' -f1)"
+
 	docker run -it \
 		-v "${PWD}":/tmp/greenplum-database-release \
 		-v "${bin_gpdb_path}":/tmp/bin_gpdb/bin_gpdb.tar.gz \
@@ -35,7 +38,7 @@ main() {
 		-e GPDB_DESCRIPTION="Greenplum Database" \
 		-e GPDB_GROUP="Applications/Databases" \
 		-e GPDB_LICENSE="Pivotal Software EULA" \
-		-e GPDB_NAME="greenplum-db-5" \
+		-e GPDB_NAME="greenplum-db-${gpdb_major_version}" \
 		-e GPDB_PREFIX="/usr/local" \
 		-e GPDB_RELEASE=1 \
 		-e GPDB_SUMMARY="Greenplum-DB" \
