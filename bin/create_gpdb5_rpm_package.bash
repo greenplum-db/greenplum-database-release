@@ -17,7 +17,7 @@ main() {
 	esac
 
 	local bin_gpdb_path
-	bin_gpdb_path="$(readlink -f "${BIN_GPDB_TARGZ}")"
+	bin_gpdb_path="${BIN_GPDB_TARGZ}"
 
 	test -f "${bin_gpdb_path}" || {
 		printf "File in \$BIN_GPDB_TARGZ does not exist\n"
@@ -47,4 +47,4 @@ main() {
 		/tmp/greenplum-database-release/ci/concourse/scripts/build_gpdb5_rpm.sh
 }
 
-main "${@}"
+main
