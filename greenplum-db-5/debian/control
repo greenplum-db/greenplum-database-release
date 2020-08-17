@@ -1,5 +1,5 @@
 Source: greenplum-db-5
-Maintainer: GP RelEng <pvtl-gp-releng@vmware.com>
+Maintainer: Greenplum Release Engineering <release@greenplum.org>
 Section: database
 Build-Depends: debhelper (>= 9),
     bison,
