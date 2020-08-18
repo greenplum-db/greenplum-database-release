@@ -15,22 +15,22 @@
 # Disable automatic dependency processing both for requirements and provides
 AutoReqProv: no
 
-Name: greenplum-db-5
+Name: %{gpdb_name}
 Version: %{rpm_gpdb_version}
 Release: %{gpdb_release}%{?dist}
-Summary: Greenplum-DB
-Group: Applications/Databases
+Summary: %{gpdb_summary}
+Group: %{gpdb_group}
 License: %{gpdb_license}
 URL: %{gpdb_url}
 Obsoletes: greenplum-db < 6.0.0
 Source0: gpdb.tar.gz
-Prefix: /usr/local
+Prefix: %{gpdb_prefix}
 
 # in sles11, the buildroot macro is not defined, it is not a problem for sles12, centos6, centos7
 Buildroot: %{_topdir}/BUILD/%{name}-%{version}-%{release}.%{_arch}
 
 %description
-Greenplum Database
+%{gpdb_description}
 
 %prep
 # If the rpm_gpdb_version macro is not defined, it gets interpreted as a literal string

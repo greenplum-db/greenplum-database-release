@@ -15,15 +15,15 @@
 # Disable automatic dependency processing both for requirements and provides
 AutoReqProv: no
 
-Name: greenplum-db-6
+Name: %{gpdb_name}
 Version: %{rpm_gpdb_version}
 Release: %{gpdb_release}%{?dist}
-Summary: Greenplum-DB
+Summary: %{gpdb_summary}
 License: %{gpdb_license}
 URL: %{gpdb_url}
 Obsoletes: greenplum-db >= %{gpdb_major_version}.0.0
 Source0: gpdb.tar.gz
-Prefix: /usr/local
+Prefix: %{gpdb_prefix}
 
 Requires: apr apr-util
 Requires: bash
@@ -60,7 +60,7 @@ Requires: libevent
 %endif
 
 %description
-Greenplum Database
+%{gpdb_description}
 
 %prep
 # If the rpm_gpdb_version macro is not defined, it gets interpreted as a literal string
