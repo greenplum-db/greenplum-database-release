@@ -50,7 +50,7 @@ function create_rpmbuild_flags() {
 
 	# The following are the possible params (environment variables):
 	# If variable is not defined, it wont be added to the array on instantiation
-	__possible_flags=(GPDB_NAME GPDB_RELEASE GPDB_SUMMARY GPDB_GROUP GPDB_LICENSE GPDB_URL GPDB_BUILDARCH GPDB_DESCRIPTION GPDB_PREFIX)
+	__possible_flags=(GPDB_RELEASE GPDB_LICENSE GPDB_URL)
 
 	# This most explicitly be unset in order to allow ${!var} to reflect a
 	# variables value from it's name
