@@ -283,12 +283,8 @@ jobs:
       PLATFORM: "rhel6"
       GPDB_NAME: greenplum-db-6
       GPDB_RELEASE: 1
-      GPDB_SUMMARY: Greenplum-DB
       GPDB_LICENSE: Pivotal Software EULA
       GPDB_URL: https://github.com/greenplum-db/gpdb
-      GPDB_BUILDARCH: x86_64
-      GPDB_DESCRIPTION: Greenplum Database
-      GPDB_PREFIX: /usr/local
       GPDB_OSS: true
   - put: gpdb_rpm_installer_centos6
     params:
@@ -317,12 +313,8 @@ jobs:
       PLATFORM: "rhel7"
       GPDB_NAME: greenplum-db-6
       GPDB_RELEASE: 1
-      GPDB_SUMMARY: Greenplum-DB
       GPDB_LICENSE: Pivotal Software EULA
       GPDB_URL: https://github.com/greenplum-db/gpdb
-      GPDB_BUILDARCH: x86_64
-      GPDB_DESCRIPTION: Greenplum Database
-      GPDB_PREFIX: /usr/local
       GPDB_OSS: true
   - put: gpdb_rpm_installer_centos7
     params:
