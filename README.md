@@ -21,41 +21,37 @@ The full behavior and user experience of the packages involves many code bases a
 
 ## Build a RPM package locally
 
-Remember the tarball to be used for the build
-```console
+Create a RPM package locally for a given tarball of the Server, platform, and Version.
+
+### Configuration
+
+```bash
 export BIN_GPDB_TARGZ=/path/bin/bin_gpdb.tar.gz
-```
-
-### for CentOs 7
-
-```console
 export CENTOS_VERSION=7
-
-GPDB_VERSION=6.x.x make local-build-gpdb-rpm
+export GPDB_VERSION=6.x.x
 ```
 
-### for CentOs 6
+### Execution
 
-Just change the `CENTOS_VERSION` to `6`, like:
-
-```console
-export CENTOS_VERSION=6
+```bash
+make local-build-gpdb-rpm
 ```
 
 ## Build a DEB package locally
 
-## for GP6 using binary tarball
+Create a DEB package locally for a given tarball of the Server, and version. It is not specific to the version of Ubuntu.
 
-```console
-export BIN_GPDB_TARGZ=/path/to/bin_gpdb.tar.gz
+**Note:** When building Greenplum 5 debian packages, the `yq` utility is required. Please refer to the [installation guide](https://github.com/mikefarah/yq#install)
 
-GPDB_VERSION=6.x.x make local-build-gpdb6-deb
+### Configuration
+
+```bash
+export BIN_GPDB_TARGZ=/path/bin/bin_gpdb.tar.gz
+export GPDB_VERSION=6.x.x
 ```
 
-## for GP5 using source code
+### Execution
 
-`yq` is required, please refer to the [installation guide](https://github.com/mikefarah/yq#install)
-
-```console
-GPDB_VERSION=5.x.x make local-build-gpdb5-deb
+```bash
+make local-build-gpdb6-deb
 ```
