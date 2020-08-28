@@ -6,8 +6,6 @@
 
 | Maintainer | GitHub ID | Affiliation |
 | --------------- | --------- | ----------- |
-| Bradford D. Boyle | [bradfordb-vmware](https://github.com/bradfordb-vmware) | [VMware](https://www.github.com/vmware/) |
-| Tingfang Bao | [baotingfang](https://github.com/baotingfang) | [VMware](https://www.github.com/vmware/) |
 | Shaoqi Bai | [BaiShaoqi](https://github.com/BaiShaoqi) | [VMware](https://www.github.com/vmware/) |
 | Kris Macoskey | [kmacoskey](https://github.com/kmacoskey) | [VMware](https://www.github.com/vmware/) |
 | Xin Zhang | [xinzweb](https://github.com/xinzweb) | [VMware](https://www.github.com/vmware/) |
@@ -17,7 +15,6 @@
 
 | Feature Area | Lead |
 | ----------------------------- | :---------------------: |
-| Technical Lead | Bradford D. Boyle (bradfordb-vmware) |
-| Deployment | Tingfang Bao (baotingfang), Shaoqi Bai (BaiShaoqi), Xin Zhang (xinzweb) Ning Wu (50wu) | 
-| Community Management | Kris Macoskey (kmacoskey) |
+| Technical Lead | Shaoqi Bai (BaiShaoqi) |
+| Deployment | Shaoqi Bai (BaiShaoqi), Xin Zhang (xinzweb) Ning Wu (50wu) | 
 | Product Management | Kris Macoskey (kmacoskey) |

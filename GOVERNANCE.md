@@ -41,17 +41,3 @@ The list of current maintainers can be found in
 Maintainers have write access to the repository. While anyone can review a PR -
 and is welcome to do so -, only maintainers can leave an approving review, which
 will allow the PR to be merged.
-
-New maintainers must be nominated from contributors by an existing maintainer
-and must be elected by a [supermajority](#supermajority) of the current
-maintainers. Likewise, maintainers can be removed by a supermajority of the
-maintainers or can resign by notifying the maintainers.
-
-### Supermajority
-
-A supermajority is defined as two-thirds of members in the group.
-
-## Updating Governance
-
-All substantive changes in Governance require a supermajority vote of the
-maintainers.
