@@ -16,5 +16,5 @@
 | Feature Area | Lead |
 | ----------------------------- | :---------------------: |
 | Technical Lead | Shaoqi Bai (BaiShaoqi) |
-| Deployment | Shaoqi Bai (BaiShaoqi), Xin Zhang (xinzweb) Ning Wu (50wu) | 
+| Deployment | Shaoqi Bai (BaiShaoqi), Xin Zhang (xinzweb) Ning Wu (50wu) |
 | Product Management | Kris Macoskey (kmacoskey) |

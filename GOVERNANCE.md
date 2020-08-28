@@ -8,7 +8,7 @@ project.
 ## Overview
 
 **Greenplum-database-release** is committed to building an open, inclusive, productive and
-self-governing open source community focused on creating packages of the 
+self-governing open source community focused on creating packages of the
 [Greenplum Server](https://github.com/greenplum-db/gpdb). The
 community is governed by this document which defines how all members should work
 together to achieve this goal.
