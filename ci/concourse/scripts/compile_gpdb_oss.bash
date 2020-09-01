@@ -96,6 +96,10 @@ include_python() {
 	mkdir -p "${greenplum_install_dir}/ext/python"
 	echo "Copying python from /opt/python-2.7.12 into ${greenplum_install_dir}/ext/python..."
 	cp --archive /opt/python-2.7.12/* "${greenplum_install_dir}/ext/python"
+
+	# because we vendor python module, hence we need to re-generate the greenplum_path.sh with
+	# additional PYTHONHOME information
+	gpdb_src/gpMgmt/bin/generate-greenplum-path.sh "${greenplum_install_dir}" yes >"${greenplum_install_dir}/greenplum_path.sh"
 }
 
 include_libstdcxx() {
