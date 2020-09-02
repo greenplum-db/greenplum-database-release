@@ -65,6 +65,7 @@ build_gpdb() {
 		--with-openssl \
 		--with-pam \
 		--with-ldap \
+		--with-extra-version=" Open Source" \
 		--prefix="${greenplum_install_dir}" \
 		--mandir="${greenplum_install_dir}/man"
 	make -j
