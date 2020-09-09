@@ -140,6 +140,30 @@ export_gpdb() {
 	popd
 }
 
+# make sure if we vendor python, then the PYTHONHOME should point to it
+check_pythonhome() {
+	local greenplum_install_dir="${1}"
+	local return_code
+
+	pushd "${greenplum_install_dir}"
+	return_code=$(
+		# shellcheck disable=SC1091
+		source greenplum_path.sh
+		if [ -f "${greenplum_install_dir}/ext/python/bin/python" ]; then
+			if [ "${PYTHONHOME}" = "${greenplum_install_dir}/ext/python" ]; then
+				echo 0
+			fi
+		else
+			if [ "${PYTHONHOME}" = "" ]; then
+				echo 0
+			fi
+		fi
+	)
+	popd
+	return_code="${return_code:-1}"
+	return "${return_code}"
+}
+
 _main() {
 	if [ -e /opt/gcc_env.sh ]; then
 		# shellcheck disable=SC1091
@@ -160,8 +184,10 @@ _main() {
 	include_python "${greenplum_install_dir}"
 	include_libstdcxx "${greenplum_install_dir}"
 	include_zstd "${greenplum_install_dir}"
-	export_gpdb "${greenplum_install_dir}" "${PWD}/gpdb_artifacts/bin_gpdb.tar.gz"
 
+	check_pythonhome "${greenplum_install_dir}"
+
+	export_gpdb "${greenplum_install_dir}" "${PWD}/gpdb_artifacts/bin_gpdb.tar.gz"
 }
 
 _main "${@}"
