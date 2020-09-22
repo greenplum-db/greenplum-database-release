@@ -1,0 +1,26 @@
+---
+release:
+  release_type: <COMPUTED>
+  eula_slug: apache_2_eula
+  description: ""
+  release_notes_url: https://docs.greenplum.org
+  availability: Admins Only
+  controlled: false
+  eccn: 5D002
+  license_exception: TSU
+
+file_groups:
+- name: Greenplum Database Server
+  product_files:
+  - file: file://gpdb_rpm_installer_centos6/greenplum-db-(6\..*)-rhel6-x86_64.rpm
+    upload_as: Greenplum Database ${VERSION_REGEX} Installer for RHEL 6
+    file_type: Software
+    file_version: ${VERSION_REGEX}
+  - file: file://gpdb_rpm_installer_centos7/greenplum-db-(6\..*)-rhel7-x86_64.rpm
+    upload_as: Greenplum Database ${VERSION_REGEX} Installer for RHEL 7
+    file_type: Software
+    file_version: ${VERSION_REGEX}
+  - file: file://gpdb_deb_package/greenplum-db-(6\..*)-ubuntu18.04-amd64.deb
+    upload_as: Greenplum Database ${VERSION_REGEX} Installer for Ubuntu 18.04
+    file_type: Software
+    file_version: ${VERSION_REGEX}

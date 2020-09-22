@@ -1,0 +1,22 @@
+---
+platform: linux
+image_resource:
+  type: docker-image
+  source:
+    repository: ruby
+    tag: "2.5"
+inputs:
+- name: gpdb_src
+- name: greenplum-database-release
+- name: pivnet_client
+- name: gpdb_rpm_installer_centos6
+- name: gpdb_rpm_installer_centos7
+- name: gpdb_deb_package
+params:
+  PIVNET_ENDPOINT:
+  PIVNET_REFRESH_TOKEN:
+  PIVNET_PRODUCT_SLUG:
+  PIVNET_S3_FILEPATH_PREFIX:
+  PIVNET_METADATA_FILE:
+run:
+  path: greenplum-database-release/ci/concourse/scripts/push_to_tanzunet.bash

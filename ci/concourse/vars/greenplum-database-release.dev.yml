@@ -14,3 +14,10 @@ debian-release-git-remote: https://github.com/greenplum-db/debian-release.git
 debian-release-git-branch: master
 debian-package-maintainer-fullname: 'GPBOSH (Testing gpdb)'
 debian-package-maintainer-email: gpbosh@pivotal.io
+tanzunet-client-version: v3.2.1
+tanzunet-client-git-remote: git@github.com:pivotal/gp-pivnet_client.git
+tanzunet-client-branch: master
+tanzunet-endpoint: "https://pivnet-integration.cfapps.io/"
+tanzunet-product-slug: toolsmiths-gpdb-test
+tanzunet-metadata-file-path: ci/tanzunet/metadata.yml
+tanzunet-s3-filepath-prefix: product-files/toolsmiths-gpdb-test
