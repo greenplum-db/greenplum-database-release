@@ -27,12 +27,6 @@ resource_types:
     repository: cfcommunity/slack-notification-resource
     tag: latest
 
-- name: pivnet
-  type: docker-image
-  source:
-    repository: pivotalcf/pivnet-resource
-    tag: latest-final
-
 resources:
 - name: slack-alert
   type: slack-notification
@@ -409,6 +403,7 @@ jobs:
       - rhel6 packaging
       - rhel7 packaging
       - ubuntu18.04 packaging
+      - verify ppa release
     - get: gpdb_src
       passed:
       - rhel6 packaging
@@ -525,6 +520,8 @@ jobs:
       passed: [release]
       trigger: true
     - get: greenplum-database-release
+      passed: [release]
+      trigger: true
   - task: push_to_tanzunet
     file: greenplum-database-release/ci/concourse/tasks/push_to_tanzunet.yml
     params:
@@ -532,3 +529,4 @@ jobs:
       PIVNET_METADATA_FILE: ((tanzunet-metadata-file-path))
       PIVNET_REFRESH_TOKEN: ((tanzunet-refresh-token))
       PIVNET_PRODUCT_SLUG: ((tanzunet-product-slug))
+      PIVNET_S3_FILEPATH_PREFIX: ((tanzunet-s3-filepath-prefix))
