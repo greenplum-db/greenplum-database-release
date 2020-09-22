@@ -27,6 +27,12 @@ resource_types:
     repository: cfcommunity/slack-notification-resource
     tag: latest
 
+- name: pivnet
+  type: docker-image
+  source:
+    repository: pivotalcf/pivnet-resource
+    tag: latest-final
+
 resources:
 - name: slack-alert
   type: slack-notification
@@ -86,6 +92,14 @@ resources:
     bucket: ((gcs-bucket-for-oss))
     json_key: ((concourse-gcs-resources-service-account-key))
     regexp: osl/released/gpdb6/open_source_license_greenplum-database-6.0.0-97773a0-(.*).txt
+
+- name: pivnet_client
+  type: git
+  source:
+    branch: ((tanzunet-client-branch))
+    private_key: ((pivnet-client-remote-deploy-key))
+    uri: ((tanzunet-client-git-remote))
+    tag_filter: ((tanzunet-client-version))
 
 ## gp internal artifacts
 - name: python-centos6
@@ -395,7 +409,6 @@ jobs:
       - rhel6 packaging
       - rhel7 packaging
       - ubuntu18.04 packaging
-      - verify ppa release
     - get: gpdb_src
       passed:
       - rhel6 packaging
@@ -493,3 +506,29 @@ jobs:
       - gpdb_rpm_installer_centos6/*.rpm
       - gpdb_rpm_installer_centos7/*.rpm
       - gpdb_deb_package/*.deb
+
+- name: push_to_tanzunet
+  plan:
+  - in_parallel:
+    - get: gpdb_src
+      passed: [release]
+    - get: pivnet_client
+    - get: license_file
+      passed: [release]
+    - get: gpdb_rpm_installer_centos6
+      passed: [release]
+      trigger: true
+    - get: gpdb_rpm_installer_centos7
+      passed: [release]
+      trigger: true
+    - get: gpdb_deb_package
+      passed: [release]
+      trigger: true
+    - get: greenplum-database-release
+  - task: push_to_tanzunet
+    file: greenplum-database-release/ci/concourse/tasks/push_to_tanzunet.yml
+    params:
+      PIVNET_ENDPOINT: ((tanzunet-endpoint))
+      PIVNET_METADATA_FILE: ((tanzunet-metadata-file-path))
+      PIVNET_REFRESH_TOKEN: ((tanzunet-refresh-token))
+      PIVNET_PRODUCT_SLUG: ((tanzunet-product-slug))
