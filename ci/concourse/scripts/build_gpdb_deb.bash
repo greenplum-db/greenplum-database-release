@@ -26,6 +26,7 @@ function build_deb() {
 
 	local __package_name=$1
 	local __gpdb_binary_tarbal=$2
+	gpdb_major_version="$(echo "${GPDB_VERSION}" | cut -d '.' -f1)"
 
 	mkdir -p "deb_build_dir"
 
@@ -80,7 +81,7 @@ NOTICE_EOF
 	fi
 
 	cat <<EOF >"${__package_name}/DEBIAN/control"
-Package: greenplum-db-6
+Package: greenplum-db-${gpdb_major_version}
 Priority: extra
 Maintainer: gp-releng@pivotal.io
 Architecture: ${GPDB_BUILDARCH}

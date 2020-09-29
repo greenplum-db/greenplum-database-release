@@ -147,10 +147,14 @@ local-build-gpdb6-rpm local-build-gpdb7-rpm:
 local-build-gpdb5-rpm local-build-gpdb4-rpm:
 	bin/create_gpdb5_rpm_package.bash
 
+.PHONY:
+local-build-gpdb-deb:
+	$(MAKE) local-build-gpdb$(GPDB_MAJOR_VERSION)-deb
+
 .PHONY: local-build-gpdb5-deb
 local-build-gpdb5-deb:
 	bin/create_gpdb5_deb_package.bash
 
-.PHONY: local-build-gpdb6-deb
-local-build-gpdb6-deb:
+.PHONY: local-build-gpdb6-deb local-build-gpdb7-deb
+local-build-gpdb6-deb local-build-gpdb7-deb:
 	bin/create_gpdb6_deb_package.bash

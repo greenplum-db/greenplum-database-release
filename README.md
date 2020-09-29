@@ -53,5 +53,5 @@ export GPDB_VERSION=6.x.x
 ### Execution
 
 ```bash
-make local-build-gpdb6-deb
+make local-build-gpdb-deb
 ```
