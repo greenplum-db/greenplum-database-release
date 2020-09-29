@@ -139,8 +139,8 @@ GPDB_MAJOR_VERSION = $(shell echo "${GPDB_VERSION}" | cut -d '.' -f1)
 local-build-gpdb-rpm:
 	$(MAKE) local-build-gpdb$(GPDB_MAJOR_VERSION)-rpm
 
-.PHONY: local-build-gpdb6-rpm
-local-build-gpdb6-rpm:
+.PHONY: local-build-gpdb6-rpm local-build-gpdb7-rpm
+local-build-gpdb6-rpm local-build-gpdb7-rpm:
 	bin/create_gpdb6_rpm_package.bash
 
 .PHONY: local-build-gpdb5-rpm local-build-gpdb4-rpm
