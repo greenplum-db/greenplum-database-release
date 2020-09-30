@@ -20,6 +20,7 @@ CONCOURSE ?= releng
 
 # set the gp-release default branch to current branch
 BRANCH ?= $(shell git rev-parse --abbrev-ref HEAD)
+WORKSPACE ?= ${HOME}/workspace
 
 PIPELINE_NAME              = greenplum-database-release-${BRANCH}-${USER}
 FLY_CMD                    = fly
@@ -56,8 +57,8 @@ set-pipeline-dev:
     --check-creds \
     --pipeline=${PIPELINE_NAME} \
     --config=ci/concourse/pipelines/${PIPELINE_NAME}.yml \
-    --load-vars-from=${HOME}/workspace/gp-continuous-integration/secrets/gpdb-oss-release.dev.yml \
-    --load-vars-from=${HOME}/workspace/gp-continuous-integration/secrets/ppa-debian-release-secrets-dev.yml \
+    --load-vars-from=${WORKSPACE}/gp-continuous-integration/secrets/gpdb-oss-release.dev.yml \
+    --load-vars-from=${WORKSPACE}/gp-continuous-integration/secrets/ppa-debian-release-secrets-dev.yml \
     --load-vars-from=ci/concourse/vars/greenplum-database-release.dev.yml \
     --var=greenplum-database-release-git-branch=${BRANCH} \
     --var=greenplum-database-release-git-remote=https://github.com/greenplum-db/greenplum-database-release.git \
@@ -97,8 +98,8 @@ set-pipeline-prod:
     --check-creds \
     --pipeline=greenplum-database-release \
     --config=ci/concourse/pipelines/gpdb_opensource_release_prod.yml \
-    --load-vars-from=${HOME}/workspace/gp-continuous-integration/secrets/gpdb-oss-release.prod.yml \
-    --load-vars-from=${HOME}/workspace/gp-continuous-integration/secrets/ppa-debian-release-secrets.yml \
+    --load-vars-from=${WORKSPACE}/gp-continuous-integration/secrets/gpdb-oss-release.prod.yml \
+    --load-vars-from=${WORKSPACE}/gp-continuous-integration/secrets/ppa-debian-release-secrets.yml \
     --load-vars-from=ci/concourse/vars/greenplum-database-release.prod.yml \
     --var=pipeline-name=greenplum-database-release \
     --var=greenplum-database-release-git-branch=master \
