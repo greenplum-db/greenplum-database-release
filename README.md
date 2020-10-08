@@ -39,7 +39,7 @@ Here are the details of each concourse job and related resources to product each
 
 Here is a code snippet to use [`build_gpdb_rpm`](https://github.com/greenplum-db/greenplum-database-release/blob/master/ci/concourse/tasks/build_gpdb_rpm.yml):
 
-```
+```yaml
 - task: create_gpdb_rpm_package
     file: greenplum-database-release/ci/concourse/tasks/build_gpdb_rpm.yml
     image: gpdb6-centos6-build
@@ -67,12 +67,15 @@ These are the required inputs of this task:
   - `GPDB_URL`: the URL for more information about Greenplum, it's currently `https://github.com/greenplum-db/gpdb` for OSS, and `https://network.pivotal.io/products/pivotal-gpdb/` for enterprise
 
 Dependency:
-- `greenplum-database-release`: folder point to this repo to retrieve the scripts to do the packaging.
-- `build_gpdb_rpm.py`: python script that actually does the packaging. It depends `python3` and libraries in `ci/concourse/oss`.
+- `greenplum-database-release/`: folder point to this repo to retrieve the scripts to do the packaging.
+- `ci/concourse/scripts/build_gpdb_rpm.py`: python script that actually does the packaging. It depends on `python3` and libraries in `ci/concourse/oss`.
 - `ci/concourse/scripts/${GPDB_NAME}.spec`: the RPM spec file for given package specified by `${GPDB_NAME}`.
 
 Optional:
 - `gpdb_src`: the optional folder containing source code of the Greenplum. It's only used for OSS (open-source software) packaging. It used to retrieve `LICENSE`, `COPYRIGHT` files.
+
+Output:
+- `gpdb_rpm_installer/`: the produced rpm file will be put under this folder.
 
 ##### Examples
 
@@ -122,6 +125,46 @@ For `greenplum-db-5` RPM enterprise package on `rhel7`
   - `PLATFORM`: should be `rhel7`
   - `GPDB_URL`: should be `https://network.pivotal.io/products/pivotal-gpdb/`
   - rest of them using the values mentioned above
+
+## Debian package through concourse pipeline
+
+Job `ubuntu18.04 packaging` task [`create_gpdb_deb_package`](https://github.com/greenplum-db/greenplum-database-release/blob/master/ci/concourse/pipelines/gpdb_opensource_release.yml#L345) builds the debian package `greenplum-db` for `GP6` in current [pipeline](https://github.com/greenplum-db/greenplum-database-release/blob/master/ci/concourse/pipelines/gpdb_opensource_release.yml).
+It's using task [`build_gpdb_deb.yml`](https://github.com/greenplum-db/greenplum-database-release/blob/master/ci/concourse/tasks/build_gpdb_deb.yml) to build the Debian package.
+
+### `build_gpdb_deb.yml` task for Debian packaging
+
+Here is a code snippet to use the `build_gpdb_deb.yml`:
+
+```yaml
+  - task: create_gpdb_deb_package
+    file: greenplum-database-release/ci/concourse/tasks/build_gpdb_deb.yml
+    image: gpdb6-ubuntu18.04-build
+    input_mapping:
+      bin_gpdb: bin_gpdb_ubuntu18.04
+    params:
+      PLATFORM: "ubuntu18.04"
+      GPDB_OSS: true
+```
+
+These are the required inputs for this task:
+- `image`: container image with toolchain to build Debian package.
+- `bin_gpdb`: folder with `*.tar.gz` tarball
+- `license_file`: the optional folder contains license file with pattern `*.txt`
+- `params` environment variables:
+  - `PLATFORM`:
+  - `GPDB_NAME`: the prefix of the package name, default is `greenplum-db`. Depends on the major version of the software, it could be `greenplum-db-6` for 6.X and `greenplum-db-7` for 7.X.
+  - `GPDB_URL`: URL location of upstream software, default is `https://github.com/greenplum-db/gpdb`
+  - `GPDB_BUILDARCH`: target architecture, default is `amd64`
+  - `GPDB_DESCRIPTION`: long description of this package, default is `Pivotal Greenplum Server`
+  - `GPDB_PREFIX`: installation location of this package, default is `/usr/local`
+  - `GPDB_OSS`: `true` to build OSS package, `false` otherwise. When build OSS package, `LICENSE` and `COPYRIGHT` are copied from `gpdb_src` folder, and `NOTICE` file is generated under `/usr/share/doc/greenplum-db` folder.
+
+Dependency:
+- `greenplum-database-release/`: the folder points to this repo to retrieve the scripts to do the packaging.
+- `ci/concourse/scripts/build_gpdb_deb.bash`: the bash script that actually does the packaging.
+
+Output:
+- `gpdb_deb_installer/`: the output Debian package will put under this folder
 
 ## Build a RPM package locally
 
