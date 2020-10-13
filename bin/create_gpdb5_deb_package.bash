@@ -13,10 +13,10 @@ build_gpdb5_deb() {
 		"${HOME}"/workspace/gp-continuous-integration/secrets/ppa-debian-release-secrets-dev.yml gpg-private-key)
 	# shellcheck disable=SC2155
 	export DEBFULLNAME=$(yq read \
-		"${HOME}"/workspace/gp-release/gpdb5/concourse/vars/gp-release.dev.yml debian-package-maintainer-fullname)
+		"${HOME}"/workspace/gp-release/gpdb5/concourse/vars/gp5-release.dev.yml debian-package-maintainer-fullname)
 	# shellcheck disable=SC2155
 	export DEBEMAIL=$(yq read \
-		"${HOME}"/workspace/gp-release/gpdb5/concourse/vars/gp-release.dev.yml debian-package-maintainer-email)
+		"${HOME}"/workspace/gp-release/gpdb5/concourse/vars/gp5-release.dev.yml debian-package-maintainer-email)
 	git clone --branch 5X_STABLE git@github.com:greenplum-db/gpdb.git ${BUILD_DIR}/gpdb
 	docker run -it \
 		-e GPG_PRIVATE_KEY \
