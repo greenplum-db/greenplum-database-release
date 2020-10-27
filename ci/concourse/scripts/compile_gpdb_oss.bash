@@ -68,7 +68,7 @@ build_gpdb() {
 		--with-extra-version=" Open Source" \
 		--prefix="${greenplum_install_dir}" \
 		--mandir="${greenplum_install_dir}/man"
-	make -j
+	make -j4
 	make install
 	popd
 
