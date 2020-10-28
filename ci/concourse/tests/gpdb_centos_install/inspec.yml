@@ -1,0 +1,9 @@
+---
+name: gpdb_centos_install
+title: GPDB on Centos Install
+maintainer: PA-Toolsmiths
+copyright: PA-Toolsmiths
+copyright_email: pa-toolsmiths@pivota.io
+license: All Rights Reserved
+summary: Test install of GPDB on Centos
+version: 0.1.0

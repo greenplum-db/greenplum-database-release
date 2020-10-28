@@ -1,0 +1,14 @@
+---
+platform: linux
+
+inputs:
+- name: greenplum-database-release
+- name: gpdb_rpm_installer
+- name: previous-5-release
+- name: previous-6-release
+
+run:
+  path: greenplum-database-release/ci/concourse/scripts/test_functionality_rpm.sh
+
+params:
+  PLATFORM:

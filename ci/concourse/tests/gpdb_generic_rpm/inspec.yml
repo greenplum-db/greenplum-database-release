@@ -1,0 +1,9 @@
+---
+name: gpdb_generic_rpm
+title: Generic GPDB RPM
+maintainer: PA-Toolsmiths
+copyright: PA-Toolsmiths
+copyright_email: pa-toolsmiths@pivota.io
+license: All Rights Reserved
+summary: Test Generic GPDB RPM settings
+version: 0.1.0

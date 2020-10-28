@@ -18,3 +18,4 @@ ci/concourse/tests/__pycache__/
 /bin_gpdb
 /*.rpm
 /*.rpm.sha256
+*.swp

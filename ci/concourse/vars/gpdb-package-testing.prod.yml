@@ -1,0 +1,8 @@
+---
+greenplum-database-release-git-branch: master
+greenplum-database-release-git-remote: https://github.com/greenplum-db/greenplum-database-release.git
+
+aws-region: us-west-2
+gpdb-stable-builds-bucket-name: gpdb-stable-concourse-builds
+
+tanzunet-endpoint: https://network.pivotal.io

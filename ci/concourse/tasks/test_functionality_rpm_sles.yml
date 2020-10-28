@@ -1,0 +1,19 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: pivotaldata/sles-gpdb-dev
+    tag: 11-beta
+
+inputs:
+- name: greenplum-database-release
+- name: gpdb_rpm_installer
+- name: previous-5-release
+
+run:
+  path: greenplum-database-release/ci/concourse/scripts/test_functionality_rpm.sh
+
+params:
+  PLATFORM:

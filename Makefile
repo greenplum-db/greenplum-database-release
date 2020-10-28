@@ -110,6 +110,23 @@ set-pipeline-prod:
 	@echo "\t$(FLY_CMD) -t prod unpause-pipeline --pipeline greenplum-database-release"
 
 ## ----------------------------------------------------------------------
+## Package Testing Pipelines
+## ----------------------------------------------------------------------
+.PHONY: set-gpdb-package-testing-dev
+set-gpdb-package-testing-dev:
+	$(FLY_CMD) --target=$(CONCOURSE) \
+	set-pipeline \
+	--check-creds \
+	--pipeline=gpdb-package-testing-$(BRANCH)-${USER} \
+	--config=ci/concourse/pipelines/gpdb-package-testing.yml \
+	--load-vars-from=ci/concourse/vars/gpdb-package-testing.prod.yml \
+	--load-vars-from=ci/concourse/vars/gpdb-package-testing.dev.yml \
+	--load-vars-from=${WORKSPACE}/gp-continuous-integration/secrets/gpdb-package-testing.prod.yml \
+	--load-vars-from=${WORKSPACE}/gp-continuous-integration/secrets/gpdb-package-testing.dev.yml \
+	--var=greenplum-database-release-git-branch=${BRANCH} \
+	$(FLY_OPTION_NON-INTERACTIVE)
+
+## ----------------------------------------------------------------------
 ## Lint targets
 ## ----------------------------------------------------------------------
 .PHONY: check

@@ -1,0 +1,9 @@
+---
+name: gpdb_sles_install
+title: GPDB on SLES Uninstall
+maintainer: PA-Toolsmiths
+copyright: PA-Toolsmiths
+copyright_email: pa-toolsmiths@pivota.io
+license: All Rights Reserved
+summary: Test installation of GPDB on SLES
+version: 0.1.0

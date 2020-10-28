@@ -1,0 +1,9 @@
+---
+name: gpdb_centos_remove
+title: GPDB on Centos Uninstall
+maintainer: PA-Toolsmiths
+copyright: PA-Toolsmiths
+copyright_email: pa-toolsmiths@pivota.io
+license: All Rights Reserved
+summary: Test uninstall of GPDB on Centos
+version: 0.1.0

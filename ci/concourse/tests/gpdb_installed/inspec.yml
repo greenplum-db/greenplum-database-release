@@ -1,0 +1,9 @@
+---
+name: gpdb_installed
+title: Installed GPDB
+maintainer: PA-Toolsmiths
+copyright: PA-Toolsmiths
+copyright_email: pa-toolsmiths@pivota.io
+license: All Rights Reserved
+summary: Test environment after generic GPDB installation
+version: 0.1.0
