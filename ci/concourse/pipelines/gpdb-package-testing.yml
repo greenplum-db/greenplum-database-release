@@ -248,4 +248,3 @@ jobs:
       gpdb_rpm_installer: rpm_gpdb_sles11
     params:
       PLATFORM: "sles11"
-

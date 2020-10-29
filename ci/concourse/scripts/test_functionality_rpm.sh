@@ -13,7 +13,7 @@ export GPDB_RPM_ARCH=$PLATFORM
 GPDB_VERSION="$(rpm --query --info --package "${GPDB_RPM_PATH}/greenplum-db-*-${GPDB_RPM_ARCH}-x86_64.rpm" | grep Version | awk '{print $3}' | tr --delete '\n')"
 export GPDB_VERSION
 
-if [[ $PLATFORM = "rhel"* ]]; then
+if [[ $PLATFORM == "rhel"* ]]; then
 	# TODO: inspec should be available on the base container
 	# Install inspec v3 because v4 requires license for commercial use
 	curl https://omnitruck.chef.io/install.sh | bash -s -- -P inspec -v 3
@@ -25,7 +25,7 @@ if [[ $PLATFORM = "rhel"* ]]; then
 		greenplum-db-5-rpm; do
 		inspec exec greenplum-database-release/ci/concourse/tests/${test_suite}/ --reporter documentation --no-distinct-exit --no-backend-cache
 	done
-elif [[ $PLATFORM = "sles"* ]]; then
+elif [[ $PLATFORM == "sles"* ]]; then
 	# Install inspec
 	wget --no-check-certificate https://packages.chef.io/files/stable/inspec/1.31.1/sles/11/inspec-1.31.1-1.sles11.x86_64.rpm
 	zypper --non-interactive install inspec-1.31.1-1.sles11.x86_64.rpm
