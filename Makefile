@@ -112,6 +112,17 @@ set-pipeline-prod:
 ## ----------------------------------------------------------------------
 ## Package Testing Pipelines
 ## ----------------------------------------------------------------------
+.PHONY: set-gpdb-package-testing-prod
+set-gpdb-package-testing-prod:
+	$(FLY_CMD) --target=$(CONCOURSE) \
+	set-pipeline \
+	--check-creds \
+	--pipeline=gpdb-package-testing \
+	--config=ci/concourse/pipelines/gpdb-package-testing.yml \
+	--load-vars-from=ci/concourse/vars/gpdb-package-testing.prod.yml \
+	--load-vars-from=${WORKSPACE}/gp-continuous-integration/secrets/gpdb-package-testing.prod.yml \
+	$(FLY_OPTION_NON-INTERACTIVE)
+
 .PHONY: set-gpdb-package-testing-dev
 set-gpdb-package-testing-dev:
 	$(FLY_CMD) --target=$(CONCOURSE) \
