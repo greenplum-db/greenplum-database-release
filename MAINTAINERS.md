@@ -1,6 +1,6 @@
 # Greenplum-database-release Maintainers
 
-[GOVERNANCE.md](https://github.com/greenplum-db/greenplum-database-release/blob/master/GOVERNANCE.md) describes governance guidelines and maintainer responsibilities.
+[GOVERNANCE.md](https://github.com/greenplum-db/greenplum-database-release/blob/main/GOVERNANCE.md) describes governance guidelines and maintainer responsibilities.
 
 ## Maintainers
 

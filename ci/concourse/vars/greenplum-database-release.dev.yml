@@ -16,7 +16,7 @@ debian-package-maintainer-fullname: 'GPBOSH (Testing gpdb)'
 debian-package-maintainer-email: gpbosh@pivotal.io
 tanzunet-client-version: v3.2.1
 tanzunet-client-git-remote: git@github.com:pivotal/gp-pivnet_client.git
-tanzunet-client-branch: master
+tanzunet-client-branch: main
 tanzunet-endpoint: "https://pivnet-integration.cfapps.io/"
 tanzunet-product-slug: toolsmiths-gpdb-test
 tanzunet-metadata-file-path: ci/tanzunet/metadata.yml

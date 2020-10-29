@@ -102,7 +102,7 @@ set-pipeline-prod:
     --load-vars-from=${WORKSPACE}/gp-continuous-integration/secrets/ppa-debian-release-secrets.yml \
     --load-vars-from=ci/concourse/vars/greenplum-database-release.prod.yml \
     --var=pipeline-name=greenplum-database-release \
-    --var=greenplum-database-release-git-branch=master \
+    --var=greenplum-database-release-git-branch=main \
     --var=greenplum-database-release-git-remote=https://github.com/greenplum-db/greenplum-database-release.git \
     ${FLY_OPTION_NON-INTERACTIVE}
 

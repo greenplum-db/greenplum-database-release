@@ -1,5 +1,5 @@
 ---
-greenplum-database-release-git-branch: master
+greenplum-database-release-git-branch: main
 greenplum-database-release-git-remote: https://github.com/greenplum-db/greenplum-database-release.git
 
 aws-region: us-west-2

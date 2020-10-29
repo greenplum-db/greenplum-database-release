@@ -50,7 +50,7 @@ Description of the expected behavior as it relates to RPM packaging for the Gree
   - If `greenplum-db` version `6.0.0` is installed, then a user installs `greenplum-db-6` version `6.0.0`, only `greenplum-db-6` version `6.0.0` shall remain installed
   - If `greenplum-db` version `6.0.0` is installed, then a user installs `greenplum-db-6` version `6.0.1`, only `greenplum-db-6` version `6.0.1` shall remain installed
 - The package shall by default be installed at `/usr/local/greenplum-db-[package version]` (Note: this is not the same as `/usr/local/[package-name]-[package-version]`)
-- The package shall be named based on [Greenplum Filename Specifications](https://github.com/pivotal/gp-releng/blob/master/docs/Greenplum-Filename-Specifications.md)
+- The package shall be named based on [Greenplum Filename Specifications](https://github.com/pivotal/gp-releng/blob/main/docs/Greenplum-Filename-Specifications.md)
 - The package shall be [relocatable](http://ftp.rpm.org/api/4.4.2.2/relocatable.html)
 - The package shall create a symbolic link from `${installation prefix}/greenplum-db-[package-version]` to `${installation prefix}/greenplum-db`
   - If a `${installation prefix}/greenplum-db` symbolic link already exists, then it should be removed and the expected link created
