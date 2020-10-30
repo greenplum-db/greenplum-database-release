@@ -1,0 +1,17 @@
+---
+platform: linux
+
+inputs:
+- name: bin_gpdb
+  optional: true
+- name: rpm_gpdb
+  optional: true
+- name: deb_gpdb
+  optional: true
+- name: greenplum-database-release
+
+outputs:
+- name: gpdb_src
+
+run:
+  path: greenplum-database-release/ci/((concourse-root))/scripts/retrieve_gpdb_src.bash

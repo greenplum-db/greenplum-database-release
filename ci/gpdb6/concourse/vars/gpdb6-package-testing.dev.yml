@@ -1,0 +1,5 @@
+---
+greenplum-database-release-git-branch:
+gcs-bucket-intermediates: pivotal-gpdb-concourse-resources-intermediates-dev
+
+tanzunet-endpoint: https://pivnet-integration.cfapps.io

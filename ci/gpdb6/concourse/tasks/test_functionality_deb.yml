@@ -1,0 +1,13 @@
+---
+platform: linux
+
+inputs:
+- name: greenplum-database-release
+- name: gpdb_deb_installer
+
+
+run:
+  path: greenplum-database-release/ci/((concourse-root))/scripts/test_functionality_deb.bash
+
+params:
+  PLATFORM:
