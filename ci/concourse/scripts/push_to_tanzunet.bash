@@ -9,7 +9,7 @@ push() {
 	cd ../tanzunet_client/
 	make depend
 	make build
-	./bin/tanzunet-client upload --trace --verbose --metadata "../greenplum-database-release/${TANZUNET_METADATA_FILE}" --search-path ../ --gpdb-version "${GPDB_VERSION}"
+	./bin/tanzunet-client upload --verbose --metadata "../greenplum-database-release/${TANZUNET_METADATA_FILE}" --search-path ../ --gpdb-version "${GPDB_VERSION}" --debug
 }
 
 if [ "${BASH_SOURCE[0]}" == "${0}" ]; then
