@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
-    - uses: docker://github/super-linter:v3
+    - uses: docker://github/super-linter:v3.13.1
       env:
         VALIDATE_MD: true
         VALIDATE_BASH: true
