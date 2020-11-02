@@ -141,12 +141,12 @@ resources:
 ##  \__,_|_| |_|\___|_| |_|\___/|_|  |___/
 ## ======================================================================
 anchors:
-  - rpm-params: &rpm-params
-      GPDB_LICENSE: Pivotal Software EULA
-      GPDB_NAME: greenplum-db-6
-      GPDB_OSS: false
-      GPDB_RELEASE: 1
-      GPDB_URL: https://network.pivotal.io/products/pivotal-gpdb/
+- rpm-params: &rpm-params
+    GPDB_LICENSE: Pivotal Software EULA
+    GPDB_NAME: greenplum-db-6
+    GPDB_OSS: false
+    GPDB_RELEASE: 1
+    GPDB_URL: https://network.pivotal.io/products/pivotal-gpdb/
 
 ## ======================================================================
 ##    _       _
@@ -159,156 +159,156 @@ anchors:
 jobs:
 - name: create_gpdb_rpm_installer_centos6
   plan:
-    - in_parallel:
-        - get: bin_gpdb_centos6
-        - get: greenplum-database-release
-          trigger: true
-        - get: gpdb6-centos6-build
-        - get: gpdb-osl
-    - task: retrieve_gpdb_src
-      file: greenplum-database-release/ci/((concourse-root))/tasks/retrieve_gpdb_src.yml
-      image: gpdb6-centos6-build
-      input_mapping:
-        bin_gpdb: bin_gpdb_centos6
-      vars:
-        concourse-root: ((concourse-root))
-    - task: build_rpm_gpdb_centos6
-      file: greenplum-database-release/ci/concourse/tasks/build_gpdb_rpm.yml
-      image: gpdb6-centos6-build
-      input_mapping:
-        bin_gpdb: bin_gpdb_centos6
-        license_file: gpdb-osl
-      params:
-        <<: *rpm-params
-        PLATFORM: rhel6
-    - put: rpm_gpdb_centos6
-      params:
-        file: gpdb_rpm_installer/*.rpm
+  - in_parallel:
+    - get: bin_gpdb_centos6
+    - get: greenplum-database-release
+      trigger: true
+    - get: gpdb6-centos6-build
+    - get: gpdb-osl
+  - task: retrieve_gpdb_src
+    file: greenplum-database-release/ci/((concourse-root))/tasks/retrieve_gpdb_src.yml
+    image: gpdb6-centos6-build
+    input_mapping:
+      bin_gpdb: bin_gpdb_centos6
+    vars:
+      concourse-root: ((concourse-root))
+  - task: build_rpm_gpdb_centos6
+    file: greenplum-database-release/ci/concourse/tasks/build_gpdb_rpm.yml
+    image: gpdb6-centos6-build
+    input_mapping:
+      bin_gpdb: bin_gpdb_centos6
+      license_file: gpdb-osl
+    params:
+      <<: *rpm-params
+      PLATFORM: rhel6
+  - put: rpm_gpdb_centos6
+    params:
+      file: gpdb_rpm_installer/*.rpm
 
 - name: create_gpdb_rpm_installer_centos7
   plan:
-    - in_parallel:
-        - get: bin_gpdb_centos7
-        - get: greenplum-database-release
-          trigger: true
-        - get: gpdb6-centos7-build
-        - get: gpdb-osl
-    - task: retrieve_gpdb_src
-      file: greenplum-database-release/ci/((concourse-root))/tasks/retrieve_gpdb_src.yml
-      image: gpdb6-centos7-build
-      input_mapping:
-        bin_gpdb: bin_gpdb_centos7
-      vars:
-        concourse-root: ((concourse-root))
-    - task: build_rpm_gpdb_centos7
-      file: greenplum-database-release/ci/concourse/tasks/build_gpdb_rpm.yml
-      image: gpdb6-centos7-build
-      input_mapping:
-        bin_gpdb: bin_gpdb_centos7
-        license_file: gpdb-osl
-      params:
-        <<: *rpm-params
-        PLATFORM: rhel7
-    - put: rpm_gpdb_centos7
-      params:
-        file: gpdb_rpm_installer/*.rpm
+  - in_parallel:
+    - get: bin_gpdb_centos7
+    - get: greenplum-database-release
+      trigger: true
+    - get: gpdb6-centos7-build
+    - get: gpdb-osl
+  - task: retrieve_gpdb_src
+    file: greenplum-database-release/ci/((concourse-root))/tasks/retrieve_gpdb_src.yml
+    image: gpdb6-centos7-build
+    input_mapping:
+      bin_gpdb: bin_gpdb_centos7
+    vars:
+      concourse-root: ((concourse-root))
+  - task: build_rpm_gpdb_centos7
+    file: greenplum-database-release/ci/concourse/tasks/build_gpdb_rpm.yml
+    image: gpdb6-centos7-build
+    input_mapping:
+      bin_gpdb: bin_gpdb_centos7
+      license_file: gpdb-osl
+    params:
+      <<: *rpm-params
+      PLATFORM: rhel7
+  - put: rpm_gpdb_centos7
+    params:
+      file: gpdb_rpm_installer/*.rpm
 
 - name: create_gpdb_deb_installer_ubuntu18.04
   plan:
-    - in_parallel:
-        - get: bin_gpdb_ubuntu18.04
-        - get: greenplum-database-release
-          trigger: true
-        - get: gpdb6-ubuntu18.04-build
-        - get: gpdb-osl
-    - task: build_deb_gpdb_ubuntu18.04
-      file: greenplum-database-release/ci/concourse/tasks/build_gpdb_deb.yml
-      image: gpdb6-ubuntu18.04-build
-      input_mapping:
-        bin_gpdb: bin_gpdb_ubuntu18.04
-        license_file: gpdb-osl
-      params:
-        GPDB_OSS: false
-        PLATFORM: ubuntu18.04
-    - put: deb_gpdb_ubuntu18.04
-      params:
-        file: gpdb_deb_installer/*.deb
+  - in_parallel:
+    - get: bin_gpdb_ubuntu18.04
+    - get: greenplum-database-release
+      trigger: true
+    - get: gpdb6-ubuntu18.04-build
+    - get: gpdb-osl
+  - task: build_deb_gpdb_ubuntu18.04
+    file: greenplum-database-release/ci/concourse/tasks/build_gpdb_deb.yml
+    image: gpdb6-ubuntu18.04-build
+    input_mapping:
+      bin_gpdb: bin_gpdb_ubuntu18.04
+      license_file: gpdb-osl
+    params:
+      GPDB_OSS: false
+      PLATFORM: ubuntu18.04
+  - put: deb_gpdb_ubuntu18.04
+    params:
+      file: gpdb_deb_installer/*.deb
 
 - name: test_functionality_rpm_centos6
   plan:
-    - in_parallel:
-        - get: previous-6-release
-          params:
-            globs:
-              - greenplum-db-*-rhel6-x86_64.rpm
-        - get: previous-5-release
-          params:
-            globs:
-              - greenplum-db-*-rhel6-x86_64.rpm
-        - get: rpm_gpdb_centos6
-          passed:
-            - create_gpdb_rpm_installer_centos6
-          trigger: true
-        - get: greenplum-database-release
-          passed:
-            - create_gpdb_rpm_installer_centos6
-        - get: gpdb6-centos6-test-packaging
-    - task: test_rpm_functionality
-      file: greenplum-database-release/ci/((concourse-root))/tasks/test_functionality_rpm.yml
-      image: gpdb6-centos6-test-packaging
-      input_mapping:
-        gpdb_rpm_installer: rpm_gpdb_centos6
+  - in_parallel:
+    - get: previous-6-release
       params:
-        PLATFORM: rhel6
-      vars:
-        concourse-root: ((concourse-root))
+        globs:
+        - greenplum-db-*-rhel6-x86_64.rpm
+    - get: previous-5-release
+      params:
+        globs:
+        - greenplum-db-*-rhel6-x86_64.rpm
+    - get: rpm_gpdb_centos6
+      passed:
+      - create_gpdb_rpm_installer_centos6
+      trigger: true
+    - get: greenplum-database-release
+      passed:
+      - create_gpdb_rpm_installer_centos6
+    - get: gpdb6-centos6-test-packaging
+  - task: test_rpm_functionality
+    file: greenplum-database-release/ci/((concourse-root))/tasks/test_functionality_rpm.yml
+    image: gpdb6-centos6-test-packaging
+    input_mapping:
+      gpdb_rpm_installer: rpm_gpdb_centos6
+    params:
+      PLATFORM: rhel6
+    vars:
+      concourse-root: ((concourse-root))
 
 - name: test_functionality_rpm_centos7
   plan:
-    - in_parallel:
-        - get: previous-6-release
-          params:
-            globs:
-              - greenplum-db-*-rhel7-x86_64.rpm
-        - get: previous-5-release
-          params:
-            globs:
-              - greenplum-db-*-rhel7-x86_64.rpm
-        - get: rpm_gpdb_centos7
-          passed:
-            - create_gpdb_rpm_installer_centos7
-          trigger: true
-        - get: greenplum-database-release
-          passed:
-            - create_gpdb_rpm_installer_centos6
-        - get: gpdb6-centos7-test-packaging
-    - task: test_rpm_functionality
-      file: greenplum-database-release/ci/((concourse-root))/tasks/test_functionality_rpm.yml
-      image: gpdb6-centos7-test-packaging
-      input_mapping:
-        gpdb_rpm_installer: rpm_gpdb_centos7
+  - in_parallel:
+    - get: previous-6-release
       params:
-        PLATFORM: rhel7
-      vars:
-        concourse-root: ((concourse-root))
+        globs:
+        - greenplum-db-*-rhel7-x86_64.rpm
+    - get: previous-5-release
+      params:
+        globs:
+        - greenplum-db-*-rhel7-x86_64.rpm
+    - get: rpm_gpdb_centos7
+      passed:
+      - create_gpdb_rpm_installer_centos7
+      trigger: true
+    - get: greenplum-database-release
+      passed:
+      - create_gpdb_rpm_installer_centos6
+    - get: gpdb6-centos7-test-packaging
+  - task: test_rpm_functionality
+    file: greenplum-database-release/ci/((concourse-root))/tasks/test_functionality_rpm.yml
+    image: gpdb6-centos7-test-packaging
+    input_mapping:
+      gpdb_rpm_installer: rpm_gpdb_centos7
+    params:
+      PLATFORM: rhel7
+    vars:
+      concourse-root: ((concourse-root))
 
 - name: test_functionality_deb_ubuntu18.04
   plan:
-    - in_parallel:
-        - get: deb_gpdb_ubuntu18.04
-          passed:
-            - create_gpdb_deb_installer_ubuntu18.04
-          trigger: true
-        - get: greenplum-database-release
-          passed:
-            - create_gpdb_rpm_installer_centos6
-        - get: gpdb6-ubuntu18.04-test-packaging
-    - task: test_deb_functionality
-      file: greenplum-database-release/ci/((concourse-root))/tasks/test_functionality_deb.yml
-      image: gpdb6-ubuntu18.04-test-packaging
-      input_mapping:
-        gpdb_deb_installer: deb_gpdb_ubuntu18.04
-      params:
-        PLATFORM: ubuntu18.04
-      vars:
-        concourse-root: ((concourse-root))
+  - in_parallel:
+    - get: deb_gpdb_ubuntu18.04
+      passed:
+      - create_gpdb_deb_installer_ubuntu18.04
+      trigger: true
+    - get: greenplum-database-release
+      passed:
+      - create_gpdb_rpm_installer_centos6
+    - get: gpdb6-ubuntu18.04-test-packaging
+  - task: test_deb_functionality
+    file: greenplum-database-release/ci/((concourse-root))/tasks/test_functionality_deb.yml
+    image: gpdb6-ubuntu18.04-test-packaging
+    input_mapping:
+      gpdb_deb_installer: deb_gpdb_ubuntu18.04
+    params:
+      PLATFORM: ubuntu18.04
+    vars:
+      concourse-root: ((concourse-root))
