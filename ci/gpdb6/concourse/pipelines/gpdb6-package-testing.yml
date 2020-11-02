@@ -11,7 +11,7 @@ resource_types:
 - name: pivnet
   type: docker-image
   source:
-    repository: pivotalcf/pivnet-resource
+    repository: pivotalcf/tanzunet-resource
     tag: latest-final
 
 - name: gcs
@@ -100,7 +100,7 @@ resources:
     versioned_file: ((pipeline-name))/deb_gpdb_ubuntu18.04/greenplum-db-ubuntu18.04-amd64.deb
 
 - name: previous-6-release
-  type: pivnet
+  type: tanzunet
   source:
     api_token: ((public-tanzunet-refresh-token))
     endpoint: ((tanzunet-endpoint))
@@ -108,7 +108,7 @@ resources:
     product_version: 6\.2\.1
 
 - name: previous-5-release
-  type: pivnet
+  type: tanzunet
   source:
     api_token: ((public-tanzunet-refresh-token))
     endpoint: ((tanzunet-endpoint))

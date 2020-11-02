@@ -8,15 +8,15 @@ image_resource:
 inputs:
 - name: gpdb_src
 - name: greenplum-database-release
-- name: pivnet_client
+- name: tanzunet_client
 - name: gpdb_rpm_installer_centos6
 - name: gpdb_rpm_installer_centos7
 - name: gpdb_deb_package
 params:
-  PIVNET_ENDPOINT:
-  PIVNET_REFRESH_TOKEN:
-  PIVNET_PRODUCT_SLUG:
-  PIVNET_S3_FILEPATH_PREFIX:
-  PIVNET_METADATA_FILE:
+  TANZUNET_ENDPOINT:
+  TANZUNET_REFRESH_TOKEN:
+  TANZUNET_PRODUCT_SLUG:
+  TANZUNET_S3_FILEPATH_PREFIX:
+  TANZUNET_METADATA_FILE:
 run:
   path: greenplum-database-release/ci/concourse/scripts/push_to_tanzunet.bash

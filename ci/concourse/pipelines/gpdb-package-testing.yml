@@ -8,7 +8,7 @@
 ##                                               |___/|_|
 ## ======================================================================
 resource_types:
-- name: pivnet
+- name: tanzunet
   type: docker-image
   source:
     repository: pivotalcf/pivnet-resource
@@ -94,7 +94,7 @@ resources:
     versioned_file: release_candidates/rpm_gpdb_sles11/gpdb5/greenplum-db-5.99.0-sles11-x86_64.rpm
 
 - name: previous-6-release
-  type: pivnet
+  type: tanzunet
   source:
     api_token: ((public-tanzunet-refresh-token))
     endpoint: ((tanzunet-endpoint))
@@ -102,7 +102,7 @@ resources:
     product_version: 6\.2\.1
 
 - name: previous-5-release
-  type: pivnet
+  type: tanzunet
   source:
     api_token: ((public-tanzunet-refresh-token))
     endpoint: ((tanzunet-endpoint))

@@ -6,9 +6,10 @@ push() {
 	cd gpdb_src
 	GPDB_VERSION=$(./getversion --short)
 
-	cd ../pivnet_client/
-	bundle install
-	bundle exec pivnet_client upload --trace --verbose --metadata "../greenplum-database-release/${PIVNET_METADATA_FILE}" --search-path ../ --gpdb-version "${GPDB_VERSION}"
+	cd ../tanzunet_client/
+	make depend
+	make build
+	./bin/tanzunet-client upload --trace --verbose --metadata "../greenplum-database-release/${TANZUNET_METADATA_FILE}" --search-path ../ --gpdb-version "${GPDB_VERSION}"
 }
 
 if [ "${BASH_SOURCE[0]}" == "${0}" ]; then

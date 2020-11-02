@@ -87,11 +87,11 @@ resources:
     json_key: ((concourse-gcs-resources-service-account-key))
     regexp: osl/released/gpdb6/open_source_license_greenplum-database-6.0.0-97773a0-(.*).txt
 
-- name: pivnet_client
+- name: tanzunet_client
   type: git
   source:
     branch: ((tanzunet-client-branch))
-    private_key: ((pivnet-client-remote-deploy-key))
+    private_key: ((tanzunet-client-remote-deploy-key))
     uri: ((tanzunet-client-git-remote))
     tag_filter: ((tanzunet-client-version))
 
@@ -507,7 +507,7 @@ jobs:
   - in_parallel:
     - get: gpdb_src
       passed: [release]
-    - get: pivnet_client
+    - get: tanzunet_client
     - get: license_file
       passed: [release]
     - get: gpdb_rpm_installer_centos6
@@ -525,8 +525,8 @@ jobs:
   - task: push_to_tanzunet
     file: greenplum-database-release/ci/concourse/tasks/push_to_tanzunet.yml
     params:
-      PIVNET_ENDPOINT: ((tanzunet-endpoint))
-      PIVNET_METADATA_FILE: ((tanzunet-metadata-file-path))
-      PIVNET_REFRESH_TOKEN: ((tanzunet-refresh-token))
-      PIVNET_PRODUCT_SLUG: ((tanzunet-product-slug))
-      PIVNET_S3_FILEPATH_PREFIX: ((tanzunet-s3-filepath-prefix))
+      TANZUNET_ENDPOINT: ((tanzunet-endpoint))
+      TANZUNET_METADATA_FILE: ((tanzunet-metadata-file-path))
+      TANZUNET_REFRESH_TOKEN: ((tanzunet-refresh-token))
+      TANZUNET_PRODUCT_SLUG: ((tanzunet-product-slug))
+      TANZUNET_S3_FILEPATH_PREFIX: ((tanzunet-s3-filepath-prefix))

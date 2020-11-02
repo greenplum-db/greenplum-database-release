@@ -195,7 +195,7 @@ control 'Category:server-rpm_not_obsoletes_old_5_rpm' do
 end
 
 control 'Categroy:server-rpm_is_upgradable' do
-# TODO, need greenplum-db-6 to be published to pivnet, at that time, write a upgradeable test
+# TODO, need greenplum-db-6 to be published to tanzunet, at that time, write a upgradeable test
 # from greenplum-db-6 with lower version to greenplum-db-6 with upper version is possible.
 end
 
