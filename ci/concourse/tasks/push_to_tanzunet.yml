@@ -20,5 +20,6 @@ params:
   TANZUNET_PRODUCT_SLUG:
   TANZUNET_S3_FILEPATH_PREFIX:
   TANZUNET_METADATA_FILE:
+  PARENT_TANZUNET_SLUG:
 run:
   path: greenplum-database-release/ci/concourse/scripts/push_to_tanzunet.bash

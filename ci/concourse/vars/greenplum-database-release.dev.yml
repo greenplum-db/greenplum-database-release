@@ -21,3 +21,4 @@ tanzunet-endpoint: "https://pivnet-integration.cfapps.io/"
 tanzunet-product-slug: toolsmiths-gpdb-test
 tanzunet-metadata-file-path: ci/tanzunet/metadata.yml
 tanzunet-s3-filepath-prefix: product-files/toolsmiths-gpdb-test
+parent-tanzunet-slug: pivotal-gpdb

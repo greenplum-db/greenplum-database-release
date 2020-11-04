@@ -23,3 +23,4 @@ tanzunet-endpoint: "https://network.pivotal.io"
 tanzunet-product-slug: greenplum-database
 tanzunet-metadata-file-path: ci/tanzunet/metadata.yml
 tanzunet-s3-filepath-prefix: product-files/greenplum-database
+parent-tanzunet-slug: pivotal-gpdb
