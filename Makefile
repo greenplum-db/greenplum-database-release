@@ -47,10 +47,7 @@ list:
 ## ----------------------------------------------------------------------
 
 .PHONY: set-dev
-set-dev: set-pipeline-dev
-
-.PHONY: set-pipeline-dev
-set-pipeline-dev:
+set-dev:
 
 	sed -e 's|tag_filter: *|## tag_filter: |g' ci/concourse/pipelines/gpdb_opensource_release.yml > ci/concourse/pipelines/${PIPELINE_NAME}.yml
 
@@ -75,10 +72,7 @@ set-pipeline-dev:
 ## ----------------------------------------------------------------------
 
 .PHONY: destroy-dev
-destroy-dev: destroy-pipeline-dev
-
-.PHONY: destroy-pipeline-dev
-destroy-pipeline-dev:
+destroy-dev:
 	$(FLY_CMD) --target=${CONCOURSE} \
     destroy-pipeline \
     --pipeline=${PIPELINE_NAME} \
@@ -89,10 +83,7 @@ destroy-pipeline-dev:
 ## ----------------------------------------------------------------------
 
 .PHONY: set-prod
-set-prod: set-pipeline-prod
-
-.PHONY: set-pipeline-prod
-set-pipeline-prod:
+set-prod:
 	sed -e 's|commitish: release_artifacts/commitish|## commitish: release_artifacts/commitish|g' ci/concourse/pipelines/gpdb_opensource_release.yml > ci/concourse/pipelines/gpdb_opensource_release_prod.yml
 
 	$(FLY_CMD) --target=prod \
