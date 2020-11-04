@@ -22,4 +22,4 @@ tanzunet-client-branch: main
 tanzunet-endpoint: "https://network.pivotal.io"
 tanzunet-product-slug: greenplum-database
 tanzunet-metadata-file-path: ci/tanzunet/metadata.yml
-tanzunet-s3-filepath-prefix: product_files/toolsmiths-gpdb-test
+tanzunet-s3-filepath-prefix: product-files/greenplum-database
