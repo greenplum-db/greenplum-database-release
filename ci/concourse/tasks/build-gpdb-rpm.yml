@@ -10,6 +10,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 ---
+
 platform: linux
 
 image_resource:
@@ -17,25 +18,29 @@ image_resource:
 
 inputs:
 - name: bin_gpdb
+- name: gpdb_src
+  optional: true
 - name: greenplum-database-release
 - name: license_file
-  optional: true
 
 outputs:
-- name: gpdb_deb_installer
+- name: gpdb_rpm_installer
 
 run:
-  path: greenplum-database-release/ci/concourse/scripts/build_gpdb_deb.bash
+  path: bash
+  args:
+  - -ec
+  - |
+    export PYTHONPATH=greenplum-database-release/ci/concourse/
+    python greenplum-database-release/ci/concourse/scripts/build-gpdb-rpm.py
 
 params:
-  PLATFORM:
-  # Default values passed to deb package
+  # Default values passed to rpm SPEC
   #  To override, please do so in pipeline
-  GPDB_NAME: greenplum-db
-  GPDB_SUMMARY: Greenplum-DB
-  GPDB_URL: https://github.com/greenplum-db/gpdb
-  GPDB_BUILDARCH: amd64
-  GPDB_DESCRIPTION: Pivotal Greenplum Server
-  GPDB_PREFIX: /usr/local
+  PLATFORM:
+  GPDB_NAME:
+  GPDB_RELEASE:
+  GPDB_LICENSE:
+  GPDB_URL:
   # build the Open Source gpdb, set this variable to 'true'
   GPDB_OSS:

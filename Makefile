@@ -52,7 +52,7 @@ set-dev: set-pipeline-dev
 .PHONY: set-pipeline-dev
 set-pipeline-dev:
 
-	sed -e 's|tag_filter: *|## tag_filter: |g' ci/concourse/pipelines/gpdb_opensource_release.yml > ci/concourse/pipelines/${PIPELINE_NAME}.yml
+	sed -e 's|tag_filter: *|## tag_filter: |g' ci/concourse/pipelines/gpdb-opensource-release.yml > ci/concourse/pipelines/${PIPELINE_NAME}.yml
 
 	$(FLY_CMD) --target=${CONCOURSE} \
     set-pipeline \
@@ -93,13 +93,13 @@ set-prod: set-pipeline-prod
 
 .PHONY: set-pipeline-prod
 set-pipeline-prod:
-	sed -e 's|commitish: release_artifacts/commitish|## commitish: release_artifacts/commitish|g' ci/concourse/pipelines/gpdb_opensource_release.yml > ci/concourse/pipelines/gpdb_opensource_release_prod.yml
+	sed -e 's|commitish: release_artifacts/commitish|## commitish: release_artifacts/commitish|g' ci/concourse/pipelines/gpdb-opensource-release.yml > ci/concourse/pipelines/gpdb-opensource-release-prod.yml
 
 	$(FLY_CMD) --target=prod \
     set-pipeline \
     --check-creds \
     --pipeline=greenplum-database-release \
-    --config=ci/concourse/pipelines/gpdb_opensource_release_prod.yml \
+    --config=ci/concourse/pipelines/gpdb-opensource-release-prod.yml \
     --load-vars-from=${WORKSPACE}/gp-continuous-integration/secrets/gpdb-oss-release.prod.yml \
     --load-vars-from=${WORKSPACE}/gp-continuous-integration/secrets/ppa-debian-release-secrets.yml \
     --load-vars-from=ci/concourse/vars/greenplum-database-release.prod.yml \

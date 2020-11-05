@@ -226,7 +226,7 @@ jobs:
     - get: python-tarball
       resource: python-centos6
   - task: compile_gpdb
-    file: greenplum-database-release/ci/concourse/tasks/compile_gpdb_oss.yml
+    file: greenplum-database-release/ci/concourse/tasks/compile-gpdb-oss.yml
     image: gpdb6-centos6-build
   - put: bin_gpdb_centos6
     params:
@@ -245,7 +245,7 @@ jobs:
       resource: python-centos7
   - task: compile_gpdb
     image: gpdb6-centos7-build
-    file: greenplum-database-release/ci/concourse/tasks/compile_gpdb_oss.yml
+    file: greenplum-database-release/ci/concourse/tasks/compile-gpdb-oss.yml
   - put: bin_gpdb_centos7
     params:
       file: gpdb_artifacts/bin_gpdb.tar.gz
@@ -263,7 +263,7 @@ jobs:
       resource: python-ubuntu18.04
   - task: compile_gpdb
     image: gpdb6-ubuntu18.04-build
-    file: greenplum-database-release/ci/concourse/tasks/compile_gpdb_oss.yml
+    file: greenplum-database-release/ci/concourse/tasks/compile-gpdb-oss.yml
   - put: bin_gpdb_ubuntu18.04
     params:
       file: gpdb_artifacts/bin_gpdb.tar.gz
@@ -283,7 +283,7 @@ jobs:
     - get: gpdb6-centos6-build
     - get: license_file
   - task: create_gpdb_rpm_package
-    file: greenplum-database-release/ci/concourse/tasks/build_gpdb_rpm.yml
+    file: greenplum-database-release/ci/concourse/tasks/build-gpdb-rpm.yml
     image: gpdb6-centos6-build
     input_mapping:
       bin_gpdb: bin_gpdb_centos6
@@ -313,7 +313,7 @@ jobs:
     - get: gpdb6-centos7-build
     - get: license_file
   - task: create_gpdb_rpm_package
-    file: greenplum-database-release/ci/concourse/tasks/build_gpdb_rpm.yml
+    file: greenplum-database-release/ci/concourse/tasks/build-gpdb-rpm.yml
     image: gpdb6-centos7-build
     input_mapping:
       bin_gpdb: bin_gpdb_centos7
@@ -343,7 +343,7 @@ jobs:
     - get: gpdb6-ubuntu18.04-build
     - get: license_file
   - task: create_gpdb_deb_package
-    file: greenplum-database-release/ci/concourse/tasks/build_gpdb_deb.yml
+    file: greenplum-database-release/ci/concourse/tasks/build-gpdb-deb.yml
     image: gpdb6-ubuntu18.04-build
     input_mapping:
       bin_gpdb: bin_gpdb_ubuntu18.04
@@ -368,7 +368,7 @@ jobs:
       trigger: true
     - get: license_file
   - task: push to ppa
-    file: greenplum-database-release/ci/concourse/tasks/publish_to_ppa.yml
+    file: greenplum-database-release/ci/concourse/tasks/publish-to-ppa.yml
     params:
       PPA_REPO: ((ppa-repository))
       GPG_PRIVATE_KEY: ((gpg-private-key))
@@ -391,7 +391,7 @@ jobs:
     - get: ppa_release_version
       passed: [publish to ppa]
   - task: verify ppa release status
-    file: greenplum-database-release/ci/concourse/tasks/verify_ppa_release.yml
+    file: greenplum-database-release/ci/concourse/tasks/verify-ppa-release.yml
 
 - name: release
   on_failure:
@@ -487,7 +487,7 @@ jobs:
     - get: greenplum-database-release
       passed: [release]
   - task: gpdb_github_release
-    file: greenplum-database-release/ci/concourse/tasks/gpdb_github_release.yml
+    file: greenplum-database-release/ci/concourse/tasks/gpdb-github-release.yml
   - put: gpdb_release
     params:
       name: release_artifacts/name
@@ -523,7 +523,7 @@ jobs:
       passed: [release]
       trigger: true
   - task: push_to_tanzunet
-    file: greenplum-database-release/ci/concourse/tasks/push_to_tanzunet.yml
+    file: greenplum-database-release/ci/concourse/tasks/push-to-tanzunet.yml
     params:
       TANZUNET_ENDPOINT: ((tanzunet-endpoint))
       TANZUNET_METADATA_FILE: ((tanzunet-metadata-file-path))

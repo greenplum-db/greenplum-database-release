@@ -10,37 +10,20 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 ---
-
 platform: linux
 
 image_resource:
   type: docker-image
+  source:
+    repository: bash
+    tag: latest
 
 inputs:
-- name: bin_gpdb
 - name: gpdb_src
-  optional: true
 - name: greenplum-database-release
-- name: license_file
 
 outputs:
-- name: gpdb_rpm_installer
+- name: release_artifacts
 
 run:
-  path: bash
-  args:
-  - -ec
-  - |
-    export PYTHONPATH=greenplum-database-release/ci/concourse/
-    python greenplum-database-release/ci/concourse/scripts/build_gpdb_rpm.py
-
-params:
-  # Default values passed to rpm SPEC
-  #  To override, please do so in pipeline
-  PLATFORM:
-  GPDB_NAME:
-  GPDB_RELEASE:
-  GPDB_LICENSE:
-  GPDB_URL:
-  # build the Open Source gpdb, set this variable to 'true'
-  GPDB_OSS:
+  path: greenplum-database-release/ci/concourse/scripts/gpdb-github-release.bash

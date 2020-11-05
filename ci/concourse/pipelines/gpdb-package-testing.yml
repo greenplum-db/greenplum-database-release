@@ -142,7 +142,7 @@ jobs:
     - get: greenplum-database-release
       trigger: true
   - task: build_rpm_gpdb_centos6
-    file: greenplum-database-release/ci/concourse/tasks/build_gpdb5_rpm.yml
+    file: greenplum-database-release/ci/concourse/tasks/build-gpdb5-rpm.yml
     image: centos-gpdb-dev-6
     params:
       <<: *rpm-params
@@ -160,7 +160,7 @@ jobs:
     - get: greenplum-database-release
       trigger: true
   - task: build_rpm_gpdb_centos7
-    file: greenplum-database-release/ci/concourse/tasks/build_gpdb5_rpm.yml
+    file: greenplum-database-release/ci/concourse/tasks/build-gpdb5-rpm.yml
     image: centos-gpdb-dev-7
     params:
       <<: *rpm-params
@@ -177,7 +177,7 @@ jobs:
     - get: greenplum-database-release
       trigger: true
   - task: build_rpm_gpdb_sles11
-    file: greenplum-database-release/ci/concourse/tasks/build_gpdb5_rpm_sles.yml
+    file: greenplum-database-release/ci/concourse/tasks/build-gpdb5-rpm-sles.yml
     params:
       <<: *rpm-params
       PLATFORM: "sles11"
@@ -202,7 +202,7 @@ jobs:
     - get: centos-gpdb-dev-6
   - task: test_rpm_functionality
     image: centos-gpdb-dev-6
-    file: greenplum-database-release/ci/concourse/tasks/test_functionality_rpm.yml
+    file: greenplum-database-release/ci/concourse/tasks/test-functionality-rpm.yml
     input_mapping:
       gpdb_rpm_installer: rpm_gpdb_centos6
     params:
@@ -225,7 +225,7 @@ jobs:
     - get: centos-gpdb-dev-7
   - task: test_rpm_functionality
     image: centos-gpdb-dev-7
-    file: greenplum-database-release/ci/concourse/tasks/test_functionality_rpm.yml
+    file: greenplum-database-release/ci/concourse/tasks/test-functionality-rpm.yml
     input_mapping:
       gpdb_rpm_installer: rpm_gpdb_centos7
     params:
@@ -243,7 +243,7 @@ jobs:
       params:
         globs: [greenplum-db-*-sles11-x86_64.rpm]
   - task: test_rpm_functionality
-    file: greenplum-database-release/ci/concourse/tasks/test_functionality_rpm_sles.yml
+    file: greenplum-database-release/ci/concourse/tasks/test-functionality-rpm-sles.yml
     input_mapping:
       gpdb_rpm_installer: rpm_gpdb_sles11
     params:

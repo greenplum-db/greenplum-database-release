@@ -14,37 +14,28 @@ platform: linux
 
 image_resource:
   type: docker-image
-  source:
-    repository: ubuntu
-    tag: 18.04
 
 inputs:
-- name: bin_gpdb_ubuntu18.04
-- name: gpdb_src
+- name: bin_gpdb
 - name: greenplum-database-release
 - name: license_file
+  optional: true
 
 outputs:
-- name: ppa_release
+- name: gpdb_deb_installer
 
 run:
-  path: bash
-  args:
-  - -ec
-  - |
-    cp greenplum-database-release/ci/concourse/scripts/dput.cf ~/.dput.cf
-    apt-get update -q=2
-    apt-get install -q=2 -y software-properties-common debmake equivs git
-    gpg --import <(echo "${GPG_PRIVATE_KEY}")
-
-    export PYTHONPATH=${PWD}/greenplum-database-release/ci/concourse
-    pushd greenplum-database-release/ci/concourse && python3 -m unittest tests/ppa_test.py && popd
-    python3 greenplum-database-release/ci/concourse/scripts/publish_to_ppa.py
+  path: greenplum-database-release/ci/concourse/scripts/build-gpdb-deb.bash
 
 params:
-  PPA_REPO:
-  GPG_PRIVATE_KEY:
-  RELEASE_MESSAGE:
-  # The DEBFULLNAME and DEBMAIL environment variables are expected in the .deb building process
-  DEBFULLNAME:
-  DEBEMAIL:
+  PLATFORM:
+  # Default values passed to deb package
+  #  To override, please do so in pipeline
+  GPDB_NAME: greenplum-db
+  GPDB_SUMMARY: Greenplum-DB
+  GPDB_URL: https://github.com/greenplum-db/gpdb
+  GPDB_BUILDARCH: amd64
+  GPDB_DESCRIPTION: Pivotal Greenplum Server
+  GPDB_PREFIX: /usr/local
+  # build the Open Source gpdb, set this variable to 'true'
+  GPDB_OSS:

@@ -18,7 +18,7 @@ outputs:
 - name: gpdb_rpm_installer
 
 run:
-  path: greenplum-database-release/ci/concourse/scripts/build_gpdb5_rpm.sh
+  path: greenplum-database-release/ci/concourse/scripts/build-gpdb5-rpm.sh
 
 params:
   PLATFORM:

@@ -106,7 +106,7 @@ A Docker environment must be used that contains the necessary build tools for ei
 
 ```yaml
 - task: create_gpdb_rpm_package
-    file: greenplum-database-release/ci/concourse/tasks/build_gpdb_rpm.yml
+    file: greenplum-database-release/ci/concourse/tasks/build-gpdb-rpm.yml
     image: gpdb6-centos6-build
     input_mapping:
       bin_gpdb: bin_gpdb_centos6

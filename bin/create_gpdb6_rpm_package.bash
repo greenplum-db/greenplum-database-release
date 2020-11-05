@@ -28,7 +28,7 @@ build_gpdb_rpm() {
 #!/bin/bash
 yum install -y rpm-build
 export PYTHONPATH=/tmp/greenplum-database-release/ci/concourse
-python /tmp/greenplum-database-release/ci/concourse/scripts/build_gpdb_rpm.py
+python /tmp/greenplum-database-release/ci/concourse/scripts/build-gpdb-rpm.py
 EOF
 	chmod a+x "${BUILD_SCRIPT}"
 	echo "Creating Centos${CENTOS_VERSION} RPM Package..."

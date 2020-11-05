@@ -14,14 +14,37 @@ platform: linux
 
 image_resource:
   type: docker-image
+  source:
+    repository: ubuntu
+    tag: 18.04
 
 inputs:
+- name: bin_gpdb_ubuntu18.04
 - name: gpdb_src
-- name: python-tarball
 - name: greenplum-database-release
+- name: license_file
 
 outputs:
-- name: gpdb_artifacts
+- name: ppa_release
 
 run:
-  path: greenplum-database-release/ci/concourse/scripts/compile_gpdb_oss.bash
+  path: bash
+  args:
+  - -ec
+  - |
+    cp greenplum-database-release/ci/concourse/scripts/dput.cf ~/.dput.cf
+    apt-get update -q=2
+    apt-get install -q=2 -y software-properties-common debmake equivs git
+    gpg --import <(echo "${GPG_PRIVATE_KEY}")
+
+    export PYTHONPATH=${PWD}/greenplum-database-release/ci/concourse
+    pushd greenplum-database-release/ci/concourse && python3 -m unittest tests/ppa-test.py && popd
+    python3 greenplum-database-release/ci/concourse/scripts/publish-to-ppa.py
+
+params:
+  PPA_REPO:
+  GPG_PRIVATE_KEY:
+  RELEASE_MESSAGE:
+  # The DEBFULLNAME and DEBMAIL environment variables are expected in the .deb building process
+  DEBFULLNAME:
+  DEBEMAIL:

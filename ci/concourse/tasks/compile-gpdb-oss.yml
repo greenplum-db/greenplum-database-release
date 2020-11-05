@@ -14,16 +14,14 @@ platform: linux
 
 image_resource:
   type: docker-image
-  source:
-    repository: bash
-    tag: latest
 
 inputs:
 - name: gpdb_src
+- name: python-tarball
 - name: greenplum-database-release
 
 outputs:
-- name: release_artifacts
+- name: gpdb_artifacts
 
 run:
-  path: greenplum-database-release/ci/concourse/scripts/gpdb_github_release.bash
+  path: greenplum-database-release/ci/concourse/scripts/compile-gpdb-oss.bash
