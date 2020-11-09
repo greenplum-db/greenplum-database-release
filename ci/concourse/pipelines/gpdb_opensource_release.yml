@@ -88,11 +88,11 @@ resources:
     regexp: osl/released/gpdb6/open_source_license_greenplum-database-6.0.0-97773a0-(.*).txt
 
 - name: tanzunet_client
-  type: git
+  type: github-release
   source:
-    branch: ((tanzunet-client-branch))
-    private_key: ((tanzunet-client-remote-deploy-key))
-    uri: ((tanzunet-client-git-remote))
+    owner: pivotal
+    repository: gp-tanzunet-client
+    access_token: ((github-token-gp-releng))
     tag_filter: ((tanzunet-client-version))
 
 ## gp internal artifacts
