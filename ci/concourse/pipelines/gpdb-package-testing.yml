@@ -212,7 +212,7 @@ jobs:
   plan:
   - in_parallel:
     - get: greenplum-database-release
-      passed: [create_gpdb_rpm_installer_centos6]
+      passed: [create_gpdb_rpm_installer_centos7]
     - get: rpm_gpdb_centos7
       passed: [create_gpdb_rpm_installer_centos7]
       trigger: true
@@ -235,7 +235,7 @@ jobs:
   plan:
   - in_parallel:
     - get: greenplum-database-release
-      passed: [create_gpdb_rpm_installer_centos6]
+      passed: [create_gpdb_rpm_installer_sles11]
     - get: rpm_gpdb_sles11
       passed: [create_gpdb_rpm_installer_sles11]
       trigger: true

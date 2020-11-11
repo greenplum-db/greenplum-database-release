@@ -280,7 +280,7 @@ jobs:
       trigger: true
     - get: greenplum-database-release
       passed:
-      - create_gpdb_rpm_installer_centos6
+      - create_gpdb_rpm_installer_centos7
     - get: gpdb6-centos7-test-packaging
   - task: test_rpm_functionality
     file: greenplum-database-release/ci/((concourse-root))/tasks/test-functionality-rpm.yml
@@ -301,7 +301,7 @@ jobs:
       trigger: true
     - get: greenplum-database-release
       passed:
-      - create_gpdb_rpm_installer_centos6
+      - create_gpdb_deb_installer_ubuntu18.04
     - get: gpdb6-ubuntu18.04-test-packaging
   - task: test_deb_functionality
     file: greenplum-database-release/ci/((concourse-root))/tasks/test-functionality-deb.yml
