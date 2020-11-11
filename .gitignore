@@ -19,3 +19,4 @@ ci/concourse/tests/__pycache__/
 /*.rpm
 /*.rpm.sha256
 *.swp
+.idea/
