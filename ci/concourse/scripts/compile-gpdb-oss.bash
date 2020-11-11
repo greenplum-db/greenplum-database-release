@@ -83,6 +83,29 @@ git_info() {
 	popd
 }
 
+get_gpdb_tag() {
+	local platform
+	platform="$(python -mplatform)"
+
+	case "${platform}" in
+	*centos*)
+		wget https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64
+		chmod a+x jq-linux64
+		mv jq-linux64 /usr/local/bin/jq
+		;;
+	*Ubuntu*)
+		apt-get update
+		apt-get install jq -y
+		;;
+	*) return ;;
+	esac
+
+	pushd gpdb_src
+	GPDB_VERSION=$(./concourse/scripts/git_info.bash | jq '.root.version' | tr -d '"')
+	export GPDB_VERSION
+	popd
+}
+
 include_xerces() {
 	local greenplum_install_dir="${1}"
 
@@ -165,6 +188,8 @@ check_pythonhome() {
 }
 
 _main() {
+	get_gpdb_tag
+
 	if [ -e /opt/gcc_env.sh ]; then
 		# shellcheck disable=SC1091
 		. /opt/gcc_env.sh
@@ -176,7 +201,13 @@ _main() {
 
 	generate_build_number
 
-	local greenplum_install_dir="/usr/local/greenplum-db-oss"
+	local greenplum_install_dir="${PREFIX}/greenplum-db-${GPDB_VERSION}"
+
+	# for push to ppa, we use prefix /opt, which installation dir will be different
+	if [ "${PREFIX}" = "/opt" ]; then
+		local greenplum_install_dir="${PREFIX}/greenplum-db-6-${GPDB_VERSION}"
+	fi
+
 	build_gpdb "${greenplum_install_dir}"
 	git_info "${greenplum_install_dir}"
 

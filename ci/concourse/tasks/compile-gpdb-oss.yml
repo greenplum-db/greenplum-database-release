@@ -23,5 +23,8 @@ inputs:
 outputs:
 - name: gpdb_artifacts
 
+params:
+  PREFIX:
+
 run:
   path: greenplum-database-release/ci/concourse/scripts/compile-gpdb-oss.bash
