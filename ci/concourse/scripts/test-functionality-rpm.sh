@@ -18,10 +18,10 @@ if [[ $PLATFORM == "rhel"* ]]; then
 	# Install inspec v3 because v4 requires license for commercial use
 	curl https://omnitruck.chef.io/install.sh | bash -s -- -P inspec -v 3
 
-	for test_suite in gpdb_generic_rpm \
-		gpdb_centos_install \
-		gpdb_installed \
-		gpdb_centos_remove \
+	for test_suite in gpdb-generic-rpm \
+		gpdb-centos-install \
+		gpdb-installed \
+		gpdb-centos-remove \
 		greenplum-db-5-rpm; do
 		inspec exec greenplum-database-release/ci/concourse/tests/${test_suite}/ --reporter documentation --no-distinct-exit --no-backend-cache
 	done
@@ -33,10 +33,10 @@ elif [[ $PLATFORM == "sles"* ]]; then
 	# backend-cache wasn't added until inspec 1.47.0
 	#   - https://discourse.chef.io/t/inspec-v1-47-0-released/12066
 	# hence no need to disable it
-	for test_suite in gpdb_generic_rpm \
-		gpdb_sles_install \
-		gpdb_installed \
-		gpdb_sles_remove \
+	for test_suite in gpdb-generic-rpm \
+		gpdb-sles-install \
+		gpdb-installed \
+		gpdb-sles-remove \
 		greenplum-db-5-rpm; do
 		inspec exec --format=documentation greenplum-database-release/ci/concourse/tests/${test_suite}/
 	done

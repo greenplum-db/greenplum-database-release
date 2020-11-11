@@ -1,5 +1,5 @@
 ---
-name: gpdb_sles_install
+name: gpdb-sles-install
 title: GPDB on SLES Uninstall
 maintainer: PA-Toolsmiths
 copyright: PA-Toolsmiths
