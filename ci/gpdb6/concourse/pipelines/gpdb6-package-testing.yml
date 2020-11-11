@@ -8,10 +8,10 @@
 ##                                               |___/|_|
 ## ======================================================================
 resource_types:
-- name: pivnet
+- name: tanzunet
   type: docker-image
   source:
-    repository: pivotalcf/tanzunet-resource
+    repository: pivotalcf/pivnet-resource
     tag: latest-final
 
 - name: gcs
