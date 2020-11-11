@@ -18,10 +18,10 @@ concourse_root="gpdb6/concourse"
 if [[ $PLATFORM == "rhel"* ]]; then
 	test_platform="centos"
 
-	inspec exec greenplum-database-release/ci/${concourse_root}/tests/gpdb_generic_rpm/ --controls=/Category:server-.*/ --reporter documentation --no-distinct-exit --no-backend-cache
-	inspec exec greenplum-database-release/ci/${concourse_root}/tests/gpdb_${test_platform}_install/ --controls=/Category:server-.*/ --reporter documentation --no-backend-cache
-	inspec exec greenplum-database-release/ci/${concourse_root}/tests/gpdb_installed/ --controls=/Category:server-.*/ --reporter documentation --no-distinct-exit --no-backend-cache
-	inspec exec greenplum-database-release/ci/${concourse_root}/tests/gpdb_${test_platform}_remove/ --controls=/Category:server-.*/ --reporter documentation --no-backend-cache
+	inspec exec greenplum-database-release/ci/${concourse_root}/tests/gpdb-generic-rpm/ --controls=/Category:server-.*/ --reporter documentation --no-distinct-exit --no-backend-cache
+	inspec exec greenplum-database-release/ci/${concourse_root}/tests/gpdb-${test_platform}-install/ --controls=/Category:server-.*/ --reporter documentation --no-backend-cache
+	inspec exec greenplum-database-release/ci/${concourse_root}/tests/gpdb-installed/ --controls=/Category:server-.*/ --reporter documentation --no-distinct-exit --no-backend-cache
+	inspec exec greenplum-database-release/ci/${concourse_root}/tests/gpdb-${test_platform}-remove/ --controls=/Category:server-.*/ --reporter documentation --no-backend-cache
 	inspec exec greenplum-database-release/ci/${concourse_root}/tests/greenplum-db-6-rpm/ --reporter documentation --no-distinct-exit --no-backend-cache
 else
 	echo "${PLATFORM} is not yet supported for Greenplum 6.X"

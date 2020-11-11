@@ -9,7 +9,7 @@ inputs:
 
 
 run:
-  path: greenplum-database-release/ci/((concourse-root))/scripts/test_functionality_rpm.sh
+  path: greenplum-database-release/ci/((concourse-root))/scripts/test-functionality-rpm.sh
 
 params:
   PLATFORM:

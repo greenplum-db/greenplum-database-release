@@ -166,14 +166,14 @@ jobs:
     - get: gpdb6-centos6-build
     - get: gpdb-osl
   - task: retrieve_gpdb_src
-    file: greenplum-database-release/ci/((concourse-root))/tasks/retrieve_gpdb_src.yml
+    file: greenplum-database-release/ci/((concourse-root))/tasks/retrieve-gpdb-src.yml
     image: gpdb6-centos6-build
     input_mapping:
       bin_gpdb: bin_gpdb_centos6
     vars:
       concourse-root: ((concourse-root))
   - task: build_rpm_gpdb_centos6
-    file: greenplum-database-release/ci/concourse/tasks/build_gpdb_rpm.yml
+    file: greenplum-database-release/ci/concourse/tasks/build-gpdb-rpm.yml
     image: gpdb6-centos6-build
     input_mapping:
       bin_gpdb: bin_gpdb_centos6
@@ -194,14 +194,14 @@ jobs:
     - get: gpdb6-centos7-build
     - get: gpdb-osl
   - task: retrieve_gpdb_src
-    file: greenplum-database-release/ci/((concourse-root))/tasks/retrieve_gpdb_src.yml
+    file: greenplum-database-release/ci/((concourse-root))/tasks/retrieve-gpdb-src.yml
     image: gpdb6-centos7-build
     input_mapping:
       bin_gpdb: bin_gpdb_centos7
     vars:
       concourse-root: ((concourse-root))
   - task: build_rpm_gpdb_centos7
-    file: greenplum-database-release/ci/concourse/tasks/build_gpdb_rpm.yml
+    file: greenplum-database-release/ci/concourse/tasks/build-gpdb-rpm.yml
     image: gpdb6-centos7-build
     input_mapping:
       bin_gpdb: bin_gpdb_centos7
@@ -222,7 +222,7 @@ jobs:
     - get: gpdb6-ubuntu18.04-build
     - get: gpdb-osl
   - task: build_deb_gpdb_ubuntu18.04
-    file: greenplum-database-release/ci/concourse/tasks/build_gpdb_deb.yml
+    file: greenplum-database-release/ci/concourse/tasks/build-gpdb-deb.yml
     image: gpdb6-ubuntu18.04-build
     input_mapping:
       bin_gpdb: bin_gpdb_ubuntu18.04
@@ -254,7 +254,7 @@ jobs:
       - create_gpdb_rpm_installer_centos6
     - get: gpdb6-centos6-test-packaging
   - task: test_rpm_functionality
-    file: greenplum-database-release/ci/((concourse-root))/tasks/test_functionality_rpm.yml
+    file: greenplum-database-release/ci/((concourse-root))/tasks/test-functionality-rpm.yml
     image: gpdb6-centos6-test-packaging
     input_mapping:
       gpdb_rpm_installer: rpm_gpdb_centos6
@@ -283,7 +283,7 @@ jobs:
       - create_gpdb_rpm_installer_centos6
     - get: gpdb6-centos7-test-packaging
   - task: test_rpm_functionality
-    file: greenplum-database-release/ci/((concourse-root))/tasks/test_functionality_rpm.yml
+    file: greenplum-database-release/ci/((concourse-root))/tasks/test-functionality-rpm.yml
     image: gpdb6-centos7-test-packaging
     input_mapping:
       gpdb_rpm_installer: rpm_gpdb_centos7
@@ -304,7 +304,7 @@ jobs:
       - create_gpdb_rpm_installer_centos6
     - get: gpdb6-ubuntu18.04-test-packaging
   - task: test_deb_functionality
-    file: greenplum-database-release/ci/((concourse-root))/tasks/test_functionality_deb.yml
+    file: greenplum-database-release/ci/((concourse-root))/tasks/test-functionality-deb.yml
     image: gpdb6-ubuntu18.04-test-packaging
     input_mapping:
       gpdb_deb_installer: deb_gpdb_ubuntu18.04
