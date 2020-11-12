@@ -142,7 +142,7 @@ resources:
 ## ======================================================================
 anchors:
 - rpm-params: &rpm-params
-    GPDB_LICENSE: Pivotal Software EULA
+    GPDB_LICENSE: VMware Software EULA
     GPDB_NAME: greenplum-db-6
     GPDB_OSS: false
     GPDB_RELEASE: 1

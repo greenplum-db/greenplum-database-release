@@ -119,7 +119,7 @@ resources:
 anchors:
 - rpm-params: &rpm-params
     GPDB_NAME: greenplum-db-5
-    GPDB_LICENSE: Pivotal Software EULA
+    GPDB_LICENSE: VMware Software EULA
     GPDB_URL: https://network.pivotal.io/products/pivotal-gpdb/
     GPDB_RELEASE: 1
     GPDB_VERSION: "5.99.0"

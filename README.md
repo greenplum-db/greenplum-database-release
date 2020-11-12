@@ -88,7 +88,7 @@ Optional:
 Required Concourse task environment paramaters:
 
 - `GPDB_OSS`: whether we are building an OSS version of the package, if not defined, it's `false`. If this value is `true`, `gpdb_src` folder has to be provided with `LICENSE` and `COPYRIGHT` files.
-- `GPDB_LICENSE`: the name of the license the Greenplum is distributed under, it's currently `Pivotal Software EULA`
+- `GPDB_LICENSE`: the name of the license the Greenplum is distributed under, it's currently `VMware Software EULA`
 - `GPDB_URL`: the URL for more information about Greenplum, it's currently `https://github.com/greenplum-db/gpdb` for OSS, and `https://network.pivotal.io/products/pivotal-gpdb/` for enterprise
 - (RPM Only) `GPDB_NAME`: the package name, e.g. `greenplum-db-6` for `GP6`, or `greenplum-db-7` for `GP7`, or `greenplum-db-5` for `GP5`.
 - (RPM Only) `PLATFORM`: `rhel6`, `rhel7`. This should depend on which `image` used to package the software
@@ -114,7 +114,7 @@ A Docker environment must be used that contains the necessary build tools for ei
       PLATFORM: "rhel6"
       GPDB_NAME: greenplum-db-6
       GPDB_RELEASE: 1
-      GPDB_LICENSE: Pivotal Software EULA
+      GPDB_LICENSE: VMware Software EULA
       GPDB_URL: https://github.com/greenplum-db/gpdb
       GPDB_OSS: true
 ```

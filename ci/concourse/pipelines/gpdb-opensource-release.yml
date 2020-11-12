@@ -291,7 +291,7 @@ jobs:
       PLATFORM: "rhel6"
       GPDB_NAME: greenplum-db-6
       GPDB_RELEASE: 1
-      GPDB_LICENSE: Pivotal Software EULA
+      GPDB_LICENSE: VMware Software EULA
       GPDB_URL: https://github.com/greenplum-db/gpdb
       GPDB_OSS: true
   - put: gpdb_rpm_installer_centos6
@@ -321,7 +321,7 @@ jobs:
       PLATFORM: "rhel7"
       GPDB_NAME: greenplum-db-6
       GPDB_RELEASE: 1
-      GPDB_LICENSE: Pivotal Software EULA
+      GPDB_LICENSE: VMware Software EULA
       GPDB_URL: https://github.com/greenplum-db/gpdb
       GPDB_OSS: true
   - put: gpdb_rpm_installer_centos7

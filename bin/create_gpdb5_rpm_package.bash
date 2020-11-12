@@ -37,7 +37,7 @@ main() {
 		-e GPDB_BUILDARCH="x86_64" \
 		-e GPDB_DESCRIPTION="Greenplum Database" \
 		-e GPDB_GROUP="Applications/Databases" \
-		-e GPDB_LICENSE="Pivotal Software EULA" \
+		-e GPDB_LICENSE="VMware Software EULA" \
 		-e GPDB_NAME="greenplum-db-${gpdb_major_version}" \
 		-e GPDB_PREFIX="/usr/local" \
 		-e GPDB_RELEASE=1 \
