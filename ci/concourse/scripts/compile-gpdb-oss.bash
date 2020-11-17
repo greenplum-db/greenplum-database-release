@@ -88,7 +88,7 @@ get_gpdb_tag() {
 	platform="$(python -mplatform)"
 
 	case "${platform}" in
-	*centos*)
+	*centos* | *photon*)
 		wget https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64
 		chmod a+x jq-linux64
 		mv jq-linux64 /usr/local/bin/jq

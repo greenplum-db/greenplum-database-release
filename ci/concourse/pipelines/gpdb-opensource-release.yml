@@ -49,6 +49,15 @@ resources:
     repository: pivotaldata/gpdb6-centos7-build
     tag: 'latest'
 
+- name: gpdb6-photon3-build
+  type: docker-image
+  icon: docker
+  source:
+    repository: pivotaldata/gpdb6-photon3-build
+    tag: 'latest'
+    username: ((docker_username))
+    password: ((docker_password))
+
 - name: gpdb6-ubuntu18.04-build
   type: docker-image
   icon: docker
@@ -111,6 +120,14 @@ resources:
     json_key: ((concourse-gcs-resources-service-account-key))
     bucket: pivotal-gpdb-concourse-resources-prod
     regexp: gp-internal-artifacts/centos7/python-(2\.7\.12-.*).tar.gz
+
+- name: python-photon3
+  type: gcs
+  icon: google
+  source:
+    json_key: ((concourse-gcs-resources-service-account-key))
+    bucket: pivotal-gpdb-concourse-resources-prod
+    regexp: gp-internal-artifacts/photon3/python-(2\.7\.12.*).tar.gz
 
 - name: python-ubuntu18.04
   type: gcs
@@ -218,6 +235,14 @@ resources:
     package: ((ppa-package-name))
     api_token: ((ppa-api-token))
 
+- name: bin_gpdb_photon3
+  type: gcs
+  icon: google
+  source:
+    json_key: ((concourse-gcs-resources-service-account-key))
+    bucket: ((gcs-bucket-intermediates-for-oss))
+    versioned_file: ((pipeline-name))/bin_gpdb_photon3/bin_gpdb.tar.gz
+
 jobs:
 - name: compile_gpdb_centos6
   on_failure: &slack-alert
@@ -259,6 +284,23 @@ jobs:
     params:
       PREFIX: /usr/local
   - put: bin_gpdb_centos7
+    params:
+      file: gpdb_artifacts/bin_gpdb.tar.gz
+
+- name: compile_gpdb_photon3
+  plan:
+  - in_parallel:
+    - get: gpdb_src
+    - get: greenplum-database-release
+    - get: gpdb6-photon3-build
+    - get: python-tarball
+      resource: python-photon3
+  - task: compile_gpdb
+    image: gpdb6-photon3-build
+    file: greenplum-database-release/ci/concourse/tasks/compile-gpdb-oss.yml
+    params:
+      PREFIX: /usr/local
+  - put: bin_gpdb_photon3
     params:
       file: gpdb_artifacts/bin_gpdb.tar.gz
 
