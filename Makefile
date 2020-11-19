@@ -61,6 +61,7 @@ set-pipeline-dev:
     --config=ci/concourse/pipelines/${PIPELINE_NAME}.yml \
     --load-vars-from=${WORKSPACE}/gp-continuous-integration/secrets/gpdb-oss-release.dev.yml \
     --load-vars-from=${WORKSPACE}/gp-continuous-integration/secrets/ppa-debian-release-secrets-dev.yml \
+    --load-vars-from=ci/concourse/vars/greenplum-database-release.prod.yml \
     --load-vars-from=ci/concourse/vars/greenplum-database-release.dev.yml \
     --var=greenplum-database-release-git-branch=${BRANCH} \
     --var=greenplum-database-release-git-remote=https://github.com/greenplum-db/greenplum-database-release.git \

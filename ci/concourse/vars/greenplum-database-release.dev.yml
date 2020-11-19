@@ -1,22 +1,13 @@
 ---
-gpdb-git-branch: 6X_STABLE
-gpdb-git-remote: https://github.com/greenplum-db/gpdb.git
-gpdb-git-tag-filter: 6.*
 gcs-bucket-intermediates-for-oss: greenplum-database-concourse-resources-intermediates-dev
 gpdb-release-owner: gp-releng
-gpdb-release-repository: gpdb
 gcs-bucket-for-oss: greenplum-database-concourse-resources-dev
 ppa-repository: 'ppa:gpdb-test/db'
 ppa-login: 'gpdb-test/db'
 ppa-package-name: 'greenplum-db-6'
 release-message: 'testing release of GPDB'
-debian-release-git-remote: https://github.com/greenplum-db/debian-release.git
-debian-release-git-branch: master
 debian-package-maintainer-fullname: 'GPBOSH (Testing gpdb)'
 debian-package-maintainer-email: gpbosh@pivotal.io
-tanzunet-client-version: v4.1.0
-tanzunet-client-git-remote: git@github.com:pivotal/gp-tanzunet-client.git
-tanzunet-client-branch: main
 tanzunet-endpoint: "https://pivnet-integration.cfapps.io/"
 tanzunet-product-slug: toolsmiths-gpdb-test
 tanzunet-metadata-file-path: ci/tanzunet/metadata.yml
