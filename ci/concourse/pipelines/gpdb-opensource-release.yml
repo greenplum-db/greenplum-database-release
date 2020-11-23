@@ -491,6 +491,8 @@ jobs:
           cp -v bin_gpdb_ubuntu18.04_for_github/bin_gpdb.tar.gz releases/server-${gpdb_semver}-ubuntu18.04_x86_64.tar.gz
   - task: verify_gpdb_versions
     file: gpdb_src/concourse/tasks/verify_gpdb_versions.yml
+    input_mapping:
+      bin_gpdb_ubuntu18.04: bin_gpdb_ubuntu18.04_for_github
   - in_parallel:
     - put: bin_gpdb_centos6_release
       params:
