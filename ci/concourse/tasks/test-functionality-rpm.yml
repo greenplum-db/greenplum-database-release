@@ -8,7 +8,8 @@ inputs:
 - name: previous-6-release
 
 run:
-  path: greenplum-database-release/ci/concourse/scripts/test-functionality-rpm.sh
+  path: greenplum-database-release/ci/concourse/scripts/test-functionality-rpm.bash
 
 params:
   PLATFORM:
+  GPDB_MAJOR_VERSION:

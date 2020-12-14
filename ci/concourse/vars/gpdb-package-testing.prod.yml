@@ -4,5 +4,6 @@ greenplum-database-release-git-remote: https://github.com/greenplum-db/greenplum
 
 aws-region: us-west-2
 gpdb-stable-builds-bucket-name: gpdb-stable-concourse-builds
-
+gcs-bucket-intermediates: pivotal-gpdb-concourse-resources-intermediates-prod
 tanzunet-endpoint: https://network.pivotal.io
+gpdb6-osl-version-regex: '6\.10\.0'

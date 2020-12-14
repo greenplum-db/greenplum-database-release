@@ -1,5 +1,5 @@
 ---
-name: gpdb-generic-rpm
+name: gpdb5-generic-rpm
 title: Generic GPDB RPM
 maintainer: PA-Toolsmiths
 copyright: PA-Toolsmiths

@@ -13,7 +13,7 @@ inputs:
 - name: previous-5-release
 
 run:
-  path: greenplum-database-release/ci/concourse/scripts/test-functionality-rpm.sh
+  path: greenplum-database-release/ci/concourse/scripts/test-functionality-rpm.bash
 
 params:
   PLATFORM:

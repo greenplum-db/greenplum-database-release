@@ -14,4 +14,4 @@ outputs:
 - name: gpdb_src
 
 run:
-  path: greenplum-database-release/ci/((concourse-root))/scripts/retrieve-gpdb-src.bash
+  path: greenplum-database-release/ci/concourse/scripts/retrieve-gpdb6-src.bash

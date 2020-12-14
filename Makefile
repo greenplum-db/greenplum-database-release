@@ -124,6 +124,7 @@ set-gpdb-package-testing-prod:
 	--config=ci/concourse/pipelines/gpdb-package-testing.yml \
 	--load-vars-from=ci/concourse/vars/gpdb-package-testing.prod.yml \
 	--load-vars-from=${WORKSPACE}/gp-continuous-integration/secrets/gpdb-package-testing.prod.yml \
+	--var=pipeline-name=gpdb6-integration-testing \
 	$(FLY_OPTION_NON-INTERACTIVE)
 
 .PHONY: set-gpdb-package-testing-dev
@@ -138,34 +139,9 @@ set-gpdb-package-testing-dev:
 	--load-vars-from=${WORKSPACE}/gp-continuous-integration/secrets/gpdb-package-testing.prod.yml \
 	--load-vars-from=${WORKSPACE}/gp-continuous-integration/secrets/gpdb-package-testing.dev.yml \
 	--var=greenplum-database-release-git-branch=${BRANCH} \
+	--var=pipeline-name=${DEV_INTEGRATION_PIPELINE_NAME} \
 	$(FLY_OPTION_NON-INTERACTIVE)
 
-.PHONY: set-gpdb6-package-testing-prod
-set-gpdb6-package-testing-prod:
-	$(FLY_CMD) --target=$(CONCOURSE) \
-	set-pipeline \
-	--check-creds \
-	--pipeline=gpdb6-package-testing \
-	--config=ci/gpdb6/concourse/pipelines/gpdb6-package-testing.yml \
-	--load-vars-from=ci/gpdb6/concourse/vars/gpdb6-package-testing.prod.yml \
-	--load-vars-from=${WORKSPACE}/gp-continuous-integration/secrets/gpdb6-package-testing.prod.yml \
-	--var=pipeline-name=gpdb6-integration-testing \
-	$(FLY_OPTION_NON-INTERACTIVE)
-
-.PHONY: set-gpdb6-package-testing-dev
-set-gpdb6-package-testing-dev:
-	$(FLY_CMD) --target=$(CONCOURSE) \
-	set-pipeline \
-	--check-creds \
-	--pipeline=gpdb6-package-testing-$(BRANCH)-${USER} \
-	--config=ci/gpdb6/concourse/pipelines/gpdb6-package-testing.yml \
-	--load-vars-from=ci/gpdb6/concourse/vars/gpdb6-package-testing.prod.yml \
-	--load-vars-from=ci/gpdb6/concourse/vars/gpdb6-package-testing.dev.yml \
-	--load-vars-from=${WORKSPACE}/gp-continuous-integration/secrets/gpdb6-package-testing.prod.yml \
-	--load-vars-from=${WORKSPACE}/gp-continuous-integration/secrets/gpdb6-package-testing.dev.yml \
-	--var=greenplum-database-release-git-branch=${BRANCH} \
-	--var=pipeline-name=${DEV_INTEGRATION_PIPELINE_NAME}
-	$(FLY_OPTION_NON-INTERACTIVE)
 
 ## ----------------------------------------------------------------------
 ## Lint targets

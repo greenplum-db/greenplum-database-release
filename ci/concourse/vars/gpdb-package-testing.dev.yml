@@ -1,6 +1,6 @@
 ---
 greenplum-database-release-git-branch:
-
+gcs-bucket-intermediates: pivotal-gpdb-concourse-resources-intermediates-dev
 gpdb-stable-builds-bucket-name: gpdb-stable-concourse-builds-dev
 
 tanzunet-endpoint: https://pivnet-integration.cfapps.io

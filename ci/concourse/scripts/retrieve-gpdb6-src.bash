@@ -29,7 +29,7 @@ fi
 popd
 
 # Fetch gpdb source code for ICW testing
-# TODO: make retrieve-gpdb-src.yml take gpdb_src as input and output gpdb_src_fetched
+# TODO: make retrieve-gpdb6-src.yml take gpdb_src as input and output gpdb_src_fetched
 git clone --depth 200 --branch 6X_STABLE \
 	https://github.com/greenplum-db/gpdb.git gpdb_src
 cd gpdb_src
