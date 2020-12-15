@@ -48,8 +48,8 @@ elif [[ $GPDB_MAJOR_VERSION == "6" ]]; then
 		inspec exec greenplum-database-release/ci/concourse/tests/gpdb6-generic-rpm/ --controls=/Category:server-.*/ --reporter documentation --no-distinct-exit --no-backend-cache
 		inspec exec greenplum-database-release/ci/concourse/tests/gpdb6-centos-install/ --controls=/Category:server-.*/ --reporter documentation --no-backend-cache
 		inspec exec greenplum-database-release/ci/concourse/tests/gpdb6-installed/ --controls=/Category:server-.*/ --reporter documentation --no-distinct-exit --no-backend-cache
-		inspec exec greenplum-database-release/ci/tests/gpdb6-centos-remove/ --controls=/Category:server-.*/ --reporter documentation --no-backend-cache
-		inspec exec greenplum-database-release/ci/tests/greenplum-db-6-rpm/ --reporter documentation --no-distinct-exit --no-backend-cache
+		inspec exec greenplum-database-release/ci/concourse/tests/gpdb6-centos-remove/ --controls=/Category:server-.*/ --reporter documentation --no-backend-cache
+		inspec exec greenplum-database-release/ci/concourse/tests/greenplum-db-6-rpm/ --reporter documentation --no-distinct-exit --no-backend-cache
 	else
 		echo "${PLATFORM} is not yet supported for Greenplum 6.X"
 		exit 1

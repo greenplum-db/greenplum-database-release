@@ -76,9 +76,9 @@ control 'rpm_relocateable' do
     it { should be_linked_to "#{prefix}/greenplum-db-#{gpdb_version}" }
   end
 
-  describe file("#{prefix}/greenplum-db/greenplum_path.sh") do
-    its('content') { should match /GPHOME=#{prefix}\/greenplum-db-.*/ }
-    its('content') { should match /export GPHOME/ }
+  describe command("source #{prefix}/greenplum-db/greenplum_path.sh; echo $GPHOME") do
+    its('exit_status') { should eq 0 }
+    its('stdout') { should match /\/opt\/greenplum-db\/./ }
   end
 
   describe command('rpm --erase greenplum-db-5') do

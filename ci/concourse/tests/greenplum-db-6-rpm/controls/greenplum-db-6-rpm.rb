@@ -62,7 +62,7 @@ control 'RPM installation' do
   end
 
   describe file("/usr/local/greenplum-db-#{gpdb_version}/greenplum_path.sh.rpmsave") do
-    it { should exist }
+    it { should_not exist }
   end
 
   describe file("/usr/local/greenplum-db") do
@@ -210,9 +210,9 @@ control 'RPM is relocateable' do
     its('link_path') { should eq "#{prefix}/greenplum-db-#{gpdb_version}" }
   end
 
-  describe file("#{prefix}/greenplum-db-#{gpdb_version}/greenplum_path.sh") do
-    its('content') { should match /GPHOME=#{prefix}\/greenplum-db-#{gpdb_version.split('+').first}.*/ }
-    its('content') { should match /export GPHOME/ }
+  describe command("source #{prefix}/greenplum-db-#{gpdb_version}/greenplum_path.sh; echo $GPHOME") do
+    its('exit_status') { should eq 0 }
+    its('stdout') { should eq "#{prefix}/greenplum-db-#{gpdb_version}\n" }
   end
 
   describe command("rpm --erase #{rpm_gpdb_name}") do

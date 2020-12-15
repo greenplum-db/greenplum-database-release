@@ -71,7 +71,7 @@ control 'Category:server-rpm_installable' do
   end
 
   describe file("/usr/local/greenplum-db-#{gpdb_version}/greenplum_path.sh.rpmsave") do
-    it { should exist }
+    it { should_not exist }
   end
 
   describe file("/usr/local/greenplum-db") do

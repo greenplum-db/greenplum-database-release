@@ -25,15 +25,9 @@ control 'greenplum_path.sh' do
   title 'greenplum_path.sh is correct'
   desc 'Modification must be made to the given upstream greenplum_path.sh'
 
-  # With default %{prefix}"
-  describe file('/usr/local/greenplum-db/greenplum_path.sh') do
-    its('content') { should match /GPHOME=\/usr\/local\/greenplum-db-#{gpdb_version.split('+').first}/ }
-    its('content') { should match /export GPHOME/ }
-  end
-
   describe command('source /usr/local/greenplum-db/greenplum_path.sh; echo $GPHOME') do
     its('exit_status') { should eq 0 }
-    its('stdout') { should match /\/usr\/local\/greenplum-db/ }
+    its('stdout') { should match /\/usr\/local\/greenplum-db\/./ }
   end
 
 end
