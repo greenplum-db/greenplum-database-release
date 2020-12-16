@@ -27,7 +27,7 @@ control 'greenplum_path.sh' do
 
   describe command('source /usr/local/greenplum-db/greenplum_path.sh; echo $GPHOME') do
     its('exit_status') { should eq 0 }
-    its('stdout') { should match /\/usr\/local\/greenplum-db\/./ }
+    its('stdout') { should eq "/usr/local/greenplum-db-#{gpdb_version}\n" }
   end
 
 end

@@ -78,7 +78,7 @@ control 'rpm_relocateable' do
 
   describe command("source #{prefix}/greenplum-db/greenplum_path.sh; echo $GPHOME") do
     its('exit_status') { should eq 0 }
-    its('stdout') { should match /\/opt\/greenplum-db\/./ }
+    its('stdout') { should eq "#{prefix}/greenplum-db-#{gpdb_version}\n" }
   end
 
   describe command('rpm --erase greenplum-db-5') do
