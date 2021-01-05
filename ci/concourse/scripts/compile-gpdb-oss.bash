@@ -141,8 +141,8 @@ include_zstd() {
 
 	local libdir
 	case "${platform}" in
-	*centos*) libdir=/usr/lib64 ;;
-	*Ubuntu* | *photon*) libdir=/usr/lib ;;
+	*centos* | *photon*) libdir=/usr/lib64 ;;
+	*Ubuntu*) libdir=/usr/lib ;;
 	*) return ;;
 	esac
 
