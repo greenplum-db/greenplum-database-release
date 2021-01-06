@@ -71,6 +71,8 @@ class RPMPackageBuilder(BasePackageBuilder):
     @property
     def rpm_build_dir(self):
         # Should return absolute path
+        if self._platform == 'photon3':
+            return "/usr/src/photon"
         return "/root/rpmbuild"
 
     @property
