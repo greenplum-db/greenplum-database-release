@@ -31,7 +31,6 @@ Requires: bzip2
 Requires: curl
 # krb5-devel provides libgssapi_krb5.so
 Requires: krb5-devel
-Requires: libcurl
 Requires: libxml2
 Requires: libyaml
 Requires: zlib
@@ -52,14 +51,17 @@ Requires: iproute
 Requires: openssh-server
 %if 0%{?rhel} == 7
 Requires: openssl-libs
+Requires: libcurl
 %endif
 %if 0%{?rhel} == 6
 Requires: libevent2
+Requires: libcurl
 %else
 Requires: libevent
-
 %endif
-
+%if 0%{?rhel:0}
+Requires: curl-libs
+%endif
 %description
 Greenplum Database
 
