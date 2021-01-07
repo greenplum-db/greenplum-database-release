@@ -5,9 +5,13 @@ inputs:
 - name: greenplum-database-release
 - name: gpdb_rpm_installer
 - name: previous-5-release
+  optional: true
 - name: previous-5.28.4-release
+  optional: true
 - name: previous-6-release
+  optional: true
 - name: previous-6.12.0-release
+  optional: true
 
 run:
   path: greenplum-database-release/ci/concourse/scripts/test-functionality-rpm.bash

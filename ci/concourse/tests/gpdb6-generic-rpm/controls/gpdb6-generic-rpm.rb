@@ -59,7 +59,7 @@ control 'Category:server-rpm_installable' do
   title 'rpm is installable with rpm'
   desc 'The rpm can be installed and then uninstalled with the rpm utility'
 
-  describe command("yum install -y #{rpm_full_path}") do
+  describe command("rpm --install #{rpm_full_path}") do
     its('exit_status') { should eq 0 }
   end
 
@@ -68,7 +68,7 @@ control 'Category:server-rpm_installable' do
     it { should be_linked_to "/usr/local/greenplum-db-#{gpdb_version}"}
   end
 
-  describe command("yum remove -y #{rpm_gpdb_name}") do
+  describe command("rpm --erase #{rpm_gpdb_name}") do
     its('exit_status') { should eq 0 }
   end
 
@@ -86,7 +86,7 @@ control 'Category:server-rpm_config_file' do
 
   title 'greenplum_path.sh is preserved if its content changed'
 
-  describe command("yum install -y #{rpm_full_path}") do
+  describe command("rpm --install #{rpm_full_path}") do
     its('exit_status') { should eq 0 }
   end
 
@@ -95,7 +95,7 @@ control 'Category:server-rpm_config_file' do
     its('exit_status') { should eq 0 }
   end
 
-  describe command("yum remove -y #{rpm_gpdb_name}") do
+  describe command("rpm --erase #{rpm_gpdb_name}") do
     its('exit_status') { should eq 0 }
   end
 
@@ -121,35 +121,63 @@ control 'Category:server-rpm_obsoletes_old_6_rpm' do
   title 'when both greenplum-db version 6.2.1 and greenplum-db-6 are installed.'
 
   describe command("yum install -y previous-6-release/greenplum-db-#{previous_6_version}-#{gpdb_rpm_arch}-x86_64.rpm") do
+    before do
+      # photon3 doesn't have previous release of gpdb6
+      skip if gpdb_rpm_arch == "photon3"
+    end
     its('exit_status') { should eq 0 }
   end
 
   describe command("yum install -y #{rpm_full_path}") do
+    before do
+      # photon3 doesn't have previous release of gpdb6
+      skip if gpdb_rpm_arch == "photon3"
+    end
     its('exit_status') { should eq 0 }
   end
 
   # the previous gpdb version 6 package will be removed
   describe command("yum list installed greenplum-db") do
+    before do
+      # photon3 doesn't have previous release of gpdb6
+      skip if gpdb_rpm_arch == "photon3"
+    end
     its('exit_status') { should eq 1 }
   end
 
   # the directory belongs to package: greenplum-db will be removed if its package version equals to version 6.*
   describe file("/usr/local/greenplum-db-#{previous_6_version}") do
+    before do
+      # photon3 doesn't have previous release of gpdb6
+      skip if gpdb_rpm_arch == "photon3"
+    end
     it { should_not exist }
   end
 
   # the link belongs to package: greenplum-db will be removed if its package version equals to version 6.*
   # so the link belongs to previous gpdb version 6 pacakge will still exist
   describe file("/usr/local/greenplum-db") do
+    before do
+      # photon3 doesn't have previous release of gpdb6
+      skip if gpdb_rpm_arch == "photon3"
+    end
     it { should be_symlink }
     its('link_path') { should eq "/usr/local/greenplum-db-#{gpdb_version}" }
   end
 
   describe file("/usr/local/greenplum-db-#{gpdb_version}") do
+    before do
+      # photon3 doesn't have previous release of gpdb6
+      skip if gpdb_rpm_arch == "photon3"
+    end
     it { should be_directory }
   end
 
   describe command("yum remove -y #{rpm_gpdb_name}") do
+    before do
+      # photon3 doesn't have previous release of gpdb6
+      skip if gpdb_rpm_arch == "photon3"
+    end
     its('exit_status') { should eq 0 }
   end
 
@@ -160,37 +188,69 @@ control 'Category:server-rpm_not_obsoletes_old_5_rpm' do
   title 'when both greenplum-db version 5.2.1 and greenplum-db-6 are installed.'
 
   describe command("yum install -y previous-5-release/greenplum-db-#{previous_5_version}-#{gpdb_rpm_arch}-x86_64.rpm") do
+    before do
+      # photon3 doesn't have previous release of gpdb5
+      skip if gpdb_rpm_arch == "photon3"
+    end
     its('exit_status') { should eq 0 }
   end
 
   describe command("yum install -y #{rpm_full_path}") do
+    before do
+      # photon3 doesn't have previous release of gpdb5
+      skip if gpdb_rpm_arch == "photon3"
+    end
     its('exit_status') { should eq 0 }
   end
 
   # the previous gpdb version 5 package will still exist
   describe command("yum list installed greenplum-db") do
+    before do
+      # photon3 doesn't have previous release of gpdb5
+      skip if gpdb_rpm_arch == "photon3"
+    end
     its('exit_status') { should eq 0 }
   end
 
   # the directory belongs to package: greenplum-db will still exist if its package version equals to version 5.*
   describe file("/usr/local/greenplum-db-#{previous_5_version}") do
+    before do
+      # photon3 doesn't have previous release of gpdb5
+      skip if gpdb_rpm_arch == "photon3"
+    end
     it { should exist }
   end
 
   describe file("/usr/local/greenplum-db") do
+    before do
+      # photon3 doesn't have previous release of gpdb5
+      skip if gpdb_rpm_arch == "photon3"
+    end
     it { should be_symlink }
     its('link_path') { should eq "/usr/local/greenplum-db-#{gpdb_version}" }
   end
 
   describe file("/usr/local/greenplum-db-#{gpdb_version}") do
+    before do
+      # photon3 doesn't have previous release of gpdb5
+      skip if gpdb_rpm_arch == "photon3"
+    end
     it { should be_directory }
   end
 
   describe command("yum remove -y #{rpm_gpdb_name}") do
+    before do
+      # photon3 doesn't have previous release of gpdb5
+      skip if gpdb_rpm_arch == "photon3"
+    end
     its('exit_status') { should eq 0 }
   end
 
   describe command("yum remove -y greenplum-db") do
+    before do
+      # photon3 doesn't have previous release of gpdb5
+      skip if gpdb_rpm_arch == "photon3"
+    end
     its('exit_status') { should eq 0 }
   end
 
@@ -220,8 +280,9 @@ control 'Category:server-rpm_is_upgradable' do
   end
 end
 
-control 'Category:server-rpm_uninstall' do
-  describe command("yum install -y #{gpdb_rpm_path}/greenplum-db-#{gpdb_rpm_arch}-x86_64.rpm") do
+
+control 'Categroy:server-rpm_uninstall' do
+  describe command("rpm --install #{gpdb_rpm_path}/greenplum-db-#{gpdb_rpm_arch}-x86_64.rpm") do
     its('exit_status') { should eq 0 }
   end
 
