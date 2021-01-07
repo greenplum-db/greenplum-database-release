@@ -40,7 +40,7 @@ control 'Category:server-rpm_binary_match' do
   title 'RPM Binary matches Built Source'
   desc 'The binaries that are packaged in the RPM should match in version to what is expected from the source code'
 
-  describe command('source /usr/local/greenplum-db/greenplum_path.sh ; /usr/local/greenplum-db/bin/postgres --gp-version') do
+  describe command("source /usr/local/greenplum-db-#{gpdb_version}/greenplum_path.sh ; /usr/local/greenplum-db-#{gpdb_version}/bin/postgres --gp-version") do
     its('exit_status') { should eq 0 }
     skip "its('stdout') { should match /#{gpdb_version}/ }"
   end
