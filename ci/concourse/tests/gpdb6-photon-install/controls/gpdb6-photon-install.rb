@@ -25,10 +25,6 @@ control 'Category:server-installs_on_photon' do
     its('exit_status') { should eq 0 }
   end
 
-  describe command("rpm --reinstall #{rpm_full_path}") do
-    its('exit_status') { should eq 0 }
-  end
-
   # Should report installed
   describe command("sleep 5;rpm --query #{rpm_gpdb_name}") do
     its('stdout') { should match /greenplum-db-6*/ }
