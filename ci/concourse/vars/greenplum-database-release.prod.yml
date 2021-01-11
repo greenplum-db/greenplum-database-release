@@ -20,5 +20,5 @@ tanzunet-client-version: v4.2.0
 tanzunet-client-git-remote: git@github.com:pivotal/gp-tanzunet-client.git
 tanzunet-client-branch: main
 tanzunet-endpoint: "https://network.pivotal.io"
-tanzunet-product-slug: toolsmiths-gpdb-test
+tanzunet-product-slug: greenplum-database
 tanzunet-metadata-file-path: ci/tanzunet/metadata.yml
