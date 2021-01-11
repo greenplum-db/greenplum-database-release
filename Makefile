@@ -26,7 +26,7 @@ PIPELINE_NAME              = greenplum-database-release-${BRANCH}-${USER}
 FLY_CMD                    = fly
 FLY_OPTION_NON-INTERACTIVE =
 
-DEV_INTEGRATION_PIPELINE_NAME = dev-gpdb6-integration-testing-${BRANCH}-${USER}
+DEV_GPDB-PACKAGE-TESTING_PIPELINE_NAME = dev-gpdb-package-testing-${BRANCH}-${USER}
 
 
 ## ----------------------------------------------------------------------
@@ -124,7 +124,7 @@ set-gpdb-package-testing-prod:
 	--config=ci/concourse/pipelines/gpdb-package-testing.yml \
 	--load-vars-from=ci/concourse/vars/gpdb-package-testing.prod.yml \
 	--load-vars-from=${WORKSPACE}/gp-continuous-integration/secrets/gpdb-package-testing.prod.yml \
-	--var=pipeline-name=gpdb6-integration-testing \
+	--var=pipeline-name=gpdb-package-testing \
 	$(FLY_OPTION_NON-INTERACTIVE)
 
 .PHONY: set-gpdb-package-testing-dev
@@ -139,7 +139,7 @@ set-gpdb-package-testing-dev:
 	--load-vars-from=${WORKSPACE}/gp-continuous-integration/secrets/gpdb-package-testing.prod.yml \
 	--load-vars-from=${WORKSPACE}/gp-continuous-integration/secrets/gpdb-package-testing.dev.yml \
 	--var=greenplum-database-release-git-branch=${BRANCH} \
-	--var=pipeline-name=${DEV_INTEGRATION_PIPELINE_NAME} \
+	--var=pipeline-name=${DEV_GPDB-PACKAGE-TESTING_PIPELINE_NAME} \
 	$(FLY_OPTION_NON-INTERACTIVE)
 
 
