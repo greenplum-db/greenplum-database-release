@@ -60,7 +60,7 @@ resources:
     secret_access_key: ((gpdb5-pipeline-s3-secret-access-key))
     region_name: ((aws-region))
     bucket: ((gpdb-stable-builds-bucket-name))
-    versioned_file: release_candidates/rpm_gpdb_centos6/gpdb5/greenplum-db-5.99.0-rhel6-x86_64.rpm
+    versioned_file: ((pipeline-name))/rpm_gpdb_centos6/gpdb5/greenplum-db-5.99.0-rhel6-x86_64.rpm
 
 - name: bin_gpdb5_centos7
   type: s3
@@ -78,7 +78,7 @@ resources:
     secret_access_key: ((gpdb5-pipeline-s3-secret-access-key))
     region_name: ((aws-region))
     bucket: ((gpdb-stable-builds-bucket-name))
-    versioned_file: release_candidates/rpm_gpdb_centos7/gpdb5/greenplum-db-5.99.0-rhel7-x86_64.rpm
+    versioned_file: ((pipeline-name))/rpm_gpdb_centos7/gpdb5/greenplum-db-5.99.0-rhel7-x86_64.rpm
 
 - name: bin_gpdb5_sles11
   type: s3
@@ -96,7 +96,7 @@ resources:
     secret_access_key: ((gpdb5-pipeline-s3-secret-access-key))
     region_name: ((aws-region))
     bucket: ((gpdb-stable-builds-bucket-name))
-    versioned_file: release_candidates/rpm_gpdb_sles11/gpdb5/greenplum-db-5.99.0-sles11-x86_64.rpm
+    versioned_file: ((pipeline-name))/rpm_gpdb_sles11/gpdb5/greenplum-db-5.99.0-sles11-x86_64.rpm
 
 - name: previous-6-release
   type: tanzunet
