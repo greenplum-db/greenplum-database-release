@@ -567,4 +567,3 @@ jobs:
       TANZUNET_METADATA_FILE: ((tanzunet-metadata-file-path))
       TANZUNET_REFRESH_TOKEN: ((tanzunet-refresh-token))
       TANZUNET_PRODUCT_SLUG: ((tanzunet-product-slug))
-      TANZUNET_S3_FILEPATH_PREFIX: ((tanzunet-s3-filepath-prefix))

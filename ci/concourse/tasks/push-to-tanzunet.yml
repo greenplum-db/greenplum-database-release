@@ -18,7 +18,6 @@ params:
   TANZUNET_ENDPOINT:
   TANZUNET_REFRESH_TOKEN:
   TANZUNET_PRODUCT_SLUG:
-  TANZUNET_S3_FILEPATH_PREFIX:
   TANZUNET_METADATA_FILE:
 run:
   path: greenplum-database-release/ci/concourse/scripts/push-to-tanzunet.bash
