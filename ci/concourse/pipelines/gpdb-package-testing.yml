@@ -50,7 +50,7 @@ resources:
     access_key_id: ((gpdb5-pipeline-s3-access-key-id))
     secret_access_key: ((gpdb5-pipeline-s3-secret-access-key))
     region_name: ((aws-region))
-    bucket: ((gpdb-stable-builds-bucket-name))
+    bucket: gpdb-stable-concourse-builds
     versioned_file: release_candidates/bin_gpdb_centos6/gpdb5/bin_gpdb.tar.gz
 
 - name: rpm_gpdb5_centos6
@@ -68,7 +68,7 @@ resources:
     access_key_id: ((gpdb5-pipeline-s3-access-key-id))
     secret_access_key: ((gpdb5-pipeline-s3-secret-access-key))
     region_name: ((aws-region))
-    bucket: ((gpdb-stable-builds-bucket-name))
+    bucket: gpdb-stable-concourse-builds
     versioned_file: release_candidates/bin_gpdb_centos7/gpdb5/bin_gpdb.tar.gz
 
 - name: rpm_gpdb5_centos7
@@ -86,7 +86,7 @@ resources:
     access_key_id: ((gpdb5-pipeline-s3-access-key-id))
     secret_access_key: ((gpdb5-pipeline-s3-secret-access-key))
     region_name: ((aws-region))
-    bucket: ((gpdb-stable-builds-bucket-name))
+    bucket: gpdb-stable-concourse-builds
     versioned_file: release_candidates/bin_gpdb_sles11/gpdb5/bin_gpdb.tar.gz
 
 - name: rpm_gpdb5_sles11
