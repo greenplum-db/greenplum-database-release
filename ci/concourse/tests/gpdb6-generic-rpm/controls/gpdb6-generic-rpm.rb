@@ -5,6 +5,8 @@ title 'Greenplum-db RPM integration testing'
 
 gpdb_rpm_path = ENV['GPDB_RPM_PATH']
 gpdb_rpm_arch = ENV['GPDB_RPM_ARCH']
+# want to get the el6 from rhel6
+gpdb_rpm_arch_string = gpdb_rpm_arch[2,4]
 
 def rpm_query(field_name, rpm_full_path)
   "rpm --query --queryformat '%{#{field_name}}' --package #{rpm_full_path}"
@@ -194,12 +196,31 @@ control 'Category:server-rpm_not_obsoletes_old_5_rpm' do
 
 end
 
-control 'Categroy:server-rpm_is_upgradable' do
-# TODO, need greenplum-db-6 to be published to tanzunet, at that time, write a upgradeable test
-# from greenplum-db-6 with lower version to greenplum-db-6 with upper version is possible.
+control 'Category:server-rpm_is_upgradable' do
+  describe command("rpm --install previous-6.12.0-release/greenplum-db-6.12.0-#{gpdb_rpm_arch}-x86_64.rpm") do
+    its('exit_status') { should eq 0 }
+  end
+
+  describe command("rpm --query greenplum-db-6") do
+    its('stdout') { should match /greenplum-db-6-6.12.0*/ }
+    its('exit_status') { should eq 0 }
+  end
+
+  describe command("rpm --upgrade #{rpm_full_path}") do
+    its('exit_status') { should eq 0 }
+  end
+
+  describe command("rpm --query greenplum-db-6") do
+    its('stdout') { should eq "greenplum-db-6-#{gpdb_version}-1.#{gpdb_rpm_arch_string}.x86_64\n"}
+    its('exit_status') { should eq 0 }
+  end
+
+  describe command('rpm --erase greenplum-db-6') do
+    its('exit_status') { should eq 0 }
+  end
 end
 
-control 'Categroy:server-rpm_uninstall' do
+control 'Category:server-rpm_uninstall' do
   describe command("yum install -y #{gpdb_rpm_path}/greenplum-db-#{gpdb_rpm_arch}-x86_64.rpm") do
     its('exit_status') { should eq 0 }
   end
@@ -221,7 +242,7 @@ control 'Categroy:server-rpm_uninstall' do
   # directory and left it in-place we use shallow_link_path here because the
   # actual target does not exist
   describe file("/usr/local/greenplum-db") do
-    its('type') { should eq :link }
+    its('type') { should eq :symlink }
     its('shallow_link_path') { should eq "/usr/local/new-greenplum-version"}
   end
 end

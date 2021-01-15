@@ -106,6 +106,14 @@ resources:
     product_slug: pivotal-gpdb
     product_version: 6\.2\.1
 
+- name: previous-6.12.0-release
+  type: tanzunet
+  source:
+    api_token: ((public-tanzunet-refresh-token))
+    endpoint: ((tanzunet-endpoint))
+    product_slug: pivotal-gpdb
+    product_version: 6\.12\.0
+
 - name: previous-5-release
   type: tanzunet
   source:
@@ -113,6 +121,15 @@ resources:
     endpoint: ((tanzunet-endpoint))
     product_slug: pivotal-gpdb
     product_version: 5\.25\.0
+
+- name: previous-5.28.4-release
+  type: tanzunet
+  source:
+    api_token: ((public-tanzunet-refresh-token))
+    endpoint: ((tanzunet-endpoint))
+    product_slug: pivotal-gpdb
+    product_version: 5\.28\.4
+
 - name: bin_gpdb6_centos6
   type: gcs
   source:
@@ -290,7 +307,13 @@ jobs:
     - get: previous-6-release
       params:
         globs: [greenplum-db-*-rhel6-x86_64.rpm]
+    - get: previous-6.12.0-release
+      params:
+        globs: [greenplum-db-*-rhel6-x86_64.rpm]
     - get: previous-5-release
+      params:
+        globs: [greenplum-db-*-rhel6-x86_64.rpm]
+    - get: previous-5.28.4-release
       params:
         globs: [greenplum-db-*-rhel6-x86_64.rpm]
     - get: centos-gpdb-dev-6
@@ -314,7 +337,13 @@ jobs:
     - get: previous-6-release
       params:
         globs: [greenplum-db-*-rhel7-x86_64.rpm]
+    - get: previous-6.12.0-release
+      params:
+        globs: [greenplum-db-*-rhel7-x86_64.rpm]
     - get: previous-5-release
+      params:
+        globs: [greenplum-db-*-rhel7-x86_64.rpm]
+    - get: previous-5.28.4-release
       params:
         globs: [greenplum-db-*-rhel7-x86_64.rpm]
     - get: centos-gpdb-dev-7
@@ -336,6 +365,9 @@ jobs:
       passed: [create_gpdb5_rpm_installer_sles11]
       trigger: true
     - get: previous-5-release
+      params:
+        globs: [greenplum-db-*-sles11-x86_64.rpm]
+    - get: previous-5.28.4-release
       params:
         globs: [greenplum-db-*-sles11-x86_64.rpm]
   - task: test_rpm_functionality
@@ -426,7 +458,15 @@ jobs:
       params:
         globs:
         - greenplum-db-*-rhel6-x86_64.rpm
+    - get: previous-6.12.0-release
+      params:
+        globs:
+        - greenplum-db-*-rhel6-x86_64.rpm
     - get: previous-5-release
+      params:
+        globs:
+        - greenplum-db-*-rhel6-x86_64.rpm
+    - get: previous-5.28.4-release
       params:
         globs:
         - greenplum-db-*-rhel6-x86_64.rpm
@@ -454,7 +494,15 @@ jobs:
       params:
         globs:
         - greenplum-db-*-rhel7-x86_64.rpm
+    - get: previous-6.12.0-release
+      params:
+        globs:
+        - greenplum-db-*-rhel7-x86_64.rpm
     - get: previous-5-release
+      params:
+        globs:
+        - greenplum-db-*-rhel7-x86_64.rpm
+    - get: previous-5.28.4-release
       params:
         globs:
         - greenplum-db-*-rhel7-x86_64.rpm

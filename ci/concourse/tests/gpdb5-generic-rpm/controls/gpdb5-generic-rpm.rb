@@ -87,6 +87,34 @@ control 'rpm_relocateable' do
 
 end
 
+control 'rpm_upgradable' do
+
+  title 'RPM is upgradable'
+
+  describe command("rpm --install previous-5.28.4-release/greenplum-db-5.28.4-#{gpdb_rpm_arch}-x86_64.rpm") do
+    its('exit_status') { should eq 0 }
+  end
+
+  describe command("rpm --query greenplum-db-5") do
+    its('stdout') { should match /greenplum-db-5-5.28.4*/ }
+    its('exit_status') { should eq 0 }
+  end
+
+  describe command("rpm --upgrade #{gpdb_rpm_path}/greenplum-db-*-#{gpdb_rpm_arch}-x86_64.rpm") do
+    its('exit_status') { should eq 0 }
+  end
+
+  describe command("rpm --query greenplum-db-5") do
+    its('stdout') { should match /greenplum-db-5-#{gpdb_version}/ }
+    its('exit_status') { should eq 0 }
+  end
+
+  describe command('rpm --erase greenplum-db-5') do
+    its('exit_status') { should eq 0 }
+  end
+end
+
+
 control 'rpm_no_deps' do
 
   title 'RPM has no dependencies'

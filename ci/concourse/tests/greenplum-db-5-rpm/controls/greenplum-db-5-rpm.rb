@@ -201,11 +201,6 @@ control 'RPM with GPDB 6' do
   end
 end
 
-control 'RPM is upgradable' do
-# TODO, need greenplum-db-5 to be published to tanzunet, at that time, write a upgradeable test
-# from greenplum-db-5 with lower version to greenplum-db-5 with upper version is possible.
-end
-
 control 'RPM is relocateable' do
 
   title 'RPM is relocateable'
