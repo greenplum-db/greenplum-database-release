@@ -137,7 +137,6 @@ set-gpdb-package-testing-dev:
 	--load-vars-from=ci/concourse/vars/gpdb-package-testing.prod.yml \
 	--load-vars-from=ci/concourse/vars/gpdb-package-testing.dev.yml \
 	--load-vars-from=${WORKSPACE}/gp-continuous-integration/secrets/gpdb-package-testing.prod.yml \
-	--load-vars-from=${WORKSPACE}/gp-continuous-integration/secrets/gpdb-package-testing.dev.yml \
 	--var=greenplum-database-release-git-branch=${BRANCH} \
 	--var=pipeline-name=${DEV_GPDB-PACKAGE-TESTING_PIPELINE_NAME} \
 	$(FLY_OPTION_NON-INTERACTIVE)
