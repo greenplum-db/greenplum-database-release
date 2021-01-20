@@ -90,7 +90,14 @@ function _main() {
 	# Strip the last .deb from the __final_deb_name
 	__final_package_name="${__final_deb_name%.*}"
 
-	build_deb "${__final_package_name}" bin_gpdb_clients/bin_gpdb_clients.tar.gz
+	# depending on the context in which this script is called, the contents of the `bin_gpdb_clients` directory are slightly different
+	# in one case, `bin_gpdb` is expected to contain a file `clients-rc-<semver>-<platform>-<arch>.tar.gz` and in the other
+	# case `bin_gpdb_clients` is expected to contain file `bin_gpdb.tar.gz`
+	if [[ -f bin_gpdb_clients/bin_gpdb_clients.tar.gz ]]; then
+		build_deb "${__final_package_name}" bin_gpdb_clients/bin_gpdb_clients.tar.gz
+	else
+		build_deb "${__final_package_name}" bin_gpdb_clients/clients-*.tar.gz
+	fi
 
 	# Export the built deb and include a sha256 hash
 	__built_deb="gpdb_clients_deb_installer/${__final_deb_name}"

@@ -200,9 +200,9 @@ resources:
 - name: bin_gpdb6_photon3
   type: gcs
   source:
-    bucket: pivotal-gpdb-concourse-resources-intermediates-dev
+    bucket: pivotal-gpdb-concourse-resources-prod
     json_key: ((concourse-gcs-resources-service-account-key))
-    versioned_file: server/published/gpdb6/server-rc-(.*)-photon3_x86_64.tar.gz
+    regexp: server/published/gpdb6/server-rc-(.*)-photon3_x86_64.tar.gz
 
 - name: bin_gpdb6_ubuntu18.04
   type: gcs
@@ -282,9 +282,6 @@ resources:
     json_key: ((concourse-gcs-resources-service-account-key))
     versioned_file: ((pipeline-name))/deb_gpdb_ubuntu18.04/greenplum-db-ubuntu18.04-amd64.deb
 
-<<<<<<< HEAD
-- name: gpdb6-centos6-test
-=======
 - name: deb_gpdb6_clients_ubuntu18.04
   type: gcs
   source:
@@ -292,18 +289,28 @@ resources:
     json_key: ((concourse-gcs-resources-service-account-key))
     versioned_file: ((pipeline-name))/deb_gpdb_clients_ubuntu18.04/greenplum-db-clients-0.0.0-ubuntu18.04-amd64.deb
 
-
-- name: gpdb6-centos6-test-packaging
->>>>>>> 467bab5... Test gpdb-clients packaging.
+- name: gpdb6-centos6-test
   type: docker-image
   source:
     repository: pivotaldata/gpdb6-centos6-test
+    tag: latest
+
+- name: gpdb6-centos6-test-packaging
+  type: docker-image
+  source:
+    repository: pivotaldata/gpdb6-centos6-test-packaging
     tag: latest
 
 - name: gpdb6-centos7-test
   type: docker-image
   source:
     repository: pivotaldata/gpdb6-centos7-test
+    tag: latest
+
+- name: gpdb6-centos7-test-packaging
+  type: docker-image
+  source:
+    repository: pivotaldata/gpdb6-centos7-test-packaging
     tag: latest
 
 - name: gpdb6-ubuntu18.04-test-packaging
@@ -535,11 +542,11 @@ jobs:
       trigger: true
     - get: gpdb6-photon3-build
     - get: gpdb6-osl
-#  - task: retrieve_gpdb6_src
-#    file: greenplum-database-release/ci/concourse/tasks/retrieve-gpdb6-src.yml
-#    image: gpdb6-photon3-build
-#    input_mapping:
-#      bin_gpdb: bin_gpdb6_photon3
+  - task: retrieve_gpdb6_src
+    file: greenplum-database-release/ci/concourse/tasks/retrieve-gpdb6-src.yml
+    image: gpdb6-photon3-build
+    input_mapping:
+      bin_gpdb: bin_gpdb6_photon3
   - task: build_rpm_gpdb6_photon3
     file: greenplum-database-release/ci/concourse/tasks/build-gpdb-rpm.yml
     image: gpdb6-photon3-build
@@ -698,7 +705,7 @@ jobs:
       PLATFORM: rhel6
       GPDB_MAJOR_VERSION: "6"
 
-- name: test_functionality_gpdb6_clients_rpm_centos6
+- name: test_functionality_clients_gpdb6_rpm_centos6
   plan:
   - in_parallel:
     - get: rpm_gpdb6_clients_centos6
@@ -706,13 +713,17 @@ jobs:
       - create_gpdb6_clients_rpm_installer_centos6
       trigger: true
     - get: gpdb6-centos6-test-packaging
-  - file: greenplum-database-release/ci/concourse/tasks/test-clients-functionality.yml
+    - get: greenplum-database-release
+      passed:
+      - create_gpdb6_clients_rpm_installer_centos6
+  - task: test_clients_rpm_functionality
+    file: greenplum-database-release/ci/concourse/tasks/test-clients-functionality.yml
     image: gpdb6-centos6-test-packaging
     input_mapping:
       gpdb_clients_package_installer: rpm_gpdb6_clients_centos6
     params:
       PLATFORM: rhel6
-    task: test_clients_rpm_functionality
+
 
 - name: test_functionality_gpdb6_rpm_centos7
   plan:
@@ -750,7 +761,7 @@ jobs:
       PLATFORM: rhel7
       GPDB_MAJOR_VERSION: "6"
 
-- name: test_functionality_gpdb6_clients_rpm_centos7
+- name: test_functionality_clients_gpdb6_rpm_centos7
   plan:
   - in_parallel:
     - get: rpm_gpdb6_clients_centos7
@@ -788,8 +799,8 @@ jobs:
       gpdb_deb_installer: deb_gpdb6_ubuntu18.04
     params:
       PLATFORM: ubuntu18.04
+      GPDB_MAJOR_VERSION: "6"
 
-<<<<<<< HEAD
 - name: test_functionality_gpdb6_rpm_photon3
   plan:
     - in_parallel:
@@ -809,8 +820,8 @@ jobs:
       params:
         PLATFORM: photon3
         GPDB_MAJOR_VERSION: "6"
-=======
-- name: test_functionality_gpdb6_clients_deb_ubuntu18.04
+
+- name: test_functionality_clients_gpdb6_deb_ubuntu18.04
   plan:
   - in_parallel:
     - get: deb_gpdb6_clients_ubuntu18.04
@@ -848,5 +859,3 @@ jobs:
       gpdb_clients_package_installer: rpm_gpdb6_clients_centos8
     params:
       PLATFORM: rhel8
-
->>>>>>> 467bab5... Test gpdb-clients packaging.
