@@ -1,0 +1,33 @@
+---
+
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: bash
+    tag: '5'
+
+inputs:
+- name: bin_gpdb_clients
+- name: greenplum-database-release
+- name: gpdb_src
+  optional: true
+
+outputs:
+- name: gpdb_clients_rpm_installer
+
+run:
+  path: greenplum-database-release/ci/concourse/scripts/build-gpdb-clients-rpm.sh
+
+params:
+  PLATFORM:
+  # Default values passed to rpm SPEC
+  #  To override, please do so in pipeline
+  GPDB_CLIENTS_NAME: greenplum-db-clients
+  GPDB_CLIENTS_SUMMARY: Greenplum-DB-Clients
+  GPDB_CLIENTS_LICENSE: VMware Software EULA
+  GPDB_CLIENTS_URL: https://network.pivotal.io/products/pivotal-gpdb/
+  GPDB_CLIEBTS_BUILDARCH: x86_64
+  GPDB_CLIENTS_DESCRIPTION: Greenplum Database Clients
+  GPDB_CLIENTS_PREFIX: /usr/local

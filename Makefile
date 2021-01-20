@@ -18,7 +18,7 @@
 # set the concourse target default to dev
 CONCOURSE ?= releng
 
-# set the gp-release default branch to current branch
+# set the greenplum-database-release default branch to current branch
 BRANCH ?= $(shell git rev-parse --abbrev-ref HEAD)
 WORKSPACE ?= ${HOME}/workspace
 

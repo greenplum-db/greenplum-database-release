@@ -1,0 +1,12 @@
+---
+platform: linux
+
+inputs:
+- name: greenplum-database-release
+- name: gpdb_clients_package_installer
+
+run:
+  path: greenplum-database-release/ci/concourse/scripts/test-clients-functionality.sh
+
+params:
+  PLATFORM:

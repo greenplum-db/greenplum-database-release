@@ -1,0 +1,21 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: bash
+    tag: '5'
+
+inputs:
+- name: greenplum-database-release
+- name: bin_gpdb_clients_windows
+
+outputs:
+- name: output_artifacts
+
+run:
+  path: greenplum-database-release/ci/concourse/scripts/build-gpdb-clients-msi.bash
+  args:
+  - bin_gpdb_clients_windows/bin_gpdb_clients.tar.gz
+  - output_artifacts
