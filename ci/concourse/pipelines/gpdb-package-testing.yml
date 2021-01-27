@@ -102,7 +102,6 @@ resources:
     json_key: ((concourse-gcs-resources-service-account-key))
     regexp: clients/published/gpdb6/clients-rc-(.*)-ubuntu18.04_x86_64.tar.gz
 
-
 - name: rpm_gpdb5_centos7
   type: s3
   source:
@@ -803,23 +802,23 @@ jobs:
 
 - name: test_functionality_gpdb6_rpm_photon3
   plan:
-    - in_parallel:
-        - get: rpm_gpdb6_photon3
-          passed:
-            - create_gpdb6_rpm_installer_photon3
-          trigger: true
-        - get: greenplum-database-release
-          passed:
-            - create_gpdb6_rpm_installer_photon3
-        - get: gpdb6-photon3-test
-    - task: test_gpdb6_rpm_functionality
-      file: greenplum-database-release/ci/concourse/tasks/test-functionality-rpm.yml
-      image: gpdb6-photon3-test
-      input_mapping:
-        gpdb_rpm_installer: rpm_gpdb6_photon3
-      params:
-        PLATFORM: photon3
-        GPDB_MAJOR_VERSION: "6"
+  - in_parallel:
+    - get: rpm_gpdb6_photon3
+      passed:
+      - create_gpdb6_rpm_installer_photon3
+      trigger: true
+    - get: greenplum-database-release
+      passed:
+      - create_gpdb6_rpm_installer_photon3
+    - get: gpdb6-photon3-test
+  - task: test_gpdb6_rpm_functionality
+    file: greenplum-database-release/ci/concourse/tasks/test-functionality-rpm.yml
+    image: gpdb6-photon3-test
+    input_mapping:
+      gpdb_rpm_installer: rpm_gpdb6_photon3
+    params:
+      PLATFORM: photon3
+      GPDB_MAJOR_VERSION: "6"
 
 - name: test_functionality_clients_gpdb6_deb_ubuntu18.04
   plan:
