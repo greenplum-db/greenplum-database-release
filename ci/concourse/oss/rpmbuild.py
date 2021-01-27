@@ -91,7 +91,10 @@ class RPMPackageBuilder(BasePackageBuilder):
 
     @property
     def rpm_package_name(self):
-        return "greenplum-db-%s-%s-x86_64.rpm" % (self.gpdb_version_short, self.platform)
+        if self.is_oss:
+            return "open-source-greenplum-db-%s-%s-x86_64.rpm" % (self.gpdb_version_short, self.platform)
+        else:
+            return "greenplum-db-%s-%s-x86_64.rpm" % (self.gpdb_version_short, self.platform)
 
     def _prepare_rpm_build_dir(self):
         for sub_dir in ["SOURCES", "SPECS"]:

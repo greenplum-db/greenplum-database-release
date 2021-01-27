@@ -15,7 +15,11 @@
 # Disable automatic dependency processing both for requirements and provides
 AutoReqProv: no
 
+%if "%{gpdb_oss}" == "true"
+Name: open-source-greenplum-db-6
+%else
 Name: greenplum-db-6
+%endif
 Version: %{rpm_gpdb_version}
 Release: %{gpdb_release}%{?dist}
 Summary: Greenplum-DB
