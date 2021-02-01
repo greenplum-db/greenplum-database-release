@@ -26,10 +26,10 @@ die() {
 
 function set_gpdb_clients_version() {
 	# shellcheck disable=SC2155
-	export GPDB_VERSION=$(./gpdb_src/getversion --short | grep -Po '^[^+]*')
+	export GPDB_VERSION=$(./gpdb_src/getversion --short | grep -o '^[^+]*')
 	# shellcheck disable=SC2154
 	# shellcheck disable=SC2155
-	export GPDB_RELEASE=$(echo "$version" | grep -Po '^[^\.]*')
+	export GPDB_RELEASE=$(echo "$version" | grep -o '^[^\.]*')
 }
 
 function determine_rpm_build_dir() {
@@ -41,7 +41,8 @@ function determine_rpm_build_dir() {
 	case "${__platform}" in
 	sles*) __rpm_build_dir=/usr/src/packages ;;
 	rhel*) __rpm_build_dir=/root/rpmbuild ;;
-	*) die "Unsupported platform: '${__platform}'. sles* and rhel* are supported" ;;
+	photon*) __rpm_build_dir=/usr/src/photon ;;
+	*) die "Unsupported platform: '${__platform}'. sles* and rhel* and photon* are supported" ;;
 	esac
 
 	echo "${__rpm_build_dir}"
