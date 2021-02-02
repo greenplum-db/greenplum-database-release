@@ -15,7 +15,7 @@ if [[ $PLATFORM == "rhel"* ]]; then
 	GPDB_CLIENTS_VERSION="$(rpm -qip ${GPDB_CLIENTS_PATH}/greenplum-db-clients-*-"${GPDB_CLIENTS_ARCH}"-x86_64.rpm | grep Version | awk '{print $3}' | tr --delete '\n')"
 	export GPDB_CLIENTS_VERSION
 	inspec exec greenplum-database-release/ci/concourse/tests/gpdb6/clients/rpm --reporter documentation --no-distinct-exit --no-backend-cache
-	
+
 elif [[ $PLATFORM == "ubuntu"* ]]; then
 
 	# Maybe later we can install the curl into the gpdb6-ubuntu18.04-test docker image
@@ -27,6 +27,7 @@ elif [[ $PLATFORM == "ubuntu"* ]]; then
 	GPDB_CLIENTS_VERSION="$(dpkg --info ${GPDB_CLIENTS_PATH}/greenplum-db-clients-*-"${GPDB_CLIENTS_ARCH}"-amd64.deb | grep Version | awk '{print $2}' | tr --delete '\n')"
 	export GPDB_CLIENTS_VERSION
 	inspec exec greenplum-database-release/ci/concourse/tests/gpdb6/clients/deb --reporter documentation --no-distinct-exit --no-backend-cache
+
 else
 	echo "${PLATFORM} is not yet supported for Greenplum Clients 6.X"
 	exit 1

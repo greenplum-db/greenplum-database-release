@@ -831,7 +831,7 @@ jobs:
     - get: greenplum-database-release
       passed:
       - create_gpdb6_clients_deb_installer_ubuntu18.04
-  - task: test_clients_rpm_functionality 
+  - task: test_clients_rpm_functionality
     file: greenplum-database-release/ci/concourse/tasks/test-clients-functionality.yml
     image: gpdb6-ubuntu18.04-test-packaging
     input_mapping:

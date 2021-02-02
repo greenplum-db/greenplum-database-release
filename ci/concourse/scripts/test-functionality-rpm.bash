@@ -31,11 +31,11 @@ if [[ $GPDB_MAJOR_VERSION == "5" ]]; then
 		# Install inspec
 		wget --no-check-certificate https://packages.chef.io/files/stable/inspec/1.31.1/sles/11/inspec-1.31.1-1.sles11.x86_64.rpm
 		zypper --non-interactive install inspec-1.31.1-1.sles11.x86_64.rpm
-		
+
 		# backend-cache wasn't added until inspec 1.47.0
 		#   - https://discourse.chef.io/t/inspec-v1-47-0-released/12066
 		# hence no need to disable it
-		
+
 		for test_suite in generic \
 			sles-install \
 			installed \
@@ -50,7 +50,7 @@ elif [[ $GPDB_MAJOR_VERSION == "6" ]]; then
 		curl https://omnitruck.chef.io/install.sh | bash -s -- -P inspec -v 3
 		test_prefix='greenplum-database-release/ci/concourse/tests/gpdb6/server'
 		inspec exec ${test_prefix}/install --reporter documentation --no-distinct-exit --no-backend-cache
-		inspec exec ${test_prefix}/remove  --reporter documentation --no-backend-cache
+		inspec exec ${test_prefix}/remove --reporter documentation --no-backend-cache
 		inspec exec ${test_prefix}/upgrade --reporter documentation --no-distinct-exit --no-backend-cache
 
 	elif [[ $PLATFORM == "photon"* ]]; then
@@ -58,7 +58,7 @@ elif [[ $GPDB_MAJOR_VERSION == "6" ]]; then
 		rpm --install inspec-3.9.3-1.el7.x86_64.rpm
 		test_prefix='greenplum-database-release/ci/concourse/tests/gpdb6/server'
 		inspec exec ${test_prefix}/install --reporter documentation --no-distinct-exit --no-backend-cache
-		inspec exec ${test_prefix}/remove  --reporter documentation --no-backend-cache
+		inspec exec ${test_prefix}/remove --reporter documentation --no-backend-cache
 		inspec exec ${test_prefix}/upgrade --reporter documentation --no-distinct-exit --no-backend-cache
 
 	else
