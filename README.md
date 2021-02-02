@@ -67,7 +67,7 @@ make local-build-gpdb-deb
 A Concourse task yaml and accompanying scripts is provided to allow creation of packages in a Concourse pipelines.
 
 (RPM Only): **Greenplum 6 and 7** uses the `ci/concourse/tasks/build_gpdb.rpm.yml` and **Greenplum 5** uses `ci/concourse/tasks/build_gpdb5_rpm.yml` for building RPM packages.
-(DEB Only): **Greenplum 6 and 7** uses the `ci/concourse/tasks/build_gpdb_deb.yml` and **Greenplum 5** requires `gpdb_src/concourse/tasks/compile_gpdb_ubuntu16.yml` which can be found in [another repository](https://github.com/greenplum-db/gpdb/blob/5X_STABLE/concourse/tasks/compile_gpdb_ubuntu16.yml) (refer to optional `gpdb_src` task input below.
+(DEB Only): **Greenplum 6 and 7** uses the `ci/concourse/tasks/build_gpdb_deb.yml` (refer to optional `gpdb_src` task input below.
 
 #### Task Inputs
 

@@ -185,10 +185,6 @@ local-build-gpdb5-rpm local-build-gpdb4-rpm:
 local-build-gpdb-deb:
 	$(MAKE) local-build-gpdb$(GPDB_MAJOR_VERSION)-deb
 
-.PHONY: local-build-gpdb5-deb
-local-build-gpdb5-deb:
-	bin/create_gpdb5_deb_package.bash
-
 .PHONY: local-build-gpdb6-deb local-build-gpdb7-deb
 local-build-gpdb6-deb local-build-gpdb7-deb:
 	bin/create_gpdb6_deb_package.bash
