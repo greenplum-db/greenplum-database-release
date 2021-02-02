@@ -29,10 +29,18 @@ Prefix: %{gpdb_clients_prefix}
 # Disable automatic dependency processing both for requirements and provides
 AutoReqProv: no
 
+%if 0%{?rhel}
 Requires: apr
+%else
+Requires: libapr1
+%endif
 Requires: bzip2
 Requires: libedit
+%if 0%{?rhel}
 Requires: libyaml
+%else
+Requires: libyaml-0-2
+%endif
 Requires: zlib
 Requires: openssh
 %if 0%{?rhel} == 6
