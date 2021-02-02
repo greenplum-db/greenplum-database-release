@@ -93,6 +93,47 @@ control 'Category:clients-rpm-functionality' do
     describe file("#{prefix}/greenplum-db-clients") do
       it { should_not exist }
     end
+  elsif os.suse?
+
+    prefix="/usr/local"
+
+    # Should not report installed
+    describe command('zypper search greenplum-db-clients') do
+      its('exit_status') { should eq 104 }
+    end
+
+    # Should be installable
+    describe command("zypper --non-interactive --no-gpg-checks install #{rpm_full_path}") do
+      its('exit_status') { should eq 0 }
+    end
+
+    # Should report installed
+    describe command('zypper search greenplum-db-clients') do
+      its('stdout') { should match (/greenplum-db-clients*/) }
+      its('exit_status') { should eq 0 }
+    end
+
+    # Should create symlink
+    describe file('/usr/local/greenplum-db-clients') do
+      it { should be_linked_to "/usr/local/greenplum-db-clients-#{gpdb_clients_version}" }
+    end
+
+    # Should be uninstallable
+    describe command('zypper --non-interactive remove greenplum-db-clients') do
+      its('exit_status') { should eq 0 }
+    end
+
+    # Should report uninstalled
+    describe command('sleep 5; zypper search greenplum-db-clients') do
+      its('exit_status') { should eq 104 }
+    end
+
+    # Should remove link created in %post scriptlet
+    describe file("#{prefix}/greenplum-db-clients") do
+      it { should_not exist }
+    end
+  # This will catch the Photon case
+  # https://docs.chef.io/inspec/resources/os/#osfamily-names
   elsif os.linux?
 
     prefix="/usr/local"
@@ -121,7 +162,7 @@ control 'Category:clients-rpm-functionality' do
     describe command('rpm --erase greenplum-db-clients') do
       its('exit_status') { should eq 0 }
     end
-  
+
     # Should report uninstalled
     describe command('sleep 5; rpm --query greenplum-db-clients') do
       its('exit_status') { should eq 1 }
@@ -207,5 +248,4 @@ control 'Category:clients-rpm_relocateable' do
     describe command('rpm -q greenplum-db-clients') do
       its('stdout') { should match /package greenplum-db-clients is not installed/ }
     end
-  
   end

@@ -102,6 +102,13 @@ resources:
     json_key: ((concourse-gcs-resources-service-account-key))
     regexp: clients/published/gpdb6/clients-rc-(.*)-ubuntu18.04_x86_64.tar.gz
 
+- name: bin_gpdb6_clients_sles12
+  type: gcs
+  source:
+    bucket: pivotal-gpdb-concourse-resources-prod
+    json_key: ((concourse-gcs-resources-service-account-key))
+    regexp: clients/published/gpdb6/clients-rc-(.*)-sles12_x86_64.tar.gz
+
 - name: rpm_gpdb5_centos7
   type: s3
   source:
@@ -149,6 +156,13 @@ resources:
     bucket: ((gcs-bucket-intermediates))
     json_key: ((concourse-gcs-resources-service-account-key))
     versioned_file: ((pipeline-name))/rpm_gpdb_clients_centos8/gpdb6/greenplum-db-clients-0.0.0-rhel8-x86_64.rpm
+
+- name: rpm_gpdb6_clients_sles12
+  type: gcs
+  source:
+    bucket: ((gcs-bucket-intermediates))
+    json_key: ((concourse-gcs-resources-service-account-key))
+    versioned_file: ((pipeline-name))/rpm_gpdb_clients_sles12/gpdb6/greenplum-db-clients-0.0.0-sles12-x86_64.rpm
 
 - name: previous-6-release
   type: tanzunet
@@ -232,6 +246,22 @@ resources:
   type: docker-image
   source:
     repository: pivotaldata/gpdb6-ubuntu18.04-build
+    tag: latest
+
+- name: gpdb6-sles12-build
+  type: docker-image
+  source:
+    repository: pivotaldata/gpdb6-sles12-build
+    username: ((docker-username))
+    password: ((docker-password))
+    tag: latest
+
+- name: gpdb6-sles12-test
+  type: docker-image
+  source:
+    repository: pivotaldata/gpdb6-sles12-test
+    username: ((docker-username))
+    password: ((docker-password))
     tag: latest
 
 - name: gpdb6-photon3-build
@@ -667,6 +697,27 @@ jobs:
         file: gpdb_clients_rpm_installer/greenplum-db-clients-*-rhel8-x86_64.rpm
       put: rpm_gpdb6_clients_centos8
 
+- name: create_gpdb6_clients_rpm_installer_sles12
+  plan:
+  - in_parallel:
+    - get: bin_gpdb6_clients_sles12
+      trigger: true
+    - get: gpdb6-sles12-build
+    - get: greenplum-database-release
+      trigger: true
+  - in_parallel:
+    - file: greenplum-database-release/ci/concourse/tasks/build-gpdb-clients-rpm.yml
+      image: gpdb6-sles12-build
+      input_mapping:
+        bin_gpdb_clients: bin_gpdb6_clients_sles12
+      params:
+        GPDB_VERSION: 0.0.0
+        PLATFORM: sles12
+      task: build_rpm_gpdb_sles12
+  - in_parallel:
+    - params:
+        file: gpdb_clients_rpm_installer/greenplum-db-clients-*-sles12-x86_64.rpm
+      put: rpm_gpdb6_clients_sles12
 
 - name: test_functionality_gpdb6_rpm_centos6
   plan:
@@ -858,3 +909,22 @@ jobs:
       gpdb_clients_package_installer: rpm_gpdb6_clients_centos8
     params:
       PLATFORM: rhel8
+
+- name: test_functionality_clients_gpdb6_rpm_sles12
+  plan:
+  - in_parallel:
+    - get: rpm_gpdb6_clients_sles12
+      passed:
+      - create_gpdb6_clients_rpm_installer_sles12
+      trigger: true
+    - get: gpdb6-sles12-test
+    - get: greenplum-database-release
+      passed:
+      - create_gpdb6_clients_rpm_installer_sles12
+    - task: test_rpm_functionality
+      file: greenplum-database-release/ci/concourse/tasks/test-clients-functionality.yml
+      image: gpdb6-sles12-test
+      input_mapping:
+        gpdb_clients_package_installer: rpm_gpdb6_clients_sles12
+      params:
+        PLATFORM: sles12
