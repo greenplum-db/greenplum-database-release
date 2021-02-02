@@ -130,6 +130,45 @@ control 'Category:clients-rpm-functionality' do
     describe file("#{prefix}/greenplum-db-clients") do
       it { should_not exist }
     end
+  elsif os.suse?
+
+    prefix="/usr/local"
+
+    # Should not already be installed
+    describe command('zypper search greenplum-db-clients') do
+      its('exit_status') { should eq 1 }
+    end
+
+    # Should be installable
+    describe command("zypper --non-interactive install #{rpm_full_path}") do
+      its('exit_status') { should eq 0 }
+    end
+
+    # Should report installed
+    describe command('zypper search greenplum-db-clients') do
+      its('stdout') { should match (/greenplum-db-clients*/) }
+      its('exit_status') { should eq 0 }
+    end
+
+    # Should create symlink
+    describe file('/usr/local/greenplum-db-clients') do
+      it { should be_linked_to "/usr/local/greenplum-db-clients-#{gpdb_clients_version}" }
+    end
+
+    # Should be uninstallable
+    describe command('zypper --non-interactive remove greenplum-db-clients') do
+      its('exit_status') { should eq 0 }
+    end
+
+    # Should report uninstalled
+    describe command('sleep 5; zypper search greenplum-db-clients') do
+      its('exit_status') { should eq 1 }
+    end
+
+    # Should remove link created in %post scriptlet
+    describe file("#{prefix}/greenplum-db-clients") do
+      it { should_not exist }
+    end
   end
 end
 
