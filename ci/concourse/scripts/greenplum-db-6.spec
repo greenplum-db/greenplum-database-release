@@ -65,6 +65,7 @@ Requires: libevent
 %endif
 %if 0%{?rhel:0}
 Requires: curl-libs
+Requires: glibc-iconv
 %endif
 %description
 Greenplum Database
