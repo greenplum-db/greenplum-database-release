@@ -8,6 +8,6 @@ ppa-package-name: 'greenplum-db-6'
 release-message: 'testing release of GPDB'
 debian-package-maintainer-fullname: 'GPBOSH (Testing gpdb)'
 debian-package-maintainer-email: gpbosh@pivotal.io
-tanzunet-endpoint: "https://pivnet-integration.cfapps.io/"
+tanzunet-endpoint: "https://network-integration.tanzu.vmware.com"
 tanzunet-product-slug: toolsmiths-gpdb-test
 tanzunet-metadata-file-path: ci/tanzunet/metadata.yml
