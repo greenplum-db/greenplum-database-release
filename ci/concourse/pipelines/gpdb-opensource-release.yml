@@ -432,6 +432,7 @@ jobs:
   - in_parallel:
     - get: gpdb_src
       trigger: true
+      passed: [compile_gpdb_photon3]
     - get: greenplum-database-release
     - get: bin_gpdb_photon3
       passed: [compile_gpdb_photon3]
@@ -529,18 +530,23 @@ jobs:
       passed:
       - rhel6 packaging
       - rhel7 packaging
+      - photon3 packaging
       - ubuntu18.04 packaging
       - verify ppa release
     - get: gpdb_src
       passed:
       - rhel6 packaging
       - rhel7 packaging
+      - photon3 packaging
       - ubuntu18.04 packaging
     - get: bin_gpdb_centos6
       passed: [rhel6 packaging]
       trigger: true
     - get: bin_gpdb_centos7
       passed: [rhel7 packaging]
+      trigger: true
+    - get: bin_gpdb_photon3
+      passed: [photon3 packaging]
       trigger: true
     - get: bin_gpdb_ubuntu18.04_for_github
       passed: [ubuntu18.04 packaging]
