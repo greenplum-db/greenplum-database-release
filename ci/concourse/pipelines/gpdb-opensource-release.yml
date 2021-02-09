@@ -104,6 +104,13 @@ resources:
     access_token: ((github-token-gp-releng))
     tag_filter: ((tanzunet-client-version))
 
+- name: pivotal-cf-tanzunet-cli
+  type: github-release
+  source:
+    owner: pivotal-cf
+    repository: pivnet-cli
+    access_token: ((github-token-gp-releng))
+
 ## gp internal artifacts
 - name: python-centos6
   type: gcs
@@ -651,6 +658,7 @@ jobs:
     - get: gpdb_src
       passed: [release]
     - get: tanzunet_client
+    - get: pivotal-cf-tanzunet-cli
     - get: license_file
       passed: [release]
     - get: gpdb_rpm_installer_centos6
@@ -672,3 +680,30 @@ jobs:
       TANZUNET_METADATA_FILE: ((tanzunet-metadata-file-path))
       TANZUNET_REFRESH_TOKEN: ((tanzunet-refresh-token))
       TANZUNET_PRODUCT_SLUG: ((tanzunet-product-slug))
+  - task: make_release_to_all_users
+    config:
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: golang
+          tag: 1.14-buster
+      inputs:
+      - name: pivotal-cf-tanzunet-cli
+      - name: gpdb_src
+      params:
+        TANZUNET_ENDPOINT: ((tanzunet-endpoint))
+        TANZUNET_REFRESH_TOKEN: ((tanzunet-refresh-token))
+        TANZUNET_PRODUCT_SLUG: ((tanzunet-product-slug))
+      run:
+        path: bash
+        args:
+        - -exc
+        - |
+          cd gpdb_src
+          GPDB_VERSION=$(./getversion --short)
+          cd ../pivotal-cf-tanzunet-cli/
+          PIVNET_CLI=$(ls pivnet-linux-amd64*)
+          chmod a+x ${PIVNET_CLI}
+          ./${PIVNET_CLI} login --api-token=${TANZUNET_REFRESH_TOKEN} --host=${TANZUNET_ENDPOINT}
+          ./${PIVNET_CLI} update-release -p ${TANZUNET_PRODUCT_SLUG} -r ${GPDB_VERSION} --availability all
