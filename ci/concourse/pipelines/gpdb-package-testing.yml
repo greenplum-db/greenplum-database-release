@@ -593,10 +593,12 @@ jobs:
     file: greenplum-database-release/ci/concourse/tasks/build-gpdb-rpm.yml
     image: gpdb6-centos7-build
     input_mapping:
-      bin_gpdb: bin_gpdb_centos7
+      bin_gpdb: bin_gpdb6_centos7
+      license_file: gpdb6-osl
     params:
       <<: *gpdb6-rpm-params-oss
       PLATFORM: rhel7
+      GPDB_NAME: greenplum-db-6
   - put: rpm_gpdb6_centos7_oss
     params:
       file: gpdb_rpm_installer/*.rpm
