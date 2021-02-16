@@ -17,6 +17,7 @@ AutoReqProv: no
 
 %if "%{gpdb_oss}" == "true"
 Name: open-source-greenplum-db-6
+Conflicts: greenplum-db-6 == %{rpm_gpdb_version}
 %else
 Name: greenplum-db-6
 %endif
