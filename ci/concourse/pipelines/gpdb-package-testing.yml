@@ -297,6 +297,13 @@ resources:
     json_key: ((concourse-gcs-resources-service-account-key))
     versioned_file: ((pipeline-name))/rpm_gpdb_centos7/gpdb6/greenplum-db-rhel7-x86_64.rpm
 
+- name: rpm_gpdb6_centos7_oss
+  type: gcs
+  source:
+    bucket: ((gcs-bucket-intermediates))
+    json_key: ((concourse-gcs-resources-service-account-key))
+    versioned_file: ((pipeline-name))/rpm_gpdb_centos7/gpdb6/open-source-greenplum-db-rhel7-x86_64.rpm
+
 - name: rpm_gpdb6_photon3
   type: gcs
   source:
@@ -367,6 +374,12 @@ anchors:
     GPDB_OSS: false
     GPDB_RELEASE: 1
     GPDB_URL: https://network.pivotal.io/products/pivotal-gpdb/
+- gpdb6-rpm-params-oss: &gpdb6-rpm-params-oss
+    GPDB_LICENSE: VMware Software EULA
+    GPDB_NAME: open-source-greenplum-db-6
+    GPDB_OSS: true
+    GPDB_RELEASE: 1
+    GPDB_URL: https://github.com/greenplum-db/gpdb
 
 ## ======================================================================
 ##    _       _
@@ -563,6 +576,31 @@ jobs:
     params:
       file: gpdb_rpm_installer/*.rpm
 
+- name: create_gpdb6_rpm_installer_centos7_oss
+  plan:
+  - in_parallel:
+    - get: greenplum-database-release
+      trigger: true
+    - get: bin_gpdb6_centos7
+    - get: gpdb6-centos7-build
+    - get: gpdb6-osl
+  - task: retrieve_gpdb6_src
+    file: greenplum-database-release/ci/concourse/tasks/retrieve-gpdb6-src.yml
+    image: gpdb6-centos7-build
+    input_mapping:
+      bin_gpdb: bin_gpdb6_centos7
+  - task: build_rpm_gpdb6_centos7
+    file: greenplum-database-release/ci/concourse/tasks/build-gpdb-rpm.yml
+    image: gpdb6-centos7-build
+    input_mapping:
+      bin_gpdb: bin_gpdb_centos7
+    params:
+      <<: *gpdb6-rpm-params-oss
+      PLATFORM: rhel7
+  - put: rpm_gpdb6_centos7_oss
+    params:
+      file: gpdb_rpm_installer/*.rpm
+    
 - name: create_gpdb6_rpm_installer_photon3
   plan:
   - in_parallel:
