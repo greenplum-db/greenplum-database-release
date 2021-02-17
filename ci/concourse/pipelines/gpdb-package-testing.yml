@@ -180,6 +180,14 @@ resources:
     product_slug: pivotal-gpdb
     product_version: 6\.12\.0
 
+- name: previous-6-oss-release
+  type: tanzunet
+  source:
+    api_token: ((public-tanzunet-refresh-token))
+    endpoint: ((tanzunet-endpoint))
+    product_slug: greenplum-database
+    product_version: 6\.14\.0
+
 - name: previous-5-release
   type: tanzunet
   source:
@@ -912,6 +920,10 @@ jobs:
       passed:
       - create_gpdb6_rpm_installer_centos7
       trigger: true
+    - get: previous-6-oss-release
+      params:
+        globs:
+        - open-source-greenplum-db-*-rhel7-x86_64.rpm
     - get: greenplum-database-release
       passed:
       - create_gpdb6_rpm_installer_centos7
