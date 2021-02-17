@@ -45,7 +45,7 @@ if [[ $GPDB_MAJOR_VERSION == "5" ]]; then
 		done
 	fi
 elif [[ $GPDB_MAJOR_VERSION == "6" ]]; then
-	export RPM_GPDB_VERSION="$(rpm --query --info --package ${GPDB_RPM_PATH}/greenplum-db-"${GPDB_RPM_ARCH}"-x86_64.rpm | awk '/Version/{printf "%s", $3}')"
+	export RPM_GPDB_VERSION="$(rpm --query --info --package ${GPDB_RPM_PATH}/greenplum-db-6-"${GPDB_RPM_ARCH}"-x86_64.rpm | awk '/Version/{printf "%s", $3}')"
 	if [[ $PLATFORM == "rhel"* ]]; then
 		curl https://omnitruck.chef.io/install.sh | bash -s -- -P inspec -v 3
 		test_prefix='greenplum-database-release/ci/concourse/tests/gpdb6/server'

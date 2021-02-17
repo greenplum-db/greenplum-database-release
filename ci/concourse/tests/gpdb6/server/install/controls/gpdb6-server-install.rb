@@ -7,8 +7,9 @@ gpdb_rpm_path = ENV['GPDB_RPM_PATH']
 gpdb_rpm_arch = ENV['GPDB_RPM_ARCH']
 rpm_gpdb_version = ENV['RPM_GPDB_VERSION']
 gpdb_version = rpm_gpdb_version.sub("_", "-") if rpm_gpdb_version != nil
-rpm_full_path = "#{gpdb_rpm_path}/greenplum-db-#{gpdb_rpm_arch}-x86_64.rpm"
 rpm_gpdb_name = 'greenplum-db-6'
+rpm_full_path = "#{gpdb_rpm_path}/#{rpm_gpdb_name}-#{gpdb_rpm_arch}-x86_64.rpm"
+
 
 
 control 'RPM metadata' do

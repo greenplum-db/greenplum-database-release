@@ -9,9 +9,10 @@ def rpm_query(field_name, rpm_full_path)
   "rpm --query --queryformat '%{#{field_name}}' --package #{rpm_full_path}"
 end
 
-rpm_full_path = "#{gpdb_rpm_path}/greenplum-db-#{gpdb_rpm_arch}-x86_64.rpm"
-rpm_gpdb_version = `#{rpm_query("Version", rpm_full_path)}`
 rpm_gpdb_name = 'greenplum-db-6'
+rpm_full_path = "#{gpdb_rpm_path}/#{rpm_gpdb_name}-#{gpdb_rpm_arch}-x86_64.rpm"
+rpm_gpdb_version = `#{rpm_query("Version", rpm_full_path)}`
+
 
 # for RPMs `-` is an invalid character for the version string
 # when the RPM was built, any `-` was converted to `_`

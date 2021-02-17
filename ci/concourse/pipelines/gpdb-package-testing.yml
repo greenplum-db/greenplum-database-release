@@ -303,35 +303,35 @@ resources:
   source:
     bucket: ((gcs-bucket-intermediates))
     json_key: ((concourse-gcs-resources-service-account-key))
-    versioned_file: ((pipeline-name))/rpm_gpdb_centos6/gpdb6/greenplum-db-rhel6-x86_64.rpm
+    versioned_file: ((pipeline-name))/rpm_gpdb_centos6/gpdb6/greenplum-db-6-rhel6-x86_64.rpm
 
 - name: rpm_gpdb6_centos7
   type: gcs
   source:
     bucket: ((gcs-bucket-intermediates))
     json_key: ((concourse-gcs-resources-service-account-key))
-    versioned_file: ((pipeline-name))/rpm_gpdb_centos7/gpdb6/greenplum-db-rhel7-x86_64.rpm
+    versioned_file: ((pipeline-name))/rpm_gpdb_centos7/gpdb6/greenplum-db-6-rhel7-x86_64.rpm
 
 - name: rpm_gpdb6_centos7_oss
   type: gcs
   source:
     bucket: ((gcs-bucket-intermediates))
     json_key: ((concourse-gcs-resources-service-account-key))
-    versioned_file: ((pipeline-name))/rpm_gpdb_centos7/gpdb6/open-source-greenplum-db-rhel7-x86_64.rpm
+    versioned_file: ((pipeline-name))/rpm_gpdb_centos7/gpdb6/open-source-greenplum-db-6-rhel7-x86_64.rpm
 
 - name: rpm_gpdb6_13_0_centos7
   type: gcs
   source:
     bucket: ((gcs-bucket-intermediates))
     json_key: ((concourse-gcs-resources-service-account-key))
-    versioned_file: ((pipeline-name))/rpm_gpdb_centos7/gpdb6_13_0/greenplum-db-rhel7-x86_64.rpm
+    versioned_file: ((pipeline-name))/rpm_gpdb_centos7/gpdb6_13_0/greenplum-db-6-rhel7-x86_64.rpm
 
 - name: rpm_gpdb6_13_0_centos7_oss
   type: gcs
   source:
     bucket: ((gcs-bucket-intermediates))
     json_key: ((concourse-gcs-resources-service-account-key))
-    versioned_file: ((pipeline-name))/rpm_gpdb_centos7/gpdb6_13_0/open-source-greenplum-db-rhel7-x86_64.rpm
+    versioned_file: ((pipeline-name))/rpm_gpdb_centos7/gpdb6_13_0/open-source-greenplum-db-6-rhel7-x86_64.rpm
 
 - name: rpm_gpdb6_photon3
   type: gcs

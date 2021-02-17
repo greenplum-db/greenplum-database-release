@@ -21,3 +21,4 @@ run:
 params:
   PLATFORM:
   GPDB_MAJOR_VERSION:
+  GPDB_RPM_OSS_PATH: previous-6-oss-release
