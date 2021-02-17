@@ -864,6 +864,10 @@ jobs:
       passed:
       - create_gpdb6_rpm_installer_centos6
       trigger: true
+    - get: previous-6-oss-release
+      params:
+        globs:
+        - open-source-greenplum-db-*-rhel6-x86_64.rpm
     - get: greenplum-database-release
       passed:
       - create_gpdb6_rpm_installer_centos6
