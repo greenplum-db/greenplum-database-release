@@ -4,6 +4,8 @@ platform: linux
 inputs:
 - name: greenplum-database-release
 - name: gpdb_rpm_installer
+- name: gpdb_rpm_oss_installer
+  optional: true
 - name: previous-5-release
   optional: true
 - name: previous-5.28.4-release
@@ -21,4 +23,3 @@ run:
 params:
   PLATFORM:
   GPDB_MAJOR_VERSION:
-  GPDB_RPM_OSS_PATH: previous-6-oss-release

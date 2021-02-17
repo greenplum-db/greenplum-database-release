@@ -35,19 +35,19 @@ control 'Category:server-uninstalls' do
     its('exit_status') { should eq 0 }
     end
 
-    describe command('yum -q list installed greenplum-db-6') do
+    describe command("yum -q list installed #{rpm_gpdb_name}") do
       its('stdout') { should match /Installed Packages/ }
       its('stdout') { should match /greenplum-db-6*/ }
       its('exit_status') { should eq 0 }
     end
 
     # Should be uninstallable
-    describe command('yum remove -y greenplum-db-6') do
+    describe command("yum remove -y #{rpm_gpdb_name}") do
       its('exit_status') { should eq 0 }
     end
 
     # Should report uninstalled
-    describe command('sleep 5; yum -q list installed greenplum-db-6') do
+    describe command("sleep 5; yum -q list installed #{rpm_gpdb_name}") do
       its('exit_status') { should eq 1 }
     end
 
@@ -64,18 +64,18 @@ control 'Category:server-uninstalls' do
     end
 
     # Should report installed
-    describe command('rpm --query greenplum-db-6') do
+    describe command("rpm --query #{rpm_gpdb_name}") do
       its('stdout') { should match /greenplum-db-6*/ }
       its('exit_status') { should eq 0 }
     end
   
     # Should be uninstallable
-    describe command('rpm --erase greenplum-db-6') do
+    describe command("rpm --erase #{rpm_gpdb_name}") do
       its('exit_status') { should eq 0 }
     end
   
     # Should report uninstalled
-    describe command('sleep 5; rpm --query greenplum-db-6') do
+    describe command("sleep 5; rpm --query #{rpm_gpdb_name}") do
       its('exit_status') { should eq 1 }
     end
     # Should remove link created in %post scriptlet
@@ -86,7 +86,7 @@ control 'Category:server-uninstalls' do
 end
 
 control 'Category:server-symlink' do
-  describe command("rpm --install #{gpdb_rpm_path}/greenplum-db-#{gpdb_rpm_arch}-x86_64.rpm") do
+  describe command("rpm --install #{rpm_full_path}") do
     its('exit_status') { should eq 0 }
   end
 
@@ -98,7 +98,7 @@ control 'Category:server-symlink' do
     its('exit_status') { should eq 0 }
   end
 
-  describe command('rpm --erase greenplum-db-6') do
+  describe command("rpm --erase #{rpm_gpdb_name}") do
     its('exit_status') { should eq 0 }
   end
 

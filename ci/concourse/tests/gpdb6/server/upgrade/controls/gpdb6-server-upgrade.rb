@@ -61,6 +61,7 @@ control 'RPM obsoletes GPDB 6' do
     end
   
     # the previous gpdb version 6 package will be removed
+    # 6.2.1 package name is 'greenplum-db'
     describe command("yum list installed greenplum-db") do
       its('exit_status') { should eq 1 }
     end
