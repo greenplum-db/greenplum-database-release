@@ -27,13 +27,13 @@ control 'rpm_metadata' do
   end
 
   # Test specified URL is reachable
-  describe command("curl --silent --head $(rpm --query --info --package #{gpdb_rpm_path}/greenplum-db-*-#{gpdb_rpm_arch}-x86_64.rpm | grep URL | awk \"{print $3\"}) | head -n 1 | grep 'HTTP/1.[01] [23]..'") do
+  describe command("curl --silent --head $(rpm --query --info --package #{gpdb_rpm_path}/greenplum-db-*-#{gpdb_rpm_arch}-x86_64.rpm | grep URL | awk \"{print $3\"}) | head -n 1 | grep 'HTTP/[1-2].* [23]..'") do
     before do
       # sles11 doesn't support the TLS version necessary to connect to *.docs.pivotal.io
       skip if gpdb_rpm_arch == "sles11"
     end
     # If URL is not specified, the field will be ommited
-    its('stdout') { should match /HTTP\/1.1 200 OK/ }
+    its('stdout') { should match /200/ }
   end
 
 end

@@ -41,9 +41,9 @@ control 'Category:clients-rpm_metadata' do
     end
   
     # Test specified URL is reachable
-    describe command("curl -s --head $(rpm -qip #{gpdb_clients_path}/greenplum-db-clients-#{gpdb_clients_version}-#{gpdb_clients_arch}-x86_64.rpm | grep URL | awk \"{print $3\"}) | head -n 1 | grep 'HTTP/1.[01] [23]..'") do
+    describe command("curl -s --head $(rpm -qip #{gpdb_clients_path}/greenplum-db-clients-#{gpdb_clients_version}-#{gpdb_clients_arch}-x86_64.rpm | grep URL | awk \"{print $3\"}) | head -n 1 | grep 'HTTP/[1-2].* [23]..'") do
       # If URL is not specified, the field will be ommited
-      its('stdout') { should match /HTTP\/1.1 200 OK/ }
+      its('stdout') { should match /200/ }
     end
   
 end

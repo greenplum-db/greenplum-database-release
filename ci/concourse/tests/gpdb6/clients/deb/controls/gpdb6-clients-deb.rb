@@ -21,8 +21,8 @@ control 'Category:clients-deb_metadata' do
   end
 
   # Test specified URL is reachable
-  describe command("curl -s --head $(dpkg --info #{gpdb_clients_deb_path}/greenplum-db-clients-*-#{gpdb_clients_deb_arch}-amd64.deb | grep Homepage | awk '{print $2}') | head -n 1 | grep 'HTTP/1.[01] [23]..'") do
-    its('stdout') { should match /HTTP\/1.1 200 OK/ }
+  describe command("curl -s --head $(dpkg --info #{gpdb_clients_deb_path}/greenplum-db-clients-*-#{gpdb_clients_deb_arch}-amd64.deb | grep Homepage | awk '{print $2}') | head -n 1 | grep 'HTTP/[1-2].* [23]..'") do
+    its('stdout') { should match /200/ }
   end
 
 end

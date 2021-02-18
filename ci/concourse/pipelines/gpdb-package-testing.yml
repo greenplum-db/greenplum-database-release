@@ -218,13 +218,6 @@ resources:
     json_key: ((concourse-gcs-resources-service-account-key))
     regexp: server/published/gpdb6/server-rc-(.*)-rhel7_x86_64.tar.gz
 
-- name: bin_gpdb6_13_0_centos7
-  type: gcs
-  source:
-    bucket: pivotal-gpdb-concourse-resources-prod
-    json_key: ((concourse-gcs-resources-service-account-key))
-    regexp: server/published/gpdb6/server-rc-(6\.13\.0\+.*)-rhel7_x86_64.tar.gz
-
 - name: bin_gpdb6_photon3
   type: gcs
   source:
@@ -326,33 +319,20 @@ resources:
     json_key: ((concourse-gcs-resources-service-account-key))
     versioned_file: ((pipeline-name))/rpm_gpdb_centos7/gpdb6/open-source-greenplum-db-6-rhel7-x86_64.rpm
 
-- name: rpm_gpdb6_13_0_centos7
-  type: gcs
-  source:
-    bucket: ((gcs-bucket-intermediates))
-    json_key: ((concourse-gcs-resources-service-account-key))
-    versioned_file: ((pipeline-name))/rpm_gpdb_centos7/gpdb6_13_0/greenplum-db-6-rhel7-x86_64.rpm
-
-- name: rpm_gpdb6_13_0_centos7_oss
-  type: gcs
-  source:
-    bucket: ((gcs-bucket-intermediates))
-    json_key: ((concourse-gcs-resources-service-account-key))
-    versioned_file: ((pipeline-name))/rpm_gpdb_centos7/gpdb6_13_0/open-source-greenplum-db-6-rhel7-x86_64.rpm
 
 - name: rpm_gpdb6_photon3
   type: gcs
   source:
     bucket: ((gcs-bucket-intermediates))
     json_key: ((concourse-gcs-resources-service-account-key))
-    versioned_file: ((pipeline-name))/rpm_gpdb_photon3/greenplum-db-photon3-x86_64.rpm
+    versioned_file: ((pipeline-name))/rpm_gpdb_photon3/greenplum-db-6-photon3-x86_64.rpm
 
 - name: deb_gpdb6_ubuntu18.04
   type: gcs
   source:
     bucket: ((gcs-bucket-intermediates))
     json_key: ((concourse-gcs-resources-service-account-key))
-    versioned_file: ((pipeline-name))/deb_gpdb_ubuntu18.04/greenplum-db-ubuntu18.04-amd64.deb
+    versioned_file: ((pipeline-name))/deb_gpdb_ubuntu18.04/greenplum-db-6-ubuntu18.04-amd64.deb
 
 - name: deb_gpdb6_clients_ubuntu18.04
   type: gcs
@@ -663,59 +643,6 @@ jobs:
       PLATFORM: rhel7
       GPDB_NAME: greenplum-db-6
   - put: rpm_gpdb6_centos7_oss
-    params:
-      file: gpdb_rpm_installer/*.rpm
-
-- name: create_gpdb6_13_0_rpm_installer_centos7
-  plan:
-  - in_parallel:
-    - get: bin_gpdb6_13_0_centos7
-    - get: greenplum-database-release
-      trigger: true
-    - get: gpdb6-centos7-build
-    - get: gpdb6-osl
-  - task: retrieve_gpdb6_src
-    file: greenplum-database-release/ci/concourse/tasks/retrieve-gpdb6-src.yml
-    image: gpdb6-centos7-build
-    input_mapping:
-      bin_gpdb: bin_gpdb6_13_0_centos7
-  - task: build_rpm_gpdb6_centos7
-    file: greenplum-database-release/ci/concourse/tasks/build-gpdb-rpm.yml
-    image: gpdb6-centos7-build
-    input_mapping:
-      bin_gpdb: bin_gpdb6_13_0_centos7
-      license_file: gpdb6-osl
-    params:
-      <<: *gpdb6-rpm-params
-      PLATFORM: rhel7
-  - put: rpm_gpdb6_13_0_centos7
-    params:
-      file: gpdb_rpm_installer/*.rpm
-
-- name: create_gpdb6_13_0_rpm_installer_centos7_oss
-  plan:
-  - in_parallel:
-    - get: greenplum-database-release
-      trigger: true
-    - get: bin_gpdb6_13_0_centos7
-    - get: gpdb6-centos7-build
-    - get: gpdb6-osl
-  - task: retrieve_gpdb6_src
-    file: greenplum-database-release/ci/concourse/tasks/retrieve-gpdb6-src.yml
-    image: gpdb6-centos7-build
-    input_mapping:
-      bin_gpdb: bin_gpdb6_13_0_centos7
-  - task: build_rpm_gpdb6_centos7
-    file: greenplum-database-release/ci/concourse/tasks/build-gpdb-rpm.yml
-    image: gpdb6-centos7-build
-    input_mapping:
-      bin_gpdb: bin_gpdb6_13_0_centos7
-      license_file: gpdb6-osl
-    params:
-      <<: *gpdb6-rpm-params-oss
-      PLATFORM: rhel7
-      GPDB_NAME: greenplum-db-6
-  - put: rpm_gpdb6_13_0_centos7_oss
     params:
       file: gpdb_rpm_installer/*.rpm
 
