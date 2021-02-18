@@ -149,7 +149,8 @@ class RPMPackageBuilder(BasePackageBuilder):
         flags = [
             r'--define="rpm_gpdb_version %s"' % self.rpm_gpdb_version,
             r'--define="gpdb_version %s"' % self.gpdb_version_short,
-            r'--define="gpdb_release %s"' % self.release
+            r'--define="gpdb_release %s"' % self.release,
+            r'--define="platform %s"' % self.platform
         ]
 
         possible_flags = ["LICENSE", "URL", "OSS"]

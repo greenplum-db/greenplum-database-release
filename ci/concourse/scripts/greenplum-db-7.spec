@@ -47,15 +47,20 @@ Requires: openssh-clients
 Requires: which
 Requires: iproute
 Requires: openssh-server
-%if 0%{?rhel} == 7
+%if "%{platform}" == "rhel7"
 Requires: openssl-libs
+Requires: libcurl
 %endif
-%if 0%{?rhel} == 6
+%if "%{platform}" == "rhel6"
 Requires: libevent2
+Requires: libcurl
 %else
 Requires: libevent
 %endif
-
+%if "%{platform}" == "photon3"
+Requires: curl-libs
+Requires: glibc-iconv
+%endif
 %description
 Greenplum Database
 
