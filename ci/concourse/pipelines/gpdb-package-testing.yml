@@ -921,10 +921,10 @@ jobs:
     - get: greenplum-database-release
       passed:
       - create_gpdb6_clients_rpm_installer_sles12
-    - task: test_rpm_functionality
-      file: greenplum-database-release/ci/concourse/tasks/test-clients-functionality.yml
-      image: gpdb6-sles12-test
-      input_mapping:
-        gpdb_clients_package_installer: rpm_gpdb6_clients_sles12
-      params:
-        PLATFORM: sles12
+  - task: test_rpm_functionality
+    file: greenplum-database-release/ci/concourse/tasks/test-clients-functionality.yml
+    image: gpdb6-sles12-test
+    input_mapping:
+      gpdb_clients_package_installer: rpm_gpdb6_clients_sles12
+    params:
+      PLATFORM: sles12
