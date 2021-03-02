@@ -167,7 +167,7 @@ resources:
   source:
     bucket: ((gcs-bucket-for-oss))
     json_key: ((concourse-gcs-resources-service-account-key))
-    regexp: greenplum-oss-server/released/gpdb6/greenplum-db-(.*)-rhel6-x86_64.rpm
+    regexp: greenplum-oss-server/released/gpdb6/open-source-greenplum-db-(.*)-rhel6-x86_64.rpm
 
 ## RHEL7 Resources
 - name: bin_gpdb_centos7
@@ -192,7 +192,7 @@ resources:
   source:
     bucket: ((gcs-bucket-for-oss))
     json_key: ((concourse-gcs-resources-service-account-key))
-    regexp: greenplum-oss-server/released/gpdb6/greenplum-db-(.*)-rhel7-x86_64.rpm
+    regexp: greenplum-oss-server/released/gpdb6/open-source-greenplum-db-(.*)-rhel7-x86_64.rpm
 
 
 ## Photon3 Resources
