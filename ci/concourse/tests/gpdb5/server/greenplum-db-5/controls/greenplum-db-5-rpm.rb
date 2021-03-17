@@ -39,7 +39,7 @@ control 'RPM metadata' do
   end
 
   describe command(rpm_query("URL", rpm_full_path)) do
-    its('stdout') { should cmp "https://network.pivotal.io/products/pivotal-gpdb/" }
+    its('stdout') { should cmp "https://network.tanzu.vmware.com/products/pivotal-gpdb/" }
   end
 
 end

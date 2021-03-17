@@ -381,7 +381,7 @@ anchors:
 - gpdb5-rpm-params: &gpdb5-rpm-params
     GPDB_NAME: greenplum-db-5
     GPDB_LICENSE: VMware Software EULA
-    GPDB_URL: https://network.pivotal.io/products/pivotal-gpdb/
+    GPDB_URL: https://network.tanzu.vmware.com/products/pivotal-gpdb/
     GPDB_RELEASE: 1
     GPDB_VERSION: "5.99.0"
 - gpdb6-rpm-params: &gpdb6-rpm-params
@@ -389,7 +389,7 @@ anchors:
     GPDB_NAME: greenplum-db-6
     GPDB_OSS: false
     GPDB_RELEASE: 1
-    GPDB_URL: https://network.pivotal.io/products/pivotal-gpdb/
+    GPDB_URL: https://network.tanzu.vmware.com/products/pivotal-gpdb/
 - gpdb6-rpm-params-oss: &gpdb6-rpm-params-oss
     GPDB_LICENSE: VMware Software EULA
     GPDB_NAME: open-source-greenplum-db-6

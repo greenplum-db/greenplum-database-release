@@ -96,7 +96,7 @@ Documenation of how a user is expected to to interact with the Greenplum Server 
 
 ### How to perform an installation
 
-1. Download the Greenplum Server binary RPM package installer from <https://network.pivotal.io>
+1. Download the Greenplum Server binary RPM package installer from <https://network.tanzu.vmware.com>
 
 2. Transfer the RPM package to all hosts being used for the Greenplum cluster
 
@@ -108,7 +108,7 @@ Documenation of how a user is expected to to interact with the Greenplum Server 
 
 ### How to perform a Minor or Maintenance Version Upgrade
 
-1. Download the new Greenplum Server binary RPM package installer from <https://network.pivotal.io>
+1. Download the new Greenplum Server binary RPM package installer from <https://network.tanzu.vmware.com>
 
 2. Transfer the RPM package to all hosts being used for the Greenplum cluster
 
@@ -122,7 +122,7 @@ Documenation of how a user is expected to to interact with the Greenplum Server 
 
 ### How to perform a Major version upgrade
 
-1. Download the new Greenplum Server binary RPM package installer from <https://network.pivotal.io>
+1. Download the new Greenplum Server binary RPM package installer from <https://network.tanzu.vmware.com>
 
 2. Transfer the RPM package to all hosts being used for the Greenplum cluster
 
@@ -147,7 +147,7 @@ Documenation of how a user is expected to to interact with the Greenplum Server 
 
 ### How to perform a Minor or Maintenance version downgrade
 
-1. Download the downgraded Greenplum Server binary RPM package installer from <https://network.pivotal.io>
+1. Download the downgraded Greenplum Server binary RPM package installer from <https://network.tanzu.vmware.com>
 
 2. Transfer the RPM package to all hosts being used for the Greenplum cluster
 
@@ -172,7 +172,7 @@ Documenation of how a user is expected to to interact with the Greenplum Server 
 
 ### How to perform an installation to a non-default location
 
-1. Download the Greenplum Server binary RPM package installer from <https://network.pivotal.io>
+1. Download the Greenplum Server binary RPM package installer from <https://network.tanzu.vmware.com>
 
 2. Transfer the RPM package to all hosts being used for the Greenplum cluster
 
@@ -191,7 +191,7 @@ Documenation of how a user is expected to to interact with the Greenplum Server 
 
 ### How to install multiple Minor or Maintenance versions
 
-1. Download the Greenplum Server binary RPM package installer from <https://network.pivotal.io>
+1. Download the Greenplum Server binary RPM package installer from <https://network.tanzu.vmware.com>
 
 2. Transfer the RPM package to all hosts being used for the Greenplum cluster
 
@@ -218,7 +218,7 @@ It is not advisable to install Greenplum without root access. If necessary, ther
 
 #### Method 1 - Using rpm2cpio
 
-1. Download the Greenplum Server binary RPM package installer from <https://network.pivotal.io>
+1. Download the Greenplum Server binary RPM package installer from <https://network.tanzu.vmware.com>
 
 2. Transfer the RPM package to all hosts being used for the Greenplum cluster
 
@@ -238,7 +238,7 @@ All package management, dependency resolution, and conflict management with othe
 
 #### Method 2 - Separate RPM package database
 
-1. Download the Greenplum Server binary RPM package installer from <https://network.pivotal.io>
+1. Download the Greenplum Server binary RPM package installer from <https://network.tanzu.vmware.com>
 
 2. Transfer the RPM package to all hosts being used for the Greenplum cluster
 

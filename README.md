@@ -89,7 +89,7 @@ Required Concourse task environment paramaters:
 
 - `GPDB_OSS`: whether we are building an OSS version of the package, if not defined, it's `false`. If this value is `true`, `gpdb_src` folder has to be provided with `LICENSE` and `COPYRIGHT` files.
 - `GPDB_LICENSE`: the name of the license the Greenplum is distributed under, it's currently `VMware Software EULA`
-- `GPDB_URL`: the URL for more information about Greenplum, it's currently `https://github.com/greenplum-db/gpdb` for OSS, and `https://network.pivotal.io/products/pivotal-gpdb/` for enterprise
+- `GPDB_URL`: the URL for more information about Greenplum, it's currently `https://github.com/greenplum-db/gpdb` for OSS, and `https://network.tanzu.vmware.com/products/pivotal-gpdb/` for enterprise
 - (RPM Only) `GPDB_NAME`: the package name, e.g. `greenplum-db-6` for `GP6`, or `greenplum-db-7` for `GP7`, or `greenplum-db-5` for `GP5`.
 - (RPM Only) `PLATFORM`: `rhel6`, `rhel7`. This should depend on which `image` used to package the software
 - (RPM Only) `GPDB_RELEASE`: the number of time this version of Greenplum is released. Unless package same version multiple times, it should be `1`.

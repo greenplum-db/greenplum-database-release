@@ -42,7 +42,7 @@ main() {
 		-e GPDB_PREFIX="/usr/local" \
 		-e GPDB_RELEASE=1 \
 		-e GPDB_SUMMARY="Greenplum-DB" \
-		-e GPDB_URL="https://network.pivotal.io/products/pivotal-gpdb/" \
+		-e GPDB_URL="https://network.tanzu.vmware.com/products/pivotal-gpdb/" \
 		pivotaldata/centos-gpdb-dev:"${docker_image_tag}" \
 		/tmp/greenplum-database-release/ci/concourse/scripts/build_gpdb5_rpm.sh
 }

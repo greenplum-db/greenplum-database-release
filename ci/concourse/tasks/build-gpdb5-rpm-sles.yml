@@ -26,5 +26,5 @@ params:
   #  To override, please do so in pipeline
   GPDB_NAME: greenplum-db-5
   GPDB_LICENSE: VMware Software EULA
-  GPDB_URL: https://network.pivotal.io/products/pivotal-gpdb/
+  GPDB_URL: https://network.tanzu.vmware.com/products/pivotal-gpdb/
   GPDB_RELEASE: "1"

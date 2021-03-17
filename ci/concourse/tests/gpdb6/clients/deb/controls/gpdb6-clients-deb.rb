@@ -17,7 +17,7 @@ control 'Category:clients-deb_metadata' do
   end
 
   describe command("dpkg --info #{gpdb_clients_deb_path}/greenplum-db-clients-*-#{gpdb_clients_deb_arch}-amd64.deb | grep Homepage") do
-    its('stdout') { should match /Homepage: https:\/\/network.pivotal.io\/products\/pivotal-gpdb\// }
+    its('stdout') { should match /Homepage: https:\/\/network.tanzu.vmware.com\/products\/pivotal-gpdb\// }
   end
 
   # Test specified URL is reachable
