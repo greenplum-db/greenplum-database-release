@@ -111,39 +111,6 @@ resources:
     repository: pivnet-cli
     access_token: ((github-token-gp-releng))
 
-## gp internal artifacts
-- name: python-centos6
-  type: gcs
-  icon: google
-  source:
-    json_key: ((concourse-gcs-resources-service-account-key))
-    bucket: pivotal-gpdb-concourse-resources-prod
-    regexp: gp-internal-artifacts/centos6/python-(2\.7\.12-.*).tar.gz
-
-- name: python-centos7
-  type: gcs
-  icon: google
-  source:
-    json_key: ((concourse-gcs-resources-service-account-key))
-    bucket: pivotal-gpdb-concourse-resources-prod
-    regexp: gp-internal-artifacts/centos7/python-(2\.7\.12-.*).tar.gz
-
-- name: python-photon3
-  type: gcs
-  icon: google
-  source:
-    json_key: ((concourse-gcs-resources-service-account-key))
-    bucket: pivotal-gpdb-concourse-resources-prod
-    regexp: gp-internal-artifacts/photon3/python-(2\.7\.12.*).tar.gz
-
-- name: python-ubuntu18.04
-  type: gcs
-  icon: google
-  source:
-    json_key: ((concourse-gcs-resources-service-account-key))
-    bucket: pivotal-gpdb-concourse-resources-prod
-    regexp: gp-internal-artifacts/ubuntu18.04/python-(2\.7\.12-.*).tar.gz
-
 ## RHEL6 Resources
 - name: bin_gpdb_centos6
   type: gcs
@@ -280,8 +247,6 @@ jobs:
       trigger: true
     - get: greenplum-database-release
     - get: gpdb6-centos6-build
-    - get: python-tarball
-      resource: python-centos6
   - task: compile_gpdb
     file: greenplum-database-release/ci/concourse/tasks/compile-gpdb-oss.yml
     image: gpdb6-centos6-build
@@ -300,8 +265,6 @@ jobs:
       trigger: true
     - get: greenplum-database-release
     - get: gpdb6-centos7-build
-    - get: python-tarball
-      resource: python-centos7
   - task: compile_gpdb
     image: gpdb6-centos7-build
     file: greenplum-database-release/ci/concourse/tasks/compile-gpdb-oss.yml
@@ -320,8 +283,6 @@ jobs:
       trigger: true
     - get: greenplum-database-release
     - get: gpdb6-photon3-build
-    - get: python-tarball
-      resource: python-photon3
   - task: compile_gpdb
     image: gpdb6-photon3-build
     file: greenplum-database-release/ci/concourse/tasks/compile-gpdb-oss.yml
@@ -340,8 +301,6 @@ jobs:
       trigger: true
     - get: greenplum-database-release
     - get: gpdb6-ubuntu18.04-build
-    - get: python-tarball
-      resource: python-ubuntu18.04
   - task: compile_gpdb
     image: gpdb6-ubuntu18.04-build
     file: greenplum-database-release/ci/concourse/tasks/compile-gpdb-oss.yml
@@ -360,8 +319,6 @@ jobs:
       trigger: true
     - get: greenplum-database-release
     - get: gpdb6-ubuntu18.04-build
-    - get: python-tarball
-      resource: python-ubuntu18.04
   - task: compile_gpdb
     image: gpdb6-ubuntu18.04-build
     file: greenplum-database-release/ci/concourse/tasks/compile-gpdb-oss.yml

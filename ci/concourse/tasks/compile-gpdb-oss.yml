@@ -17,7 +17,6 @@ image_resource:
 
 inputs:
 - name: gpdb_src
-- name: python-tarball
 - name: greenplum-database-release
 
 outputs:

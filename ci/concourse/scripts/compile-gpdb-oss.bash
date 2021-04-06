@@ -31,7 +31,6 @@ build_xerces() {
 
 install_python() {
 	echo "Installing python"
-	tar xzf python-tarball/python-*.tar.gz -C /opt --strip-components=2
 	export PATH="/opt/python-2.7.12/bin:${PATH}"
 	export PYTHONHOME=/opt/python-2.7.12
 	echo "/opt/python-2.7.12/lib" >>/etc/ld.so.conf.d/gpdb.conf
@@ -189,6 +188,11 @@ check_pythonhome() {
 
 _main() {
 	get_gpdb_tag
+	PREFIX=${PREFIX:="/usr/local"}
+	output_artifact_dir="${PWD}/gpdb_artifacts"
+	if [[ ! -d "${output_artifact_dir}" ]]; then
+		mkdir "${output_artifact_dir}"
+	fi
 
 	if [ -e /opt/gcc_env.sh ]; then
 		# shellcheck disable=SC1091
@@ -218,7 +222,7 @@ _main() {
 
 	check_pythonhome "${greenplum_install_dir}"
 
-	export_gpdb "${greenplum_install_dir}" "${PWD}/gpdb_artifacts/bin_gpdb.tar.gz"
+	export_gpdb "${greenplum_install_dir}" "${output_artifact_dir}/bin_gpdb.tar.gz"
 }
 
 _main "${@}"
