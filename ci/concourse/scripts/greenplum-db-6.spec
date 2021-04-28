@@ -31,44 +31,84 @@ Obsoletes: greenplum-db >= %{gpdb_major_version}.0.0
 Source0: gpdb.tar.gz
 Prefix: /usr/local
 
+%if 0%{?rhel}
 Requires: apr apr-util
 Requires: bash
 Requires: bzip2
 Requires: curl
-# krb5-devel provides libgssapi_krb5.so
+Requires: iproute
 Requires: krb5-devel
+Requires: less
+Requires: libcurl
 Requires: libxml2
 Requires: libyaml
-Requires: zlib
+Requires: net-tools
 Requires: openldap
 Requires: openssh
+Requires: openssh-clients
+Requires: openssh-server
 Requires: openssl
 Requires: perl
 Requires: readline
 Requires: rsync
 Requires: sed
 Requires: tar
-Requires: zip
-Requires: net-tools
-Requires: less
-Requires: openssh-clients
 Requires: which
-Requires: iproute
-Requires: openssh-server
+Requires: zip
+Requires: zlib
+%endif
+
 %if "%{platform}" == "rhel7"
 Requires: openssl-libs
-Requires: libcurl
 %endif
 %if "%{platform}" == "rhel6"
 Requires: libevent2
-Requires: libcurl
-%else
-Requires: libevent
 %endif
+
 %if "%{platform}" == "photon3"
+Requires: apr
+Requires: bash
+Requires: bzip2-libs
+Requires: coreutils
 Requires: curl-libs
+Requires: cyrus-sasl
+Requires: e2fsprogs-libs
+Requires: findutils
+Requires: gawk
+Requires: gdbm
 Requires: glibc-iconv
+Requires: grep
+Requires: gzip
+Requires: iproute2
+Requires: iputils
+Requires: krb5
+Requires: less
+Requires: libevent
+Requires: libgcc == 7.3.0
+Requires: libssh2
+Requires: libstdc++ == 7.3.0
+Requires: libxml2
+Requires: libyaml
+Requires: Linux-PAM
+Requires: ncurses-libs
+Requires: net-tools
+Requires: openldap
+Requires: openssh-clients
+Requires: openssl
+Requires: perl
+Requires: procps-ng
+Requires: readline
+Requires: rsync
+Requires: sed
+Requires: sqlite-libs
+Requires: tar
+Requires: util-linux
+Requires: util-linux-libs
+Requires: which
+Requires: zip
+Requires: zlib
 %endif
+
 %description
 Greenplum Database
 
