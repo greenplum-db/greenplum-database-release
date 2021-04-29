@@ -169,7 +169,7 @@ resources:
   source:
     api_token: ((public-tanzunet-refresh-token))
     endpoint: ((tanzunet-endpoint))
-    product_slug: pivotal-gpdb
+    product_slug: vmware-tanzu-greenplum
     product_version: 6\.2\.1
 
 - name: previous-6.12.0-release
@@ -177,7 +177,7 @@ resources:
   source:
     api_token: ((public-tanzunet-refresh-token))
     endpoint: ((tanzunet-endpoint))
-    product_slug: pivotal-gpdb
+    product_slug: vmware-tanzu-greenplum
     product_version: 6\.12\.0
 
 - name: previous-6-oss-release
@@ -193,7 +193,7 @@ resources:
   source:
     api_token: ((public-tanzunet-refresh-token))
     endpoint: ((tanzunet-endpoint))
-    product_slug: pivotal-gpdb
+    product_slug: vmware-tanzu-greenplum
     product_version: 5\.25\.0
 
 - name: previous-5.28.4-release
@@ -201,7 +201,7 @@ resources:
   source:
     api_token: ((public-tanzunet-refresh-token))
     endpoint: ((tanzunet-endpoint))
-    product_slug: pivotal-gpdb
+    product_slug: vmware-tanzu-greenplum
     product_version: 5\.28\.4
 
 - name: bin_gpdb6_centos6
@@ -381,7 +381,7 @@ anchors:
 - gpdb5-rpm-params: &gpdb5-rpm-params
     GPDB_NAME: greenplum-db-5
     GPDB_LICENSE: VMware Software EULA
-    GPDB_URL: https://network.tanzu.vmware.com/products/pivotal-gpdb/
+    GPDB_URL: https://network.tanzu.vmware.com/products/vmware-tanzu-greenplum/
     GPDB_RELEASE: 1
     GPDB_VERSION: "5.99.0"
 - gpdb6-rpm-params: &gpdb6-rpm-params
@@ -389,7 +389,7 @@ anchors:
     GPDB_NAME: greenplum-db-6
     GPDB_OSS: false
     GPDB_RELEASE: 1
-    GPDB_URL: https://network.tanzu.vmware.com/products/pivotal-gpdb/
+    GPDB_URL: https://network.tanzu.vmware.com/products/vmware-tanzu-greenplum/
 - gpdb6-rpm-params-oss: &gpdb6-rpm-params-oss
     GPDB_LICENSE: VMware Software EULA
     GPDB_NAME: open-source-greenplum-db-6

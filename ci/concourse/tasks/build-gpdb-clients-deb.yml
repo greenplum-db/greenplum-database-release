@@ -22,7 +22,7 @@ params:
   #  To override, please do so in pipeline
   GPDB_NAME: greenplum-db-clients
   GPDB_SUMMARY: Greenplum-DB-Clients
-  GPDB_URL: https://network.tanzu.vmware.com/products/pivotal-gpdb/
+  GPDB_URL: https://network.tanzu.vmware.com/products/vmware-tanzu-greenplum/
   GPDB_BUILDARCH: amd64
   GPDB_DESCRIPTION: Pivotal Greenplum Clients
   GPDB_PREFIX: /usr/local
