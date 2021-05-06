@@ -17,7 +17,7 @@ apk update && apk add --no-progress git tar zip
 
 BASE_DIR="$(pwd)"
 
-GPDB_RELEASE_COMMIT_SHA="$(cat gpdb_src/.git/ref)"
+GPDB_RELEASE_COMMIT_SHA="$(git --git-dir gpdb_src/.git rev-parse HEAD)"
 GPDB_RELEASE_TAG="$(git --git-dir gpdb_src/.git describe --tags "${GPDB_RELEASE_COMMIT_SHA}")"
 
 OUTPUT_DIR="${BASE_DIR}/release_artifacts"
@@ -32,7 +32,7 @@ function build_gpdb_binaries_tarball() {
 	# 1. `git archive` can not archive the submodules parts directly
 	# 2. we have one implementation using `git archive`, you can ref:
 	# https://github.com/greenplum-db/greenplum-database-release/commit/4e15c018f82f647129ac6e704d4fd0e9a66c353a
-	printf "%s build commit:%s\n" "${GPDB_RELEASE_TAG}" "${GPDB_RELEASE_COMMIT_SHA}" >VERSION
+	printf "%s build commit:%s\n" "${GPDB_RELEASE_TAG}" "${GPDB_RELEASE_COMMIT_SHA}" >gpdb_src/VERSION
 	tar --exclude '.git*' -czf "${OUTPUT_DIR}/${GPDB_RELEASE_TAG}-src-full.tar.gz" gpdb_src
 	zip -r -q "${OUTPUT_DIR}/${GPDB_RELEASE_TAG}-src-full.zip" gpdb_src -x '*.git*'
 	echo "Created the release binaries successfully! [tar.gz, zip]"
