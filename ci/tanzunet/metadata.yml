@@ -6,8 +6,8 @@ release:
   release_notes_url: https://docs.greenplum.org
   availability: Admins Only
   controlled: false
-  eccn: 5D002
-  license_exception: TSU
+  eccn: Not Subject to EAR
+  license_exception: NLR
 
 product_files:
 - file: file://gpdb_rpm_installer_centos6/greenplum-db-(6\..*)-rhel6-x86_64.rpm
