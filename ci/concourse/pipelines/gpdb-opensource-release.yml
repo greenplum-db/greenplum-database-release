@@ -36,33 +36,31 @@ resources:
 
 ## Image Resources
 - name: gpdb6-centos6-build
-  type: docker-image
+  type: registry-image
   icon: docker
   source:
-    repository: pivotaldata/gpdb6-centos6-build
+    repository: gcr.io/data-gpdb-public-images/gpdb6-centos6-build
     tag: 'latest'
 
 - name: gpdb6-centos7-build
-  type: docker-image
+  type: registry-image
   icon: docker
   source:
-    repository: pivotaldata/gpdb6-centos7-build
+    repository: gcr.io/data-gpdb-public-images/gpdb6-centos7-build
     tag: 'latest'
 
 - name: gpdb6-photon3-build
-  type: docker-image
+  type: registry-image
   icon: docker
   source:
-    repository: pivotaldata/gpdb6-photon3-build
+    repository: gcr.io/data-gpdb-public-images/gpdb6-photon3-build
     tag: 'latest'
-    username: ((docker_username))
-    password: ((docker_password))
 
 - name: gpdb6-ubuntu18.04-build
-  type: docker-image
+  type: registry-image
   icon: docker
   source:
-    repository: pivotaldata/gpdb6-ubuntu18.04-build
+    repository: gcr.io/data-gpdb-public-images/gpdb6-ubuntu18.04-build
     tag: 'latest'
 
 - name: gpdb_src
@@ -534,9 +532,9 @@ jobs:
     config:
       platform: linux
       image_resource:
-        type: docker-image
+        type: registry-image
         source:
-          repository: pivotaldata/gpdb6-centos6-build
+          repository: gcr.io/data-gpdb-public-images/gpdb6-centos6-build
       inputs:
       - name: gpdb_src
       - name: bin_gpdb_centos6

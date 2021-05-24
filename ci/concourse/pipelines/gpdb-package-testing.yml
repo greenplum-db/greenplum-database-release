@@ -33,16 +33,16 @@ resources:
     uri: ((greenplum-database-release-git-remote))
 
 - name: centos-gpdb-dev-6
-  type: docker-image
+  type: registry-image
   source:
-    repository: pivotaldata/centos-gpdb-dev
-    tag: '6-gcc6.2-llvm3.7'
+    repository: gcr.io/data-gpdb-public-images/gpdb5-centos6-build-test
+    tag: 'latest'
 
 - name: centos-gpdb-dev-7
-  type: docker-image
+  type: registry-image
   source:
-    repository: pivotaldata/centos-gpdb-dev
-    tag: '7-gcc6.2-llvm3.7'
+    repository: gcr.io/data-gpdb-public-images/gpdb5-centos7-build-test
+    tag: 'latest'
 
 - name: bin_gpdb5_centos6
   type: s3
@@ -233,55 +233,55 @@ resources:
     regexp: server/published/gpdb6/server-rc-(.*)-ubuntu18.04_x86_64.tar.gz
 
 - name: gpdb6-centos6-build
-  type: docker-image
+  type: registry-image
   source:
-    repository: pivotaldata/gpdb6-centos6-build
+    repository: gcr.io/data-gpdb-public-images/gpdb6-centos6-build
     tag: latest
 
 - name: gpdb6-centos7-build
-  type: docker-image
+  type: registry-image
   source:
-    repository: pivotaldata/gpdb6-centos7-build
+    repository: gcr.io/data-gpdb-public-images/gpdb6-centos7-build
     tag: latest
 
 - name: gpdb6-centos8-build
-  type: docker-image
+  type: registry-image
   source:
-    repository: pivotaldata/gpdb6-centos8-build
+    repository: gcr.io/data-gpdb-public-images/gpdb6-centos8-build
     tag: latest
 
 - name: gpdb6-ubuntu18.04-build
-  type: docker-image
+  type: registry-image
   source:
-    repository: pivotaldata/gpdb6-ubuntu18.04-build
+    repository: gcr.io/data-gpdb-public-images/gpdb6-ubuntu18.04-build
     tag: latest
 
 - name: gpdb6-sles12-build
-  type: docker-image
+  type: registry-image
   source:
-    repository: pivotaldata/gpdb6-sles12-build
-    username: ((docker-username))
-    password: ((docker-password))
+    repository: gcr.io/data-gpdb-private-images/gpdb6-sles12-build
+    username: _json_key
+    password: ((container-registry-readonly-service-account-key))
     tag: latest
 
 - name: gpdb6-sles12-test
-  type: docker-image
+  type: registry-image
   source:
-    repository: pivotaldata/gpdb6-sles12-test
-    username: ((docker-username))
-    password: ((docker-password))
+    repository: gcr.io/data-gpdb-private-images/gpdb6-sles12-test
+    username: _json_key
+    password: ((container-registry-readonly-service-account-key))
     tag: latest
 
 - name: gpdb6-photon3-build
-  type: docker-image
+  type: registry-image
   source:
-    repository: pivotaldata/gpdb6-photon3-build
+    repository: gcr.io/data-gpdb-public-images/gpdb6-photon3-build
     tag: latest
 
 - name: gpdb6-photon3-test
-  type: docker-image
+  type: registry-image
   source:
-    repository: pivotaldata/gpdb6-photon3-test
+    repository: gcr.io/data-gpdb-public-images/gpdb6-photon3-test
     tag: latest
 
 - name: gpdb6-osl
@@ -342,33 +342,33 @@ resources:
     versioned_file: ((pipeline-name))/deb_gpdb_clients_ubuntu18.04/greenplum-db-clients-0.0.0-ubuntu18.04-amd64.deb
 
 - name: gpdb6-centos6-test
-  type: docker-image
+  type: registry-image
   source:
-    repository: pivotaldata/gpdb6-centos6-test
+    repository: gcr.io/data-gpdb-public-images/gpdb6-centos6-test
     tag: latest
 
 - name: gpdb6-centos6-test-packaging
-  type: docker-image
+  type: registry-image
   source:
-    repository: pivotaldata/gpdb6-centos6-test-packaging
+    repository: gcr.io/data-gpdb-public-images/gpdb6-centos6-test-packaging
     tag: latest
 
 - name: gpdb6-centos7-test
-  type: docker-image
+  type: registry-image
   source:
-    repository: pivotaldata/gpdb6-centos7-test
+    repository: gcr.io/data-gpdb-public-images/gpdb6-centos7-test
     tag: latest
 
 - name: gpdb6-centos7-test-packaging
-  type: docker-image
+  type: registry-image
   source:
-    repository: pivotaldata/gpdb6-centos7-test-packaging
+    repository: gcr.io/data-gpdb-public-images/gpdb6-centos7-test-packaging
     tag: latest
 
 - name: gpdb6-ubuntu18.04-test-packaging
-  type: docker-image
+  type: registry-image
   source:
-    repository: pivotaldata/gpdb6-ubuntu18.04-test-packaging
+    repository: gcr.io/data-gpdb-public-images/gpdb6-ubuntu18.04-test-packaging
     tag: latest
 ## ======================================================================
 ##                   _
