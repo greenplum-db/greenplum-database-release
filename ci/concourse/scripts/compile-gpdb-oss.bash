@@ -13,22 +13,6 @@
 
 set -euox pipefail
 
-build_xerces() {
-	echo "Building Xerces-C"
-	mkdir -p xerces_patch/concourse
-
-	orca_src="gpdb_src/src/backend/gporca"
-
-	cp -r "${orca_src}/concourse/xerces-c" xerces_patch/concourse
-
-	/usr/bin/python xerces_patch/concourse/xerces-c/build_xerces.py --output_dir="/usr/local"
-	rm -rf build
-
-	# RHEL does not include `/usr/local/lib` in the default search path
-	echo "/usr/local/lib" >>/etc/ld.so.conf.d/gpdb.conf
-	ldconfig
-}
-
 install_python() {
 	echo "Installing python"
 	export PATH="/opt/python-2.7.12/bin:${PATH}"
@@ -105,13 +89,6 @@ get_gpdb_tag() {
 	popd
 }
 
-include_xerces() {
-	local greenplum_install_dir="${1}"
-
-	echo "Including libxerces-c in greenplum package"
-	cp --archive /usr/local/lib/libxerces-c{,-3.1}.so "${greenplum_install_dir}/lib"
-}
-
 include_python() {
 	local greenplum_install_dir="${1}"
 
@@ -122,6 +99,12 @@ include_python() {
 	# because we vendor python module, hence we need to re-generate the greenplum_path.sh with
 	# additional PYTHONHOME information
 	gpdb_src/gpMgmt/bin/generate-greenplum-path.sh yes >"${greenplum_install_dir}/greenplum_path.sh"
+}
+
+function include_xerces() {
+	xerces_so=$(find /usr/local/lib* -name libxerces-c*.so)
+	local greenplum_install_dir="${1}"
+	cp -a ${xerces_so} "${greenplum_install_dir}/lib"
 }
 
 include_libstdcxx() {
@@ -199,8 +182,6 @@ _main() {
 		. /opt/gcc_env.sh
 	fi
 
-	build_xerces
-
 	install_python
 
 	generate_build_number
@@ -215,10 +196,10 @@ _main() {
 	build_gpdb "${greenplum_install_dir}"
 	git_info "${greenplum_install_dir}"
 
-	include_xerces "${greenplum_install_dir}"
 	include_python "${greenplum_install_dir}"
 	include_libstdcxx "${greenplum_install_dir}"
 	include_zstd "${greenplum_install_dir}"
+	include_xerces "${greenplum_install_dir}"
 
 	check_pythonhome "${greenplum_install_dir}"
 
