@@ -44,6 +44,14 @@ resources:
     repository: gcr.io/data-gpdb-public-images/gpdb5-centos7-build-test
     tag: 'latest'
 
+- name: gpdb5-sles11-build-test
+  source:
+    repository: gcr.io/data-gpdb-private-images/gpdb5-sles11-build-test
+    tag: latest
+    username: _json_key
+    password: ((container-registry-readonly-service-account-key))
+  type: registry-image
+
 - name: bin_gpdb5_centos6
   type: s3
   source:
@@ -449,7 +457,9 @@ jobs:
       resource: bin_gpdb5_sles11
     - get: greenplum-database-release
       trigger: true
+    - get: gpdb5-sles11-build-test
   - task: build_rpm_gpdb5_sles11
+    image: gpdb5-sles11-build-test
     file: greenplum-database-release/ci/concourse/tasks/build-gpdb5-rpm-sles.yml
     params:
       <<: *gpdb5-rpm-params
@@ -532,8 +542,10 @@ jobs:
     - get: previous-5.28.4-release
       params:
         globs: [greenplum-db-*-sles11-x86_64.rpm]
+    - get: gpdb5-sles11-build-test
   - task: test_rpm_functionality
     file: greenplum-database-release/ci/concourse/tasks/test-functionality-rpm-sles.yml
+    image: gpdb5-sles11-build-test
     input_mapping:
       gpdb_rpm_installer: rpm_gpdb5_sles11
     params:
