@@ -12,17 +12,17 @@
 ---
 resource_types:
 - name: gcs
-  type: docker-image
+  type: registry-image
   source:
     repository: frodenas/gcs-resource
 
 - name: ppa
-  type: docker-image
+  type: registry-image
   source:
     repository: seveas/concourse-ppa-resource
 
 - name: slack-notification
-  type: docker-image
+  type: registry-image
   source:
     repository: cfcommunity/slack-notification-resource
     tag: latest
