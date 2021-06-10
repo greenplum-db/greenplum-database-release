@@ -60,6 +60,7 @@ Requires: zlib
 
 %if "%{platform}" == "rhel7"
 Requires: openssl-libs
+Requires: libevent
 %endif
 %if "%{platform}" == "rhel6"
 Requires: libevent2
