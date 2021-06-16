@@ -9,16 +9,38 @@ release:
   eccn: Not Subject to EAR
   license_exception: NLR
 
+file_groups:
+- name: Greenplum Database Sever
+  product_files:
+  - file: file://gpdb_rpm_installer_centos6/greenplum-db-(6\..*)-rhel6-x86_64.rpm
+    upload_as: Greenplum Database Installer for Redhat 6
+    file_type: Software
+    file_version: ${VERSION_REGEX}
+  - file: file://gpdb_rpm_installer_centos7/greenplum-db-(6\..*)-rhel7-x86_64.rpm
+    upload_as: Greenplum Database Installer for Redhat 7
+    file_type: Software
+    file_version: ${VERSION_REGEX}
+  - file: file://gpdb_deb_package/greenplum-db-(6\..*)-ubuntu18.04-amd64.deb
+    upload_as: Greenplum Database Installer for Ubuntu 18.04
+    file_type: Software
+    file_version: ${VERSION_REGEX}
+
 product_files:
-- file: file://gpdb_rpm_installer_centos6/greenplum-db-(6\..*)-rhel6-x86_64.rpm
-  upload_as: Greenplum Database Installer for Redhat 6
-  file_type: Software
+- file: file://gpdb-osl/open_source_license_greenplum_database_by_vmware_tanzu_(.*)_GA.txt
+  upload_as: Open Source Licenses for Greenplum Database by VMware Tanzu 6
+  description:
+  file_type: Open Source License
+  docs_url:
+  system_requirements:
+  platforms:
+  included_files:
   file_version: ${VERSION_REGEX}
-- file: file://gpdb_rpm_installer_centos7/greenplum-db-(6\..*)-rhel7-x86_64.rpm
-  upload_as: Greenplum Database Installer for Redhat 7
-  file_type: Software
-  file_version: ${VERSION_REGEX}
-- file: file://gpdb_deb_package/greenplum-db-(6\..*)-ubuntu18.04-amd64.deb
-  upload_as: Greenplum Database Installer for Ubuntu 18.04
-  file_type: Software
+- file: file://gpdb-odp/Greenplum-Database-by-VMware-Tanzu-(.*)-ODP.tar.gz
+  upload_as: Open Source Disclosure Package for Greenplum Database by VMware Tanzu 6
+  description:
+  file_type: Open Source License
+  docs_url:
+  system_requirements:
+  platforms:
+  included_files:
   file_version: ${VERSION_REGEX}

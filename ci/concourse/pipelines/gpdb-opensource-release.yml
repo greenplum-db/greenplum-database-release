@@ -232,6 +232,22 @@ resources:
     ppa: ((ppa-login))
     package: ((ppa-package-name))
     api_token: ((ppa-api-token))
+
+## OSL
+- name: gpdb-osl
+  source:
+    bucket: pivotal-gpdb-concourse-resources-prod
+    json_key: ((concourse-gcs-resources-service-account-key))
+    regexp: osl/released/gpdb6/open_source_license_greenplum_gatabase_by_vmware_tanzu_(.*)_GA.txt
+  type: gcs
+
+- name: gpdb-odp
+  source:
+    bucket: pivotal-gpdb-concourse-resources-prod
+    json_key: ((concourse-gcs-resources-service-account-key))
+    regexp: osl/released/gpdb6/VMware-greenplum-6-database-(.*)-ODP.tar.gz
+  type: gcs
+
 jobs:
 - name: compile_gpdb_centos6
   on_failure: &slack-alert
@@ -625,6 +641,8 @@ jobs:
     - get: gpdb_deb_package
       passed: [release]
       trigger: true
+    - get: gpdb-osl
+    - get: gpdb-odp
     - get: greenplum-database-release
       passed: [release]
       trigger: true

@@ -14,6 +14,9 @@ inputs:
 - name: gpdb_rpm_installer_centos6
 - name: gpdb_rpm_installer_centos7
 - name: gpdb_deb_package
+- name: gpdb-osl
+- name: gpdb-odp
+
 params:
   TANZUNET_ENDPOINT:
   TANZUNET_REFRESH_TOKEN:
