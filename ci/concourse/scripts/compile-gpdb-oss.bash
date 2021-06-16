@@ -13,30 +13,6 @@
 
 set -euox pipefail
 
-build_xerces() {
-	echo "Building Xerces-C"
-	mkdir -p xerces_patch/concourse
-
-	orca_src="gpdb_src/src/backend/gporca"
-
-	cp -r "${orca_src}/concourse/xerces-c" xerces_patch/concourse
-
-	/usr/bin/python xerces_patch/concourse/xerces-c/build_xerces.py --output_dir="/usr/local"
-	rm -rf build
-
-	# RHEL does not include `/usr/local/lib` in the default search path
-	echo "/usr/local/lib" >>/etc/ld.so.conf.d/gpdb.conf
-	ldconfig
-}
-
-install_python() {
-	echo "Installing python"
-	export PATH="/opt/python-2.7.12/bin:${PATH}"
-	export PYTHONHOME=/opt/python-2.7.12
-	echo "/opt/python-2.7.12/lib" >>/etc/ld.so.conf.d/gpdb.conf
-	ldconfig
-}
-
 generate_build_number() {
 	pushd gpdb_src
 	#Only if its git repro, add commit SHA as build number
@@ -45,6 +21,15 @@ generate_build_number() {
 		echo "commit:$(git rev-parse HEAD)" >BUILD_NUMBER
 	fi
 	popd
+}
+
+install_python() {
+	echo "Installing python"
+	# shellcheck disable=SC2155
+	export PYTHONHOME=$(find /opt -maxdepth 1 -type d -name "python*")
+	export PATH="${PYTHONHOME}/bin:${PATH}"
+	echo "${PYTHONHOME}/lib" >>/etc/ld.so.conf.d/gpdb.conf
+	ldconfig
 }
 
 build_gpdb() {
@@ -67,7 +52,7 @@ build_gpdb() {
 		--with-extra-version=" Open Source" \
 		--prefix="${greenplum_install_dir}" \
 		--mandir="${greenplum_install_dir}/man"
-	make -j4
+	make -j"$(nproc)"
 	make install
 	popd
 
@@ -83,69 +68,47 @@ git_info() {
 }
 
 get_gpdb_tag() {
-	local platform
-	platform="$(python -mplatform)"
-
-	case "${platform}" in
-	*centos* | *photon*)
-		wget https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64
-		chmod a+x jq-linux64
-		mv jq-linux64 /usr/local/bin/jq
-		;;
-	*Ubuntu*)
-		apt-get update
-		apt-get install jq -y
-		;;
-	*) return ;;
-	esac
-
 	pushd gpdb_src
 	GPDB_VERSION=$(./concourse/scripts/git_info.bash | jq '.root.version' | tr -d '"')
 	export GPDB_VERSION
 	popd
 }
 
-include_xerces() {
+include_dependencies() {
 	local greenplum_install_dir="${1}"
 
-	echo "Including libxerces-c in greenplum package"
-	cp --archive /usr/local/lib/libxerces-c{,-3.1}.so "${greenplum_install_dir}/lib"
-}
+	mkdir -p "${greenplum_install_dir}"/{lib,include,ext/python}
 
-include_python() {
-	local greenplum_install_dir="${1}"
+	declare -a library_search_path header_search_path vendored_headers vendored_libs pkgconfigs
 
-	mkdir -p "${greenplum_install_dir}/ext/python"
-	echo "Copying python from /opt/python-2.7.12 into ${greenplum_install_dir}/ext/python..."
-	cp --archive /opt/python-2.7.12/* "${greenplum_install_dir}/ext/python"
+	header_search_path=(/usr/local/include/ /usr/include/)
+	vendored_headers=(zstd*.h)
+	pkgconfigs=(libzstd.pc)
+
+	vendored_libs=(libzstd.so{,.1,.1.3.7} libxerces-c{,-3.1}.so)
+
+	if [[ -d /opt/gcc-6.4.0 ]]; then
+		vendored_libs+=(libstdc++.so.6{,.0.22,*.pyc,*.pyo})
+		library_search_path+=(/opt/gcc-6.4.0/lib64)
+	fi
+	#shellcheck disable=SC2207
+	library_search_path+=($(cat /etc/ld.so.conf.d/*.conf | grep -v '#'))
+	library_search_path+=(/lib64 /usr/lib64 /lib /usr/lib)
+
+	# Vendor shared libraries - follow symlinks
+	for path in "${library_search_path[@]}"; do if [[ -d "${path}" ]]; then for lib in "${vendored_libs[@]}"; do find -L "$path" -name "$lib" -exec cp -avn '{}' "${greenplum_install_dir}/lib" \;; done; fi; done
+	# Vendor headers - follow symlinks
+	for path in "${header_search_path[@]}"; do if [[ -d "${path}" ]]; then for header in "${vendored_headers[@]}"; do find -L "$path" -name "$header" -exec cp -avn '{}' "${greenplum_install_dir}/include" \;; done; fi; done
+	# vendor pkgconfig files
+	for path in "${library_search_path[@]}"; do if [[ -d "${path}/pkgconfig" ]]; then for pkg in "${pkgconfigs[@]}"; do find -L "$path"/pkgconfig/ -name "$pkg" -exec cp -avn '{}' "${greenplum_install_dir}/lib/pkgconfig" \;; done; fi; done
+
+	# Vendor python
+	echo "Copying python from ${PYTHONHOME} into ${greenplum_install_dir}/ext/python..."
+	cp --archive "${PYTHONHOME}"/* "${greenplum_install_dir}/ext/python"
 
 	# because we vendor python module, hence we need to re-generate the greenplum_path.sh with
 	# additional PYTHONHOME information
 	gpdb_src/gpMgmt/bin/generate-greenplum-path.sh yes >"${greenplum_install_dir}/greenplum_path.sh"
-}
-
-include_libstdcxx() {
-	local greenplum_install_dir="${1}"
-
-	# if this is a platform that uses a non-system toolchain, libstdc++ needs to be vendored
-	if [ -d /opt/gcc-6.4.0 ]; then
-		cp --archive /opt/gcc-6.4.0/lib64/libstdc++.so.6{,.0.22} "${greenplum_install_dir}/lib"
-	fi
-}
-
-include_zstd() {
-	local greenplum_install_dir="${1}"
-	local platform
-	platform="$(python -mplatform)"
-
-	local libdir
-	case "${platform}" in
-	*centos* | *photon*) libdir=/usr/lib64 ;;
-	*Ubuntu*) libdir=/usr/lib ;;
-	*) return ;;
-	esac
-
-	cp --archive ${libdir}/libzstd.so.1{,.3.7} "${greenplum_install_dir}/lib"
 }
 
 export_gpdb() {
@@ -194,15 +157,6 @@ _main() {
 		mkdir "${output_artifact_dir}"
 	fi
 
-	if [ -e /opt/gcc_env.sh ]; then
-		# shellcheck disable=SC1091
-		. /opt/gcc_env.sh
-	fi
-
-	build_xerces
-
-	install_python
-
 	generate_build_number
 
 	local greenplum_install_dir="${PREFIX}/greenplum-db-${GPDB_VERSION}"
@@ -212,14 +166,11 @@ _main() {
 		local greenplum_install_dir="${PREFIX}/greenplum-db-6-${GPDB_VERSION}"
 	fi
 
+	install_python
 	build_gpdb "${greenplum_install_dir}"
 	git_info "${greenplum_install_dir}"
 
-	include_xerces "${greenplum_install_dir}"
-	include_python "${greenplum_install_dir}"
-	include_libstdcxx "${greenplum_install_dir}"
-	include_zstd "${greenplum_install_dir}"
-
+	include_dependencies "${greenplum_install_dir}"
 	check_pythonhome "${greenplum_install_dir}"
 
 	export_gpdb "${greenplum_install_dir}" "${output_artifact_dir}/bin_gpdb.tar.gz"
