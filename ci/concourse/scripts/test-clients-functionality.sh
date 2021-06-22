@@ -17,17 +17,10 @@ if [[ $PLATFORM == "rhel"* || $PLATFORM == "sles"* ]]; then
 	inspec exec greenplum-database-release/ci/concourse/tests/gpdb6/clients/rpm --reporter documentation --no-distinct-exit --no-backend-cache
 
 elif [[ $PLATFORM == "ubuntu"* ]]; then
-
-	# Maybe later we can install the curl into the gpdb6-ubuntu18.04-test docker image
-	apt-get update && apt-get install -y curl
-
-	# TODO: inspec should be available on the base container
-	# Install inspec v3 because v4 requires license for commercial use
-	curl https://omnitruck.chef.io/install.sh | bash -s -- -P inspec -v 3
-	GPDB_CLIENTS_VERSION="$(dpkg --info ${GPDB_CLIENTS_PATH}/greenplum-db-clients-*-"${GPDB_CLIENTS_ARCH}"-amd64.deb | grep Version | awk '{print $2}' | tr --delete '\n')"
-	export GPDB_CLIENTS_VERSION
-	inspec exec greenplum-database-release/ci/concourse/tests/gpdb6/clients/deb --reporter documentation --no-distinct-exit --no-backend-cache
-
+	mkdir greenplum-database-release/gpdb-deb-test/gpdb_client_deb_installer
+	cp gpdb_clients_package_installer/*.deb greenplum-database-release/gpdb-deb-test/gpdb_client_deb_installer/greenplum-db-6-ubuntu18.04-amd64.deb
+	cd greenplum-database-release/gpdb-deb-test
+	godog features/gpdb-client-deb.feature
 else
 	echo "${PLATFORM} is not yet supported for Greenplum Clients 6.X"
 	exit 1
