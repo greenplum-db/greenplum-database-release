@@ -71,6 +71,9 @@ fi
 rm -rf %{buildroot}
 mkdir -p %{buildroot}%{bin_gpdb}
 cp -R * %{buildroot}%{bin_gpdb}
+pushd %{buildroot}/%{bin_gpdb}
+ext/python/bin/python -m compileall -q -x test .
+popd
 
 # Disable build root policy trying to generate %.pyo/%.pyc
 exit 0

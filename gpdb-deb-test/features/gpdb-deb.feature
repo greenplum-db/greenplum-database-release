@@ -8,4 +8,5 @@ Feature: deb install and remove works
   Scenario: gpdb server deb can be removed
     Given gpdb installed
     When remove gpdb
-    Then gpdb removed as expected
+    Then gpdb link removed as expected
+    And gpdb removed as expected

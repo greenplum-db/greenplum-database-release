@@ -38,9 +38,18 @@ set -e
 cd ${GPDB_PREFIX}/
 rm -f ${GPDB_NAME}
 ln -s ${GPDB_NAME}-${GPDB_VERSION} ${GPDB_NAME}
+cd ${GPDB_NAME}-${GPDB_VERSION}
+ext/python/bin/python -m compileall -q -x test .
 exit 0
 EOF
 	chmod 0775 "${__package_name}/DEBIAN/postinst"
+	cat <<EOF >"${__package_name}/DEBIAN/prerm"
+#!/bin/sh
+set -e
+dpkg -L "${__package_name}" | grep '\.py$' | while read file; do rm -f "${file}"[co] >/dev/null; done
+exit 0
+EOF
+	chmod 0775 "${__package_name}/DEBIAN/prerm"
 	cat <<EOF >"${__package_name}/DEBIAN/postrm"
 #!/bin/sh
 set -e

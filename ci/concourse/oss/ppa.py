@@ -134,6 +134,12 @@ class SourcePackageBuilder(BasePackageBuilder):
         with open(os.path.join(debian_dir, 'install'), mode='x') as fd:
             fd.write(self._install())
 
+        with open(os.path.join(debian_dir, 'postinst'), mode='x') as fd:
+            fd.write(self._postinst())
+
+        with open(os.path.join(debian_dir, 'prerm'), mode='x') as fd:
+            fd.write(self._prerm())
+
     def generate_changelog(self):
         new_version = f'{self.gpdb_upstream_version}-{self.debian_revision}'
         cmd = [
@@ -241,3 +247,14 @@ conditions of the subcomponent's license, as noted in the LICENSE file.
                |  contributions.  For the Greenplum Database community, no contribution is too
                |  small, we encourage all types of contributions.
                |''')
+    def _postinst(self):
+        return Util.strip_margin(
+            f'''#!/usr/bin/env bash
+            |cd {self.install_location()}
+            |ext/python/bin/python -m compileall -q -x test .
+            ''')
+    def _prerm(self):
+        return Util.strip_margin(
+            f'''#!/usr/bin/env bash
+            |dpkg -L {self.package_name} | grep '\.py$' | while read file; do rm -f "${{file}}"[co] >/dev/null;
+            ''')

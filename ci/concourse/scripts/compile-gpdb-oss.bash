@@ -102,7 +102,6 @@ include_dependencies() {
 	# vendor pkgconfig files
 	for path in "${library_search_path[@]}"; do if [[ -d "${path}/pkgconfig" ]]; then for pkg in "${pkgconfigs[@]}"; do find -L "$path"/pkgconfig/ -name "$pkg" -exec cp -avn '{}' "${greenplum_install_dir}/lib/pkgconfig" \;; done; fi; done
 
-	# Vendor python
 	echo "Copying python from ${PYTHONHOME} into ${greenplum_install_dir}/ext/python..."
 	cp --archive "${PYTHONHOME}"/* "${greenplum_install_dir}/ext/python"
 
@@ -116,11 +115,8 @@ export_gpdb() {
 	local tarball="${2}"
 
 	pushd "${greenplum_install_dir}"
-	(
-		# shellcheck disable=SC1091
-		source greenplum_path.sh
-		python -m compileall -q -x test .
-	)
+	# Remove python bytecode
+	find . -type f \( -iname \*.pyc -o -iname \*.pyo \) -delete
 	tar -czf "${tarball}" ./*
 	popd
 }

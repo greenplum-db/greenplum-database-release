@@ -7,4 +7,5 @@ Feature: deb install and remove works
   Scenario: gpdb client deb can be removed
     Given gpdb client installed
     When remove gpdb client
-    Then gpdb client removed as expected
+    Then gpdb client link removed as expected
+    And gpdb client removed as expected

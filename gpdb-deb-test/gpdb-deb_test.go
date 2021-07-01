@@ -2,12 +2,13 @@ package main
 
 import (
 	"fmt"
-	"github.com/cucumber/godog"
 	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
+
+	"github.com/cucumber/godog"
 )
 
 func gpdbDebHasCorrectMetadata() error {
@@ -56,17 +57,58 @@ func gpdbInstalledAsExpected() error {
 		return err
 	}
 	if !strings.Contains(string(postgresGpbdVersion), string(gpbdVersion)) {
-		fmt.Errorf("postgres --gp-version: %s should contains %s", string(postgresGpbdVersion), string(gpbdVersion))
+		return fmt.Errorf("postgres --gp-version: %s should contains %s", string(postgresGpbdVersion), string(gpbdVersion))
+	}
+
+	err = gpdbGeneratedPythonBytecode("/usr/local/greenplum-db/ext/python/lib/python2.7/cmd.py")
+	if err != nil {
+		return err
+	}
+
+	err = gpdbGeneratedPythonBytecode("/usr/local/greenplum-db/lib/python/subprocess32.py")
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func gpdbGeneratedPythonBytecode(fileName string) error {
+	// Check that vendored .pyc files were created after their associated .py files
+
+	pyFile, err := os.Stat(fileName)
+	if os.IsNotExist(err) {
+		return fmt.Errorf(pyFile.Name() + " should exist")
+	}
+	pycFile, err := os.Stat(fileName + "c")
+	if os.IsNotExist(err) {
+		return fmt.Errorf(pycFile.Name() + " should exist")
+	}
+	if pycFile.ModTime().Before(pyFile.ModTime()) {
+		return fmt.Errorf(pycFile.Name() + " should have modified time after " + pyFile.Name())
 	}
 	return nil
 }
 
-func gpdbRemovedAsExpected() error {
+func gpdbLinkRemovedAsExpected() error {
 	_, err := os.Stat("/usr/local/greenplum-db")
 	if os.IsNotExist(err) {
 		return nil
 	}
 	return fmt.Errorf("/usr/local/greenplum-db should not exist")
+}
+
+func gpdbRemovedAsExpected() error {
+	// get gpdbVersion
+	gpbdVersion, err := GetDebField("Version", "gpdb_deb_installer/greenplum-db-6-ubuntu18.04-amd64.deb")
+	if err != nil {
+		return err
+	}
+	_, err = os.Stat("/usr/local/greenplum-db-" + gpbdVersion)
+	if os.IsNotExist(err) {
+		return nil
+	}
+	return fmt.Errorf("/usr/local/greenplum-db-" + gpbdVersion + " should not exist")
 }
 
 func installGpdb() error {
@@ -112,7 +154,7 @@ func gpdbClientInstalledAsExpected() error {
 	if err != nil {
 		return err
 	}
-	if linkDestination != "greenplum-db-clients-" + gpdbClientVersion {
+	if linkDestination != "greenplum-db-clients-"+gpdbClientVersion {
 		return fmt.Errorf("/usr/local/greenplum-db-clients links to %s != %s", linkDestination, "greenplum-db-clients-"+gpdbClientVersion)
 	}
 	// GPHOME_CLIENT is set
@@ -123,15 +165,34 @@ func gpdbClientInstalledAsExpected() error {
 	if gpClientHome != "/usr/local/greenplum-db-clients-"+gpdbClientVersion {
 		return fmt.Errorf("GPHOME_CLIENTS:%s is not set to %s", gpClientHome, "/usr/local/greenplum-db-clients-"+gpdbClientVersion)
 	}
+
+	err = gpdbGeneratedPythonBytecode("/usr/local/greenplum-db-clients/ext/python/lib/python2.7/cmd.py")
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
-func gpdbClientRemovedAsExpected() error {
+func gpdbClientLinkRemovedAsExpected() error {
 	_, err := os.Stat("/usr/local/greenplum-db-clients")
 	if os.IsNotExist(err) {
 		return nil
 	}
 	return fmt.Errorf("/usr/local/greenplum-db-clients should not exist")
+}
+
+func gpdbClientRemovedAsExpected() error {
+	// get gpdb client debian Version
+	gpdbClientVersion, err := GetDebField("Version", "gpdb_client_deb_installer/greenplum-db-6-ubuntu18.04-amd64.deb")
+	if err != nil {
+		return err
+	}
+	_, err = os.Stat("/usr/local/greenplum-db-" + gpdbClientVersion)
+	if os.IsNotExist(err) {
+		return nil
+	}
+	return fmt.Errorf("/usr/local/greenplum-db-" + gpdbClientVersion + " should not exist")
 }
 
 func installGpdbClient() error {
@@ -146,12 +207,14 @@ func InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Step(`^gpdb deb has correct metadata$`, gpdbDebHasCorrectMetadata)
 	ctx.Step(`^gpdb installed$`, gpdbInstalled)
 	ctx.Step(`^gpdb installed as expected$`, gpdbInstalledAsExpected)
+	ctx.Step(`^gpdb link removed as expected$`, gpdbLinkRemovedAsExpected)
 	ctx.Step(`^gpdb removed as expected$`, gpdbRemovedAsExpected)
 	ctx.Step(`^install gpdb$`, installGpdb)
 	ctx.Step(`^remove gpdb$`, removeGpdb)
 	ctx.Step(`^gpdb client deb has correct metadata$`, gpdbClientDebHasCorrectMetadata)
 	ctx.Step(`^gpdb client installed$`, gpdbClientInstalled)
 	ctx.Step(`^gpdb client installed as expected$`, gpdbClientInstalledAsExpected)
+	ctx.Step(`^gpdb client link removed as expected$`, gpdbClientLinkRemovedAsExpected)
 	ctx.Step(`^gpdb client removed as expected$`, gpdbClientRemovedAsExpected)
 	ctx.Step(`^install gpdb client$`, installGpdbClient)
 	ctx.Step(`^remove gpdb client$`, removeGpdbClient)
@@ -210,7 +273,7 @@ func InstallPackage(debPath string) error {
 	if err != nil {
 		return err
 	}
-	cmd = exec.Command("apt-get", "install", "--yes", "./" + filepath.Base(fullDebPath))
+	cmd = exec.Command("apt-get", "install", "--yes", "./"+filepath.Base(fullDebPath))
 	cmd.Dir = filepath.Dir(fullDebPath)
 	_, err = cmd.Output()
 	if err != nil {

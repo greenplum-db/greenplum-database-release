@@ -80,6 +80,11 @@ control 'Category:server-installs' do
       its('exit_status') { should eq 0 }
       end
   end
+
+  describe file("/usr/local/greenplum-db/ext/python/lib/python2.7/cmd.pyc") do
+    it { should exist}
+  end
+
 end
 
 control 'Category:server-installs_with_link' do
@@ -87,15 +92,15 @@ control 'Category:server-installs_with_link' do
    impact 1.0
    title 'RPM installs with symbolic link'
    desc 'When the RPM is installed a shorter symbolic link is created and destroyed on uninstall'
-  
+
    describe file('/usr/local/greenplum-db') do
      it { should be_linked_to "/usr/local/greenplum-db-#{gpdb_version}" }
    end
-  
+
 end
-  
+
 control 'Category:server-greenplum_path.sh' do
-  
+
   impact 1.0
   title 'greenplum_path.sh is correct'
   desc 'Modification must be made to the given upstream greenplum_path.sh'
@@ -105,11 +110,11 @@ control 'Category:server-greenplum_path.sh' do
     its('exit_status') { should eq 0 }
     its('stdout') { should eq "/usr/local/greenplum-db-#{gpdb_version}\n" }
   end
-  
+
 end
-  
+
 control 'Category:server-rpm_binary_match' do
-  
+
   impact 1.0
   title 'RPM Binary matches Built Source'
   desc 'The binaries that are packaged in the RPM should match in version to what is expected from the source code'
@@ -184,3 +189,4 @@ control 'RPM is relocateable' do
   end
 
 end
+
