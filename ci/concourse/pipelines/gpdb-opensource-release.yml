@@ -245,7 +245,7 @@ resources:
   source:
     bucket: pivotal-gpdb-concourse-resources-prod
     json_key: ((concourse-gcs-resources-service-account-key))
-    regexp: osl/released/gpdb6/VMware-greenplum-6-database-(.*)-ODP.tar.gz
+    regexp: osl/released/gpdb6/Greenplum-Database-by-VMware-Tanzu-(.*)-ODP.tar.gz
   type: gcs
 
 jobs:
