@@ -9,10 +9,10 @@ This repository contains 3 different topics that support packaging and distribut
 **Table of Contents**
 
 1. [Greenplum Database Server RPM and DEB files](#greenplum-database-server-rpm-and-deb-files)
-	1. [Packaging Specification and Behavior](#packaging-specification-and-behavior)
+   1. [Packaging Specification and Behavior](#packaging-specification-and-behavior)
 2. [Build RPM and DEB from compiled archive](#build-rpm-and-deb-from-compiled-archive)
-	1. [Locally](#locally)
-	2. [Concourse](#concourse)
+   1. [Locally](#locally)
+   2. [Concourse](#concourse)
 3. [Greenplum Database Concourse release pipeline](#greenplum-database-concourse-release-pipeline)
 
 ## Greenplum Database Server RPM and DEB files
@@ -31,13 +31,13 @@ _Concourse Builds_
 | Platform     | Greenplum Major Version |
 | ------------ | ----------------------- |
 | Centos 6, 7  | 5, 6, 7                 |
-| Ubuntu 18.04 | 6, 7                    | 
+| Ubuntu 18.04 | 6, 7                    |
 
 _Local Builds_
 | Platform     | Greenplum Major Version |
 | ------------ | ----------------------- |
 | Centos 6, 7  | 4, 5, 6, 7              |
-| Ubuntu 18.04 | 5, 6, 7                 | 
+| Ubuntu 18.04 | 5, 6, 7                 |
 
 _If it's not listed in the table, it's not supported._
 
@@ -121,11 +121,11 @@ A Docker environment must be used that contains the necessary build tools for ei
 
 ## Greenplum Database Concourse release pipeline
 
-A Concourse pipeline application that builds, integrates, packages, and distributes a release of Greenplum Database 6. 
+A Concourse pipeline application that builds, integrates, packages, and distributes a release of Greenplum Database 6.
 
 **Dependencies**
 
-Access to https://prod.ci.gpdb.pivotal.io/
+Access to <https://prod.ci.gpdb.pivotal.io/>
 
 **Installation**
 

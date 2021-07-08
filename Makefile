@@ -150,18 +150,20 @@ check:
 	$(MAKE) lint
 
 .PHONY: lint
-lint: shfmt
-	docker run --rm \
-        -e RUN_LOCAL=true \
-        -e VALIDATE_MD=true \
-        -e VALIDATE_BASH=true \
-        -e VALIDATE_YAML=true \
-        -v ${PWD}:/tmp/lint \
-        github/super-linter:v3
+lint:
+	$(MAKE) yamllint shfmt markdown-lint
+
+.PHONY: yamllint
+yamllint:
+	docker run --rm -v ${PWD}:/code cytopia/yamllint /code -c /code/.yamllint
 
 .PHONY: shfmt
 shfmt:
-	docker run --rm -v ${PWD}:/code mvdan/shfmt:v2.6.4 -d /code
+	docker run --rm -i -v "${PWD}":/code mvdan/shfmt:v3.0.2 -d /code
+
+PHONY: markdown-lint
+markdown-lint:
+	docker run --rm -i -v "$(PWD):/code" avtodev/markdown-lint:v1 /code -c /code/.markdown-lint
 
 ## ----------------------------------------------------------------------
 ## Local packaging targets
