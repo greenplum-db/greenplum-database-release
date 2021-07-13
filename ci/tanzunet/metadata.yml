@@ -10,7 +10,7 @@ release:
   license_exception: NLR
 
 file_groups:
-- name: Greenplum Database Sever
+- name: Greenplum Database Server
   product_files:
   - file: file://gpdb_rpm_installer_centos6/greenplum-db-(6\..*)-rhel6-x86_64.rpm
     upload_as: Greenplum Database Installer for Redhat 6
