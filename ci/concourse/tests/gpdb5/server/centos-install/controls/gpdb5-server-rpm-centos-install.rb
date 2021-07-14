@@ -6,6 +6,8 @@ title 'Greenplum-db RPM integration testing'
 gpdb_rpm_path = ENV['GPDB_RPM_PATH']
 gpdb_version = ENV['GPDB_VERSION']
 gpdb_rpm_arch = ENV['GPDB_RPM_ARCH']
+rpm_gpdb_name = 'greenplum-db-5'
+rpm_full_path = "#{gpdb_rpm_path}/#{rpm_gpdb_name}-#{gpdb_rpm_arch}-x86_64.rpm"
 
 control 'installs_on_centos' do
 
@@ -18,11 +20,11 @@ control 'installs_on_centos' do
     its('exit_status') { should eq 1 }
   end
 
-  describe command("yum install -y #{gpdb_rpm_path}/greenplum-db-#{gpdb_version}-#{gpdb_rpm_arch}-x86_64.rpm") do
+  describe command("yum install -y #{rpm_full_path}") do
     its('exit_status') { should eq 0 }
   end
 
-  describe command("yum reinstall -y #{gpdb_rpm_path}/greenplum-db-#{gpdb_version}-#{gpdb_rpm_arch}-x86_64.rpm") do
+  describe command("yum reinstall -y #{rpm_full_path}") do
     its('exit_status') { should eq 0 }
   end
 

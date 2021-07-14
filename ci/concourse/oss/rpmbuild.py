@@ -71,8 +71,6 @@ class RPMPackageBuilder(BasePackageBuilder):
     @property
     def rpm_build_dir(self):
         # Should return absolute path
-        if self._platform == 'photon3':
-            return "/usr/src/photon"
         return "/root/rpmbuild"
 
     @property
@@ -85,8 +83,8 @@ class RPMPackageBuilder(BasePackageBuilder):
 
     @platform.setter
     def platform(self, value):
-        if value not in ['rhel6', 'rhel7', 'photon3']:
-            raise Exception("The platform only support rhel6, rhel7, photon3")
+        if value not in ['rhel6', 'rhel7', 'photon3','sles11']:
+            raise Exception("The platform only support rhel6, rhel7, photon3, sles11")
         self._platform = value
 
     @property
@@ -97,8 +95,8 @@ class RPMPackageBuilder(BasePackageBuilder):
             return "greenplum-db-%s-%s-x86_64.rpm" % (self.gpdb_version_short, self.platform)
 
     def _prepare_rpm_build_dir(self):
-        for sub_dir in ["SOURCES", "SPECS"]:
-            os.makedirs(os.path.join(self.rpm_build_dir, sub_dir), mode=0o755)
+        for sub_dir in ["SOURCES", "SPECS","BUILD","RPMS"]:
+	        os.makedirs(os.path.join(self.rpm_build_dir, sub_dir), mode=0o755)
 
         temp_dir = tempfile.mkdtemp()
         print("TEMP DIR: %s" % temp_dir)
@@ -150,7 +148,8 @@ class RPMPackageBuilder(BasePackageBuilder):
             r'--define="rpm_gpdb_version %s"' % self.rpm_gpdb_version,
             r'--define="gpdb_version %s"' % self.gpdb_version_short,
             r'--define="gpdb_release %s"' % self.release,
-            r'--define="platform %s"' % self.platform
+            r'--define="platform %s"' % self.platform,
+            r'--define="_topdir /root/rpmbuild"'
         ]
 
         possible_flags = ["LICENSE", "URL", "OSS"]

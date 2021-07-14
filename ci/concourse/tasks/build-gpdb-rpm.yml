@@ -22,6 +22,7 @@ inputs:
   optional: true
 - name: greenplum-database-release
 - name: license_file
+  optional: true
 
 outputs:
 - name: gpdb_rpm_installer

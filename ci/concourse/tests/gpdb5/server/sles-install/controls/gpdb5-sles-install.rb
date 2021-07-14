@@ -7,6 +7,9 @@ gpdb_rpm_path = ENV['GPDB_RPM_PATH']
 gpdb_version = ENV['GPDB_VERSION']
 gpdb_rpm_arch = ENV['GPDB_RPM_ARCH']
 
+rpm_gpdb_name = 'greenplum-db-5'
+rpm_full_path = "#{gpdb_rpm_path}/#{rpm_gpdb_name}-#{gpdb_rpm_arch}-x86_64.rpm"
+
 control 'installs_on_sles' do
 
   impact 1.0
@@ -19,7 +22,7 @@ control 'installs_on_sles' do
   end
 
   # Should be installable
-  describe command("zypper --non-interactive install #{gpdb_rpm_path}/greenplum-db-#{gpdb_version}-#{gpdb_rpm_arch}-x86_64.rpm") do
+  describe command("zypper --non-interactive install #{rpm_full_path}") do
     its('exit_status') { should eq 0 }
   end
 

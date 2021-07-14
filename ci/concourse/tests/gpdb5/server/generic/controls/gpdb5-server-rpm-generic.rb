@@ -105,7 +105,9 @@ control 'rpm_upgradable' do
   end
 
   describe command("rpm --query greenplum-db-5") do
-    its('stdout') { should match /greenplum-db-5-#{gpdb_version}/ }
+    # Replace '+' in gpdb_version with '\+' for regex match
+    gpdb_version_regex = gpdb_version.gsub("+", "\\\\+")
+    its('stdout') { should match /greenplum-db-5-#{gpdb_version_regex}-1/}
     its('exit_status') { should eq 0 }
   end
 

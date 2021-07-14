@@ -86,13 +86,11 @@ resources:
     versioned_file: release_candidates/bin_gpdb_centos6/gpdb5/bin_gpdb.tar.gz
 
 - name: rpm_gpdb5_centos6
-  type: s3
+  type: gcs
   source:
-    access_key_id: ((gpdb5-pipeline-s3-access-key-id))
-    secret_access_key: ((gpdb5-pipeline-s3-secret-access-key))
-    region_name: ((aws-region))
-    bucket: ((gpdb-stable-builds-bucket-name))
-    versioned_file: ((pipeline-name))/rpm_gpdb_centos6/gpdb5/greenplum-db-5.99.0-rhel6-x86_64.rpm
+    bucket: ((gcs-bucket-intermediates))
+    json_key: ((concourse-gcs-resources-service-account-key))
+    versioned_file: ((pipeline-name))/rpm_gpdb_centos6/gpdb5/greenplum-db-5-rhel6-x86_64.rpm
 
 - name: bin_gpdb5_centos7
   type: s3
@@ -142,13 +140,11 @@ resources:
     regexp: clients/published/gpdb6/clients-rc-(.*)-sles12_x86_64.tar.gz
 
 - name: rpm_gpdb5_centos7
-  type: s3
+  type: gcs
   source:
-    access_key_id: ((gpdb5-pipeline-s3-access-key-id))
-    secret_access_key: ((gpdb5-pipeline-s3-secret-access-key))
-    region_name: ((aws-region))
-    bucket: ((gpdb-stable-builds-bucket-name))
-    versioned_file: ((pipeline-name))/rpm_gpdb_centos7/gpdb5/greenplum-db-5.99.0-rhel7-x86_64.rpm
+    bucket: ((gcs-bucket-intermediates))
+    json_key: ((concourse-gcs-resources-service-account-key))
+    versioned_file: ((pipeline-name))/rpm_gpdb_centos7/gpdb5/greenplum-db-5-rhel7-x86_64.rpm
 
 - name: bin_gpdb5_sles11
   type: s3
@@ -159,14 +155,13 @@ resources:
     bucket: gpdb-stable-concourse-builds
     versioned_file: release_candidates/bin_gpdb_sles11/gpdb5/bin_gpdb.tar.gz
 
+
 - name: rpm_gpdb5_sles11
-  type: s3
+  type: gcs
   source:
-    access_key_id: ((gpdb5-pipeline-s3-access-key-id))
-    secret_access_key: ((gpdb5-pipeline-s3-secret-access-key))
-    region_name: ((aws-region))
-    bucket: ((gpdb-stable-builds-bucket-name))
-    versioned_file: ((pipeline-name))/rpm_gpdb_sles11/gpdb5/greenplum-db-5.99.0-sles11-x86_64.rpm
+    bucket: ((gcs-bucket-intermediates))
+    json_key: ((concourse-gcs-resources-service-account-key))
+    versioned_file: ((pipeline-name))/rpm_gpdb_sles11/gpdb5/greenplum-db-5-sles11-x86_64.rpm
 
 - name: rpm_gpdb6_clients_centos6
   type: gcs
@@ -316,6 +311,13 @@ resources:
     repository: gcr.io/data-gpdb-public-images/gpdb6-photon3-test
     tag: latest
 
+- name: gpdb5-osl
+  type: gcs
+  source:
+    bucket: pivotal-gpdb-concourse-resources-prod
+    json_key: ((concourse-gcs-resources-service-account-key))
+    regexp: osl/released/gpdb5/open_source_license_GPDB_-_(((gpdb5-osl-version-regex)))_-_GA.txt
+
 - name: gpdb6-osl
   type: gcs
   source:
@@ -415,7 +417,6 @@ anchors:
     GPDB_LICENSE: VMware Software EULA
     GPDB_URL: https://network.tanzu.vmware.com/products/vmware-tanzu-greenplum/
     GPDB_RELEASE: 1
-    GPDB_VERSION: "5.99.0"
 - gpdb6-rpm-params: &gpdb6-rpm-params
     GPDB_LICENSE: VMware Software EULA
     GPDB_NAME: greenplum-db-6
@@ -443,11 +444,13 @@ jobs:
   - in_parallel:
     - get: bin_gpdb
       resource: bin_gpdb5_centos6
+    - get: license_file
+      resource: gpdb5-osl
     - get: centos-gpdb-dev-6
     - get: greenplum-database-release
       trigger: true
   - task: build_rpm_gpdb5_centos6
-    file: greenplum-database-release/ci/concourse/tasks/build-gpdb5-rpm.yml
+    file: greenplum-database-release/ci/concourse/tasks/build-gpdb-rpm.yml
     image: centos-gpdb-dev-6
     params:
       <<: *gpdb5-rpm-params
@@ -461,11 +464,13 @@ jobs:
   - in_parallel:
     - get: bin_gpdb
       resource: bin_gpdb5_centos7
+    - get: license_file
+      resource: gpdb5-osl
     - get: centos-gpdb-dev-7
     - get: greenplum-database-release
       trigger: true
   - task: build_rpm_gpdb5_centos7
-    file: greenplum-database-release/ci/concourse/tasks/build-gpdb5-rpm.yml
+    file: greenplum-database-release/ci/concourse/tasks/build-gpdb-rpm.yml
     image: centos-gpdb-dev-7
     params:
       <<: *gpdb5-rpm-params
@@ -479,12 +484,14 @@ jobs:
   - in_parallel:
     - get: bin_gpdb
       resource: bin_gpdb5_sles11
+    - get: license_file
+      resource: gpdb5-osl
     - get: greenplum-database-release
       trigger: true
     - get: gpdb5-sles11-build-test
   - task: build_rpm_gpdb5_sles11
     image: gpdb5-sles11-build-test
-    file: greenplum-database-release/ci/concourse/tasks/build-gpdb5-rpm-sles.yml
+    file: greenplum-database-release/ci/concourse/tasks/build-gpdb-rpm.yml
     params:
       <<: *gpdb5-rpm-params
       PLATFORM: "sles11"
