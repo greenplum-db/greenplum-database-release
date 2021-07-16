@@ -27,6 +27,12 @@ resource_types:
     repository: cfcommunity/slack-notification-resource
     tag: latest
 
+- name: tanzunet
+  source:
+    repository: pivotalcf/pivnet-resource
+    tag: latest-final
+  type: registry-image
+
 resources:
 - name: slack-alert
   type: slack-notification
@@ -77,6 +83,7 @@ resources:
   source:
     branch: ((greenplum-database-release-git-branch))
     uri: ((greenplum-database-release-git-remote))
+    tag_filter: ((greenplum-database-release-tag-filter))
 
 - name: gpdb_release
   type: github-release
@@ -248,7 +255,31 @@ resources:
     regexp: osl/released/gpdb6/Greenplum-Database-by-VMware-Tanzu-(.*)-ODP.tar.gz
   type: gcs
 
+- name: pivotal-gpdb
+  type: tanzunet
+  source:
+    api_token: ((public-tanzunet-refresh-token))
+    endpoint: https://network.tanzu.vmware.com
+    product_slug: vmware-tanzu-greenplum
+    product_version: 6.*
+    sort_by: semver
+
 jobs:
+- name: pipeline_start_gate
+  plan:
+  - in_parallel:
+      steps:
+      - get: gpdb_src
+      - get: greenplum-database-release
+      - get: pivotal-gpdb
+        params:
+          globs: []
+        trigger: true
+  - task: check_version
+    file: greenplum-database-release/ci/concourse/tasks/check-version.yml
+    params:
+      RUN_MODE: ((run_mode))
+
 - name: compile_gpdb_centos6
   on_failure: &slack-alert
     put: slack-alert
@@ -259,7 +290,11 @@ jobs:
   - in_parallel:
     - get: gpdb_src
       trigger: true
+      passed:
+      - pipeline_start_gate
     - get: greenplum-database-release
+      passed:
+      - pipeline_start_gate
     - get: gpdb6-centos6-build
   - task: compile_gpdb
     file: greenplum-database-release/ci/concourse/tasks/compile-gpdb-oss.yml
@@ -277,7 +312,11 @@ jobs:
   - in_parallel:
     - get: gpdb_src
       trigger: true
+      passed:
+      - pipeline_start_gate
     - get: greenplum-database-release
+      passed:
+      - pipeline_start_gate
     - get: gpdb6-centos7-build
   - task: compile_gpdb
     image: gpdb6-centos7-build
@@ -295,7 +334,11 @@ jobs:
   - in_parallel:
     - get: gpdb_src
       trigger: true
+      passed:
+      - pipeline_start_gate
     - get: greenplum-database-release
+      passed:
+      - pipeline_start_gate
     - get: gpdb6-photon3-build
   - task: compile_gpdb
     image: gpdb6-photon3-build
@@ -313,7 +356,11 @@ jobs:
   - in_parallel:
     - get: gpdb_src
       trigger: true
+      passed:
+      - pipeline_start_gate
     - get: greenplum-database-release
+      passed:
+      - pipeline_start_gate
     - get: gpdb6-ubuntu18.04-build
   - task: compile_gpdb
     image: gpdb6-ubuntu18.04-build
@@ -331,7 +378,11 @@ jobs:
   - in_parallel:
     - get: gpdb_src
       trigger: true
+      passed:
+      - pipeline_start_gate
     - get: greenplum-database-release
+      passed:
+      - pipeline_start_gate
     - get: gpdb6-ubuntu18.04-build
   - task: compile_gpdb
     image: gpdb6-ubuntu18.04-build
