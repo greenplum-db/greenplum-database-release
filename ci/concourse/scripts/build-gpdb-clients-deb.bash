@@ -4,7 +4,7 @@ set -eo pipefail
 set -x
 
 function set_gpdb_clients_version() {
-	GPDB_VERSION=$(./gpdb_src/getversion --short | grep -Po '^[^+]*')
+	GPDB_VERSION=$RELEASE_VERSION
 	export GPDB_VERSION
 }
 

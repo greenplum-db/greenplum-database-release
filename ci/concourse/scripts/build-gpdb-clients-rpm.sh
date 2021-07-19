@@ -26,7 +26,8 @@ die() {
 
 function set_gpdb_clients_version() {
 	# shellcheck disable=SC2155
-	export GPDB_VERSION=$(./gpdb_src/getversion --short | grep -o '^[^+]*')
+	export GPDB_VERSION=$RELEASE_VERSION
+
 	# shellcheck disable=SC2154
 	# shellcheck disable=SC2155
 	export GPDB_RELEASE=$(echo "$version" | grep -o '^[^\.]*')
