@@ -1,0 +1,15 @@
+---
+platform: linux
+
+inputs:
+- name: greenplum-database-release
+- name: gpdb_pkg_installer
+
+
+run:
+  path: greenplum-database-release/ci/concourse/scripts/test-package-dependencies.bash
+
+params:
+  PLATFORM:
+  GPDB_MAJOR_VERSION:
+  CLIENTS:

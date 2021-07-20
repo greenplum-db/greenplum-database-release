@@ -44,6 +44,30 @@ resources:
     repository: gcr.io/data-gpdb-public-images/gpdb5-centos7-build-test
     tag: 'latest'
 
+- name: centos-6
+  type: registry-image
+  source:
+    repository: centos
+    tag: '6'
+
+- name: centos-7
+  type: registry-image
+  source:
+    repository: centos
+    tag: '7'
+
+- name: centos-8
+  type: registry-image
+  source:
+    repository: centos
+    tag: '8'
+
+- name: ubuntu-18.04
+  type: registry-image
+  source:
+    repository: ubuntu
+    tag: '18.04'
+
 - name: gpdb5-sles11-build-test
   source:
     repository: gcr.io/data-gpdb-private-images/gpdb5-sles11-build-test
@@ -489,14 +513,24 @@ jobs:
       params:
         globs: [greenplum-db-*-rhel6-x86_64.rpm]
     - get: centos-gpdb-dev-6
-  - task: test_rpm_functionality
-    image: centos-gpdb-dev-6
-    file: greenplum-database-release/ci/concourse/tasks/test-functionality-rpm.yml
-    input_mapping:
-      gpdb_rpm_installer: rpm_gpdb5_centos6
-    params:
-      PLATFORM: "rhel6"
-      GPDB_MAJOR_VERSION: "5"
+    - get: centos-6
+  - in_parallel:
+    - task: test_rpm_functionality
+      image: centos-gpdb-dev-6
+      file: greenplum-database-release/ci/concourse/tasks/test-functionality-rpm.yml
+      input_mapping:
+        gpdb_rpm_installer: rpm_gpdb5_centos6
+      params:
+        PLATFORM: "rhel6"
+        GPDB_MAJOR_VERSION: "5"
+    - task: test_package_dependencies
+      file: greenplum-database-release/ci/concourse/tasks/test-package-dependencies.yml
+      image: centos-6
+      input_mapping:
+        gpdb_pkg_installer: rpm_gpdb5_centos6
+      params:
+        PLATFORM: rhel6
+        GPDB_MAJOR_VERSION: "5"
 
 - name: test_functionality_gpdb5_rpm_centos7
   plan:
@@ -519,14 +553,24 @@ jobs:
       params:
         globs: [greenplum-db-*-rhel7-x86_64.rpm]
     - get: centos-gpdb-dev-7
-  - task: test_rpm_functionality
-    image: centos-gpdb-dev-7
-    file: greenplum-database-release/ci/concourse/tasks/test-functionality-rpm.yml
-    input_mapping:
-      gpdb_rpm_installer: rpm_gpdb5_centos7
-    params:
-      PLATFORM: "rhel7"
-      GPDB_MAJOR_VERSION: "5"
+    - get: centos-7
+  - in_parallel:
+    - task: test_rpm_functionality
+      image: centos-gpdb-dev-7
+      file: greenplum-database-release/ci/concourse/tasks/test-functionality-rpm.yml
+      input_mapping:
+        gpdb_rpm_installer: rpm_gpdb5_centos7
+      params:
+        PLATFORM: "rhel7"
+        GPDB_MAJOR_VERSION: "5"
+    - task: test_package_dependencies
+      file: greenplum-database-release/ci/concourse/tasks/test-package-dependencies.yml
+      image: centos-7
+      input_mapping:
+        gpdb_pkg_installer: rpm_gpdb5_centos7
+      params:
+        PLATFORM: rhel7
+        GPDB_MAJOR_VERSION: "5"
 
 - name: test_functionality_gpdb5_rpm_sles11
   plan:
@@ -849,15 +893,25 @@ jobs:
       passed:
       - create_gpdb6_rpm_installer_centos6
     - get: gpdb6-centos6-test
-  - task: test_gpdb6_rpm_functionality
-    file: greenplum-database-release/ci/concourse/tasks/test-functionality-rpm.yml
-    image: gpdb6-centos6-test
-    input_mapping:
-      gpdb_rpm_installer: rpm_gpdb6_centos6
-      gpdb_rpm_oss_installer: rpm_gpdb6_centos6_oss
-    params:
-      PLATFORM: rhel6
-      GPDB_MAJOR_VERSION: "6"
+    - get: centos-6
+  - in_parallel:
+    - task: test_gpdb6_rpm_functionality
+      file: greenplum-database-release/ci/concourse/tasks/test-functionality-rpm.yml
+      image: gpdb6-centos6-test
+      input_mapping:
+        gpdb_rpm_installer: rpm_gpdb6_centos6
+        gpdb_rpm_oss_installer: rpm_gpdb6_centos6_oss
+      params:
+        PLATFORM: rhel6
+        GPDB_MAJOR_VERSION: "6"
+    - task: test_package_dependencies
+      file: greenplum-database-release/ci/concourse/tasks/test-package-dependencies.yml
+      image: centos-6
+      input_mapping:
+        gpdb_pkg_installer: rpm_gpdb6_centos6
+      params:
+        PLATFORM: rhel6
+        GPDB_MAJOR_VERSION: "6"
 
 - name: test_functionality_clients_gpdb6_rpm_centos6
   plan:
@@ -867,16 +921,27 @@ jobs:
       - create_gpdb6_clients_rpm_installer_centos6
       trigger: true
     - get: gpdb6-centos6-test-packaging
+    - get: centos-6
     - get: greenplum-database-release
       passed:
       - create_gpdb6_clients_rpm_installer_centos6
-  - task: test_clients_rpm_functionality
-    file: greenplum-database-release/ci/concourse/tasks/test-clients-functionality.yml
-    image: gpdb6-centos6-test-packaging
-    input_mapping:
-      gpdb_clients_package_installer: rpm_gpdb6_clients_centos6
-    params:
-      PLATFORM: rhel6
+  - in_parallel:
+    - task: test_clients_rpm_functionality
+      file: greenplum-database-release/ci/concourse/tasks/test-clients-functionality.yml
+      image: gpdb6-centos6-test-packaging
+      input_mapping:
+        gpdb_clients_package_installer: rpm_gpdb6_clients_centos6
+      params:
+        PLATFORM: rhel6
+    - task: test_package_dependencies
+      file: greenplum-database-release/ci/concourse/tasks/test-package-dependencies.yml
+      image: centos-6
+      input_mapping:
+        gpdb_pkg_installer: rpm_gpdb6_clients_centos6
+      params:
+        PLATFORM: rhel6
+        GPDB_MAJOR_VERSION: "6"
+        CLIENTS: "clients"
 
 
 - name: test_functionality_gpdb6_rpm_centos7
@@ -914,15 +979,25 @@ jobs:
       passed:
       - create_gpdb6_rpm_installer_centos7
     - get: gpdb6-centos7-test
-  - task: test_gpdb6_rpm_functionality
-    file: greenplum-database-release/ci/concourse/tasks/test-functionality-rpm.yml
-    image: gpdb6-centos7-test
-    input_mapping:
-      gpdb_rpm_installer: rpm_gpdb6_centos7
-      gpdb_rpm_oss_installer: rpm_gpdb6_centos7_oss
-    params:
-      PLATFORM: rhel7
-      GPDB_MAJOR_VERSION: "6"
+    - get: centos-7
+  - in_parallel:
+    - task: test_gpdb6_rpm_functionality
+      file: greenplum-database-release/ci/concourse/tasks/test-functionality-rpm.yml
+      image: gpdb6-centos7-test
+      input_mapping:
+        gpdb_rpm_installer: rpm_gpdb6_centos7
+        gpdb_rpm_oss_installer: rpm_gpdb6_centos7_oss
+      params:
+        PLATFORM: rhel7
+        GPDB_MAJOR_VERSION: "6"
+    - task: test_package_dependencies
+      file: greenplum-database-release/ci/concourse/tasks/test-package-dependencies.yml
+      image: centos-7
+      input_mapping:
+        gpdb_pkg_installer: rpm_gpdb6_centos7
+      params:
+        PLATFORM: rhel7
+        GPDB_MAJOR_VERSION: "6"
 
 - name: test_functionality_clients_gpdb6_rpm_centos7
   plan:
@@ -932,16 +1007,27 @@ jobs:
       - create_gpdb6_clients_rpm_installer_centos7
       trigger: true
     - get: gpdb6-centos7-test-packaging
+    - get: centos-7
     - get: greenplum-database-release
       passed:
       - create_gpdb6_clients_rpm_installer_centos7
-  - task: test_clients_rpm_functionality
-    file: greenplum-database-release/ci/concourse/tasks/test-clients-functionality.yml
-    image: gpdb6-centos7-test-packaging
-    input_mapping:
-      gpdb_clients_package_installer: rpm_gpdb6_clients_centos7
-    params:
-      PLATFORM: rhel7
+  - in_parallel:
+    - task: test_clients_rpm_functionality
+      file: greenplum-database-release/ci/concourse/tasks/test-clients-functionality.yml
+      image: gpdb6-centos7-test-packaging
+      input_mapping:
+        gpdb_clients_package_installer: rpm_gpdb6_clients_centos7
+      params:
+        PLATFORM: rhel7
+    - task: test_package_dependencies
+      file: greenplum-database-release/ci/concourse/tasks/test-package-dependencies.yml
+      image: centos-7
+      input_mapping:
+        gpdb_pkg_installer: rpm_gpdb6_clients_centos7
+      params:
+        PLATFORM: rhel7
+        GPDB_MAJOR_VERSION: "6"
+        CLIENTS: "clients"
 
 
 - name: test_functionality_gpdb6_deb_ubuntu18.04
@@ -955,14 +1041,24 @@ jobs:
       passed:
       - create_gpdb6_deb_installer_ubuntu18.04
     - get: gpdb6-ubuntu18.04-test-packaging
-  - task: test_gpdb6_deb_functionality
-    file: greenplum-database-release/ci/concourse/tasks/test-functionality-deb.yml
-    image: gpdb6-ubuntu18.04-test-packaging
-    input_mapping:
-      gpdb_deb_installer: deb_gpdb6_ubuntu18.04
-    params:
-      PLATFORM: ubuntu18.04
-      GPDB_MAJOR_VERSION: "6"
+    - get: ubuntu-18.04
+  - in_parallel:
+    - task: test_gpdb6_deb_functionality
+      file: greenplum-database-release/ci/concourse/tasks/test-functionality-deb.yml
+      image: gpdb6-ubuntu18.04-test-packaging
+      input_mapping:
+        gpdb_deb_installer: deb_gpdb6_ubuntu18.04
+      params:
+        PLATFORM: ubuntu18.04
+        GPDB_MAJOR_VERSION: "6"
+    - task: test_package_dependencies
+      file: greenplum-database-release/ci/concourse/tasks/test-package-dependencies.yml
+      image: ubuntu-18.04
+      input_mapping:
+        gpdb_pkg_installer: deb_gpdb6_ubuntu18.04
+      params:
+        PLATFORM: ubuntu18.04
+        GPDB_MAJOR_VERSION: "6"
 
 - name: test_functionality_gpdb6_rpm_photon3
   plan:
@@ -995,13 +1091,25 @@ jobs:
     - get: greenplum-database-release
       passed:
       - create_gpdb6_clients_deb_installer_ubuntu18.04
-  - task: test_clients_rpm_functionality
-    file: greenplum-database-release/ci/concourse/tasks/test-clients-functionality.yml
-    image: gpdb6-ubuntu18.04-test-packaging
-    input_mapping:
-      gpdb_clients_package_installer: deb_gpdb6_clients_ubuntu18.04
-    params:
-      PLATFORM: ubuntu18.04
+    - get: ubuntu-18.04
+  - in_parallel:
+    - task: test_clients_rpm_functionality
+      file: greenplum-database-release/ci/concourse/tasks/test-clients-functionality.yml
+      image: gpdb6-ubuntu18.04-test-packaging
+      input_mapping:
+        gpdb_clients_package_installer: deb_gpdb6_clients_ubuntu18.04
+      params:
+        PLATFORM: ubuntu18.04
+        GPDB_MAJOR_VERSION: "6"
+    - task: test_package_dependencies
+      file: greenplum-database-release/ci/concourse/tasks/test-package-dependencies.yml
+      image: ubuntu-18.04
+      input_mapping:
+        gpdb_pkg_installer: deb_gpdb6_clients_ubuntu18.04
+      params:
+        PLATFORM: ubuntu18.04
+        GPDB_MAJOR_VERSION: "6"
+        CLIENTS: "clients"
 
 
 - name: test_functionality_clients_gpdb6_rpm_centos8
@@ -1015,13 +1123,24 @@ jobs:
     - get: greenplum-database-release
       passed:
       - create_gpdb6_clients_rpm_installer_centos8
-  - task: test_rpm_functionality
-    file: greenplum-database-release/ci/concourse/tasks/test-clients-functionality.yml
-    image: gpdb6-centos8-build
-    input_mapping:
-      gpdb_clients_package_installer: rpm_gpdb6_clients_centos8
-    params:
-      PLATFORM: rhel8
+    - get: centos-8
+  - in_parallel:
+    - task: test_rpm_functionality
+      file: greenplum-database-release/ci/concourse/tasks/test-clients-functionality.yml
+      image: gpdb6-centos8-build
+      input_mapping:
+        gpdb_clients_package_installer: rpm_gpdb6_clients_centos8
+      params:
+        PLATFORM: rhel8
+    - task: test_package_dependencies
+      file: greenplum-database-release/ci/concourse/tasks/test-package-dependencies.yml
+      image: centos-8
+      input_mapping:
+        gpdb_pkg_installer: rpm_gpdb6_clients_centos8
+      params:
+        PLATFORM: rhel8
+        GPDB_MAJOR_VERSION: "6"
+        CLIENTS: "clients"
 
 - name: test_functionality_clients_gpdb6_rpm_sles12
   plan:

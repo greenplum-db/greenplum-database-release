@@ -45,6 +45,7 @@ Description: ${GPDB_DESCRIPTION}
 Homepage: ${GPDB_URL}
 Depends: libapr1,
     libaprutil1,
+	libreadline7,
     bzip2,
     krb5-multidev,
     libcurl3-gnutls,
