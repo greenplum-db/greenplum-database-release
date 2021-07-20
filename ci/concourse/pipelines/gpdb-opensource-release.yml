@@ -40,6 +40,11 @@ resources:
   source:
     url: ((releng-webhook-url))
 
+- name: slack-start-greenplum-oss
+  type: slack-notification
+  source:
+    url: ((releng-webhook-url))
+
 ## Image Resources
 - name: gpdb6-centos6-build
   type: registry-image
@@ -279,6 +284,11 @@ jobs:
     file: greenplum-database-release/ci/concourse/tasks/check-version.yml
     params:
       RUN_MODE: ((run_mode))
+  - task: generate-start-message-oss
+    file: greenplum-database-release/ci/concourse/tasks/generate-start-messages-oss.yml
+  - put: slack-start-greenplum-oss
+    params:
+      text_file: start-messages-oss/message
 
 - name: compile_gpdb_centos6
   on_failure: &slack-alert

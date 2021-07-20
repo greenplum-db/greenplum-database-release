@@ -1,0 +1,24 @@
+---
+platform: linux
+
+image_resource:
+  type: registry-image
+  source:
+    repository: bash
+    tag: latest
+
+inputs:
+- name: greenplum-database-release
+- name: pivotal-gpdb
+outputs:
+- name: start-messages-oss
+
+run:
+  path: bash
+  args:
+  - -ec
+  - |
+    RELEASE_VERSION=$(cat pivotal-gpdb/version | cut -d "#" -f 1)
+    cat <<EOF >start-messages-oss/message
+    :tanzu-greenplum: *Greenplum Database release pipeline is running for ${RELEASE_VERSION} release*
+    EOF
