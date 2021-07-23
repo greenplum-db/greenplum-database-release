@@ -88,7 +88,6 @@ resources:
   source:
     branch: ((greenplum-database-release-git-branch))
     uri: ((greenplum-database-release-git-remote))
-    tag_filter: ((greenplum-database-release-tag-filter))
 
 - name: gpdb_release
   type: github-release
@@ -282,8 +281,6 @@ jobs:
         trigger: true
   - task: check_version
     file: greenplum-database-release/ci/concourse/tasks/check-version.yml
-    params:
-      RUN_MODE: ((run_mode))
   - task: generate-start-message-oss
     file: greenplum-database-release/ci/concourse/tasks/generate-start-messages-oss.yml
   - put: slack-start-greenplum-oss

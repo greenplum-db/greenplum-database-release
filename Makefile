@@ -66,7 +66,6 @@ set-pipeline-dev:
     --var=greenplum-database-release-git-branch=${BRANCH} \
     --var=greenplum-database-release-git-remote=https://github.com/greenplum-db/greenplum-database-release.git \
     --var=pipeline-name=${PIPELINE_NAME} \
-    --var=run_mode=dev \
     ${FLY_OPTION_NON-INTERACTIVE}
 
 	@echo using the following command to unpause the pipeline:
@@ -108,7 +107,6 @@ set-pipeline-prod:
     --var=pipeline-name=greenplum-database-release \
     --var=greenplum-database-release-git-branch=main \
     --var=greenplum-database-release-git-remote=https://github.com/greenplum-db/greenplum-database-release.git \
-    --var=run_mode=prod \
     ${FLY_OPTION_NON-INTERACTIVE}
 
 	@echo using the following command to unpause the pipeline:
