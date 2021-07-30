@@ -123,7 +123,7 @@ mkdir -p %{buildroot}/%{prefix}/greenplum-db-%{gpdb_version}
 cp -R * %{buildroot}/%{prefix}/greenplum-db-%{gpdb_version}
 
 pushd %{buildroot}/%{prefix}/greenplum-db-%{gpdb_version}
-ext/python/bin/python -m compileall -q -x test .
+/usr/bin/env python3 -m compileall -q -x test .
 popd
 
 # Disable build root policy trying to generate %.pyo/%.pyc
