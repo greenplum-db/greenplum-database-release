@@ -25,9 +25,11 @@ function set_gpdb_version_from_binary() {
 function build_deb() {
 
 	local __package_name=$1
+	local __package_short_name
 	local __gpdb_binary_tarbal=$2
-	gpdb_major_version="$(echo "${GPDB_VERSION}" | cut -d '.' -f1)"
 
+	gpdb_major_version="$(echo "${GPDB_VERSION}" | cut -d '.' -f1)"
+	__package_short_name="greenplum-db-${gpdb_major_version}"
 	mkdir -p "deb_build_dir"
 
 	pushd "deb_build_dir"
@@ -46,7 +48,7 @@ EOF
 	cat <<EOF >"${__package_name}/DEBIAN/prerm"
 #!/bin/sh
 set -e
-dpkg -L "${__package_name}" | grep '\.py$' | while read file; do rm -f "${file}"[co] >/dev/null; done
+dpkg -L "${__package_short_name}" | grep '\.py$' | while read file; do rm -f "${file}"[co] >/dev/null; done
 exit 0
 EOF
 	chmod 0775 "${__package_name}/DEBIAN/prerm"
