@@ -46,7 +46,8 @@ EOF
 	cat <<EOF >"${__package_name}/DEBIAN/prerm"
 #!/bin/sh
 set -e
-dpkg -L "${__package_name}" | grep '\.py$' | while read file; do rm -f "${file}"[co] >/dev/null; done
+cd ${GPDB_PREFIX}/${GPDB_NAME}-${GPDB_VERSION}
+find . -name *.pyc -exec rm -rf {} \;
 exit 0
 EOF
 	chmod 0775 "${__package_name}/DEBIAN/prerm"
