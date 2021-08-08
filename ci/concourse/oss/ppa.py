@@ -256,6 +256,5 @@ conditions of the subcomponent's license, as noted in the LICENSE file.
     def _prerm(self):
         return Util.strip_margin(
             f'''#!/usr/bin/env bash
-            |cd {self.install_location()}
-            |find . -name *.pyc -exec rm -rf {{}} \;
+            |dpkg -L {self.package_name} | grep '\.py$' | while read file; do rm -f "${{file}}"[co] >/dev/null; done
             ''')

@@ -46,8 +46,7 @@ EOF
 	cat <<EOF >"${__package_name}/DEBIAN/prerm"
 #!/bin/sh
 set -e
-cd ${GPDB_PREFIX}/${GPDB_NAME}-${GPDB_VERSION}
-find . -name *.pyc -exec rm -rf {} \;
+dpkg -L "greenplum-db-${gpdb_major_version}" | grep '\.py$' | while read file; do rm -f "\${file}"[co] >/dev/null; done
 exit 0
 EOF
 	chmod 0775 "${__package_name}/DEBIAN/prerm"
