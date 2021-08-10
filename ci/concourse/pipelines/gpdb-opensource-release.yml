@@ -718,7 +718,7 @@ jobs:
         type: registry-image
         source:
           repository: golang
-          tag: 1.14-buster
+          tag: 1.16-buster
       inputs:
       - name: pivotal-cf-tanzunet-cli
       - name: gpdb_src
