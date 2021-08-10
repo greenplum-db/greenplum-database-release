@@ -12,11 +12,21 @@ inputs:
 - name: greenplum-database-release
 - name: pivotal-gpdb
 
+params:
+  RUN_MODE:
+
 run:
   path: bash
   args:
   - -ec
   - |
+    # only check the versions on production environment
+    # RUN_MODE: prod|dev
+    if [ "${RUN_MODE}" != "prod" ]; then
+      echo "CURRENT RUN_MODE: ${RUN_MODE}, NOT the 'prod' run mode and skip the check_version step"
+      exit 0
+    fi
+
     RELEASE_VERSION=$(cat pivotal-gpdb/version |cut -d "#" -f 1)
     gpdb_src_tag=$(cat gpdb_src/.git/ref)
 

@@ -281,6 +281,8 @@ jobs:
         trigger: true
   - task: check_version
     file: greenplum-database-release/ci/concourse/tasks/check-version.yml
+    params:
+      RUN_MODE: ((run_mode))
   - task: generate-start-message-oss
     file: greenplum-database-release/ci/concourse/tasks/generate-start-messages-oss.yml
   - put: slack-start-greenplum-oss
