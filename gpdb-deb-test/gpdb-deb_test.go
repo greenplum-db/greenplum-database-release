@@ -27,6 +27,32 @@ func gpdbInstalled() error {
 	return CheckPackageInstalled("greenplum-db-6")
 }
 
+func ppaInstalledAsExpected() error {
+	// get gpdbVersion
+	gpbdVersion, err := GetDebField("Version", "gpdb_deb_installer/greenplum-db-6-ubuntu18.04-amd64.deb")
+	if err != nil {
+		return err
+	}
+	// Remove package revision number
+	gpbdVersion = strings.TrimSuffix(gpbdVersion, "-1")
+	versionCmd := fmt.Sprintf("source /opt/greenplum-db-6-%s/greenplum_path.sh; postgres --gp-version", gpbdVersion)
+	// postgres --gp-version has same Version from debian package
+	cmd := exec.Command("/bin/bash", "-c", versionCmd)
+	postgresGpbdVersion, err := cmd.Output()
+	if err != nil {
+		return err
+	}
+	if !strings.Contains(string(postgresGpbdVersion), string(gpbdVersion)) {
+		return fmt.Errorf("postgres --gp-version: %s should contains %s", string(postgresGpbdVersion), string(gpbdVersion))
+	}
+
+	err = gpdbGeneratedPythonBytecode(fmt.Sprintf("/opt/greenplum-db-6-%s/ext/python/lib/python2.7/cmd.py", gpbdVersion))
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func gpdbInstalledAsExpected() error {
 	// get gpdbVersion
 	gpbdVersion, err := GetDebField("Version", "gpdb_deb_installer/greenplum-db-6-ubuntu18.04-amd64.deb")
@@ -96,6 +122,19 @@ func gpdbLinkRemovedAsExpected() error {
 		return nil
 	}
 	return fmt.Errorf("/usr/local/greenplum-db should not exist")
+}
+
+func ppaRemovedAsExpected() error {
+	// get gpdbVersion
+	gpbdVersion, err := GetDebField("Version", "gpdb_deb_installer/greenplum-db-6-ubuntu18.04-amd64.deb")
+	if err != nil {
+		return err
+	}
+	_, err = os.Stat("/opt/greenplum-db-6-" + gpbdVersion)
+	if os.IsNotExist(err) {
+		return nil
+	}
+	return fmt.Errorf("/opt/greenplum-db-6-" + gpbdVersion + " should not exist")
 }
 
 func gpdbRemovedAsExpected() error {
@@ -207,8 +246,10 @@ func InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Step(`^gpdb deb has correct metadata$`, gpdbDebHasCorrectMetadata)
 	ctx.Step(`^gpdb installed$`, gpdbInstalled)
 	ctx.Step(`^gpdb installed as expected$`, gpdbInstalledAsExpected)
+	ctx.Step(`^gpdb ppa installed as expected$`, ppaInstalledAsExpected)
 	ctx.Step(`^gpdb link removed as expected$`, gpdbLinkRemovedAsExpected)
 	ctx.Step(`^gpdb removed as expected$`, gpdbRemovedAsExpected)
+	ctx.Step(`^gpdb ppa removed as expected$`, ppaRemovedAsExpected)
 	ctx.Step(`^install gpdb$`, installGpdb)
 	ctx.Step(`^remove gpdb$`, removeGpdb)
 	ctx.Step(`^gpdb client deb has correct metadata$`, gpdbClientDebHasCorrectMetadata)
