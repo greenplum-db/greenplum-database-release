@@ -570,7 +570,6 @@ jobs:
       - rhel7 packaging
       - photon3 packaging
       - ubuntu18.04 packaging
-      - verify ppa release
     - get: gpdb_src
       passed:
       - rhel6 packaging
