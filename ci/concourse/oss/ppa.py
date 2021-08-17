@@ -157,7 +157,7 @@ class SourcePackageBuilder(BasePackageBuilder):
         return f'bin_gpdb/* {self.install_location()}\ndoc_files/* /usr/share/doc/greenplum-db/\n'
 
     def install_location(self):
-        return f'/opt/{self.package_name}-{self.gpdb_version_short}'
+        return f'/opt/greenplum-db-{self.gpdb_version_short}'
 
     def _generate_license_files(self, root_dir):
         shutil.copy(os.path.join(self.gpdb_src_path, "LICENSE"),
