@@ -141,8 +141,6 @@ exit 0
 %post
 if [ ! -e "${RPM_INSTALL_PREFIX}/greenplum-db" ] || [ -L "${RPM_INSTALL_PREFIX}/greenplum-db" ];then
   ln -fsT "${RPM_INSTALL_PREFIX}/greenplum-db-%{gpdb_version}" "${RPM_INSTALL_PREFIX}/greenplum-db" || :
-  # Set GPHOME to the installation prefix
-  sed -i -e "1 s~^\(GPHOME=\).*~\1${RPM_INSTALL_PREFIX}/greenplum-db-%{gpdb_version}~" "${RPM_INSTALL_PREFIX}/greenplum-db-%{gpdb_version}/greenplum_path.sh"
 else
   echo "the expected symlink was not created because a file exists at that location"
 fi

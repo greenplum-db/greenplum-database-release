@@ -128,7 +128,6 @@ EOF
 
 	mkdir -p "${__package_name}/${GPDB_PREFIX}/${GPDB_NAME}-${GPDB_VERSION}"
 	tar -xf "../${__gpdb_binary_tarbal}" -C "${__package_name}/${GPDB_PREFIX}/${GPDB_NAME}-${GPDB_VERSION}"
-	sed -i -e "1 s~^\(GPHOME=\).*~\1$GPDB_PREFIX/$GPDB_NAME-$GPDB_VERSION~" "${__package_name}/${GPDB_PREFIX}/${GPDB_NAME}-${GPDB_VERSION}/greenplum_path.sh"
 	dpkg-deb --build "${__package_name}"
 	popd
 

@@ -96,21 +96,10 @@ class SourcePackageBuilder(BasePackageBuilder):
             dest = os.path.join(self.source_dir, 'bin_gpdb')
             tar.extractall(dest)
 
-        self.replace_greenplum_path()
-
         # using _ here is debian convention
         archive_name = f'{self.package_name}_{self.gpdb_upstream_version}.orig.tar.gz'
         with tarfile.open(archive_name, 'w:gz') as tar:
             tar.add(self.source_dir, arcname=os.path.basename(self.source_dir))
-
-    def replace_greenplum_path(self):
-        greenplum_path = os.path.join(self.source_dir, 'bin_gpdb', 'greenplum_path.sh')
-        with fileinput.FileInput(greenplum_path, inplace=True) as file:
-            for line in file:
-                if line.startswith('GPHOME='):
-                    print(f'GPHOME={self.install_location()}')
-                else:
-                    print(line, end='')
 
     def create_debian_dir(self):
         debian_dir = os.path.join(self.source_dir, 'debian')

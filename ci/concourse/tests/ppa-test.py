@@ -131,45 +131,18 @@ class TestSourcePackageBuilder(TestCase):
         mock2.assert_called()
         mock3.assert_called()
 
-    @patch('oss.ppa.SourcePackageBuilder.install_location')
-    @patch('oss.ppa.SourcePackageBuilder.source_dir', new_callable=PropertyMock)
-    def test_replace_greenplum_path_replaces_GPHOME_with_the_install_location(self, mock_source_dir,
-                                                                              mock_install_location):
-        mock_source_dir.return_value = self.temp_dir
-        os.mkdir(os.path.join(self.temp_dir, 'bin_gpdb'))
-        mock_install_location.return_value = 'fake-install-location'
-        greenplum_path_sh = os.path.join(self.temp_dir, 'bin_gpdb', 'greenplum_path.sh')
-        with open(greenplum_path_sh, mode='w') as path_file:
-            path_file.writelines([
-                'OTHER=123\n',
-                'GPHOME=should-be-replaced\n',
-                'thing\n'
-            ])
-
-        self.source_package_builder.replace_greenplum_path()
-        expected = [
-            'OTHER=123\n',
-            'GPHOME=fake-install-location\n',
-            'thing\n'
-        ]
-        with open(greenplum_path_sh) as greenplum_path_file:
-            greenplum_path_contents = greenplum_path_file.readlines()
-            self.assertEqual(greenplum_path_contents, expected)
-
-    @patch('oss.ppa.SourcePackageBuilder.replace_greenplum_path')
     @patch('oss.ppa.tarfile')
     @patch('oss.ppa.SourcePackageBuilder.source_dir', new_callable=PropertyMock)
-    def test_create_source_it_creates_the_source_directory_when_it_does_not_exist(self, mock_source_dir, _1, _2):
+    def test_create_source_it_creates_the_source_directory_when_it_does_not_exist(self, mock_source_dir, _1):
         source_dir = os.path.join(self.temp_dir, 'my_src')
         mock_source_dir.return_value = source_dir
         self.assertFalse(os.path.exists(source_dir))
         self.source_package_builder.create_source()
         self.assertTrue(os.path.exists(source_dir))
 
-    @patch('oss.ppa.SourcePackageBuilder.replace_greenplum_path')
     @patch('oss.ppa.tarfile')
     @patch('oss.ppa.SourcePackageBuilder.source_dir', new_callable=PropertyMock)
-    def test_create_source_it_removes_the_source_directory_when_it_already_exists(self, mock_source_dir, _1, _2):
+    def test_create_source_it_removes_the_source_directory_when_it_already_exists(self, mock_source_dir, _1):
         mock_source_dir.return_value = self.temp_dir
         file_path = os.path.join(self.temp_dir, 'a.txt')
         Path(file_path).touch()
@@ -178,10 +151,8 @@ class TestSourcePackageBuilder(TestCase):
         self.assertFalse(os.path.exists(file_path))
         self.assertTrue(os.path.exists(self.temp_dir))
 
-    @patch('oss.ppa.SourcePackageBuilder.replace_greenplum_path')
     @patch('oss.ppa.SourcePackageBuilder.source_dir', new_callable=PropertyMock)
-    def test_create_source_extracts_bin_and_archives_it_to_basename_of_source_dir(self, mock_source_dir,
-                                                                                  mock_replace_greenplum_path):
+    def test_create_source_extracts_bin_and_archives_it_to_basename_of_source_dir(self, mock_source_dir):
         os.chdir(self.temp_dir)
         source_dir = os.path.join(self.temp_dir, 'my_src')
         os.mkdir(source_dir)
@@ -204,7 +175,6 @@ class TestSourcePackageBuilder(TestCase):
         with tarfile.open(os.path.join(self.temp_dir, 'name_short~version.orig.tar.gz')) as tar:
             repackaged_contents_set.update(map(lambda tar_info: tar_info.name, tar.getmembers()))
         self.assertEqual(len(repackaged_contents_set.intersection(expected_contents_set)), 3)
-        mock_replace_greenplum_path.assert_called()
 
 
 class TestUtil(TestCase):
