@@ -29,6 +29,11 @@ if __name__ == '__main__':
     if os.path.exists("gpdb_src"):
         gpdb_src_path = os.path.abspath("gpdb_src")
 
+    if os.path.isfile("bin_gpdb/bin_gpdb.tar.gz"):
+        tarball_path="bin_gpdb/bin_gpdb.tar.gz"
+    else:
+        tarball_path=glob.glob("bin_gpdb/server-*.tar.gz")[0]
+
     rpm_builder = RPMPackageBuilder(
         name=gpdb_name,
         release=os.environ["GPDB_RELEASE"],
@@ -36,7 +41,7 @@ if __name__ == '__main__':
         license=os.environ["GPDB_LICENSE"],
         url=os.environ["GPDB_URL"],
         oss=os.getenv("GPDB_OSS", "false"),
-        bin_gpdb_path=glob.glob("bin_gpdb/bin_gpdb.tar.gz")[0],
+        bin_gpdb_path=tarball_path,
         spec_file_path=os.path.join("greenplum-database-release/ci/concourse/scripts", gpdb_name + ".spec"),
         license_file_path=license_file_path,
         gpdb_src_path=gpdb_src_path
