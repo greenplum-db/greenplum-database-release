@@ -32,7 +32,7 @@ if __name__ == '__main__':
     if os.path.isfile("bin_gpdb/bin_gpdb.tar.gz"):
         tarball_path="bin_gpdb/bin_gpdb.tar.gz"
     else:
-        tarball_path=glob.glob("bin_gpdb/server-*.tar.gz")[0]
+        tarball_path=glob.glob("bin_gpdb/[!QA]*.tar.gz")[0]
 
     rpm_builder = RPMPackageBuilder(
         name=gpdb_name,
