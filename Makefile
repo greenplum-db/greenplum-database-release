@@ -126,6 +126,9 @@ set-gpdb-package-testing-prod:
 	--config=ci/concourse/pipelines/gpdb-package-testing.yml \
 	--load-vars-from=ci/concourse/vars/gpdb-package-testing.prod.yml \
 	--load-vars-from=${WORKSPACE}/gp-continuous-integration/secrets/gpdb-package-testing.prod.yml \
+	--load-vars-from=ci/concourse/vars/greenplum-database-release.prod.yml \
+	--load-vars-from=ci/concourse/vars/greenplum-database-release.dev.yml \
+	--load-vars-from=${WORKSPACE}/gp-continuous-integration/secrets/ppa-debian-release-secrets-dev.yml \
 	--var=pipeline-name=gpdb-package-testing \
 	$(FLY_OPTION_NON-INTERACTIVE)
 
@@ -139,6 +142,9 @@ set-gpdb-package-testing-dev:
 	--load-vars-from=ci/concourse/vars/gpdb-package-testing.prod.yml \
 	--load-vars-from=ci/concourse/vars/gpdb-package-testing.dev.yml \
 	--load-vars-from=${WORKSPACE}/gp-continuous-integration/secrets/gpdb-package-testing.prod.yml \
+	--load-vars-from=ci/concourse/vars/greenplum-database-release.prod.yml \
+	--load-vars-from=ci/concourse/vars/greenplum-database-release.dev.yml \
+	--load-vars-from=${WORKSPACE}/gp-continuous-integration/secrets/ppa-debian-release-secrets-dev.yml \
 	--var=greenplum-database-release-git-branch=${BRANCH} \
 	--var=pipeline-name=${DEV_GPDB-PACKAGE-TESTING_PIPELINE_NAME} \
 	$(FLY_OPTION_NON-INTERACTIVE)

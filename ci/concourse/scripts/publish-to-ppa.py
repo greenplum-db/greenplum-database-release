@@ -14,32 +14,13 @@
 import glob
 import os
 
-from oss.ppa import SourcePackageBuilder, DebianPackageBuilder, LaunchpadPublisher
-from oss.utils import PackageTester
+from oss.ppa import LaunchpadPublisher
+from buildppa import BuildAndTestPPA
 
 if __name__ == '__main__':
-    package_builder = SourcePackageBuilder(
-        bin_gpdb_path='bin_gpdb_ubuntu18.04/bin_gpdb.tar.gz',
-        package_name='greenplum-db-6',
-        release_message=os.environ["RELEASE_MESSAGE"],
-        gpdb_src_path="gpdb_src",
-        license_dir_path="license_file"
-    )
 
-    gpdb_ppa_version = f'{package_builder.gpdb_upstream_version}-{package_builder.debian_revision}'
-    with open("ppa_release/version.txt", "w") as f:
-        f.write(gpdb_ppa_version)
-
-    source_package = package_builder.build()
-    builder = DebianPackageBuilder(source_package=source_package)
-    builder.build_binary()
-    builder.build_source()
-
-    deb_file_path = os.path.abspath(glob.glob("./*.deb")[0])
-    print("Verify DEB package...")
-    packager_tester = PackageTester(deb_file_path)
-    packager_tester.test_package()
-    print("All check actions passed!")
+    build_test = BuildAndTestPPA()
+    source_package = build_test.build()
 
     ppa_repo = os.environ["PPA_REPO"]
     publisher = LaunchpadPublisher(ppa_repo, source_package)

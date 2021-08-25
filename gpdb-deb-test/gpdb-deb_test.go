@@ -35,7 +35,7 @@ func ppaInstalledAsExpected() error {
 	}
 	// Remove package revision number
 	gpbdVersion = strings.TrimSuffix(gpbdVersion, "-1")
-	versionCmd := fmt.Sprintf("source /opt/greenplum-db-6-%s/greenplum_path.sh; postgres --gp-version", gpbdVersion)
+	versionCmd := fmt.Sprintf("source /opt/greenplum-db-%s/greenplum_path.sh; postgres --gp-version", gpbdVersion)
 	// postgres --gp-version has same Version from debian package
 	cmd := exec.Command("/bin/bash", "-c", versionCmd)
 	postgresGpbdVersion, err := cmd.Output()
@@ -46,7 +46,7 @@ func ppaInstalledAsExpected() error {
 		return fmt.Errorf("postgres --gp-version: %s should contains %s", string(postgresGpbdVersion), string(gpbdVersion))
 	}
 
-	err = gpdbGeneratedPythonBytecode(fmt.Sprintf("/opt/greenplum-db-6-%s/ext/python/lib/python2.7/cmd.py", gpbdVersion))
+	err = gpdbGeneratedPythonBytecode(fmt.Sprintf("/opt/greenplum-db-%s/ext/python/lib/python2.7/cmd.py", gpbdVersion))
 	if err != nil {
 		return err
 	}

@@ -237,6 +237,13 @@ resources:
     bucket: ((gcs-bucket-intermediates-for-oss))
     versioned_file: ((pipeline-name))/ppa_release_version/version.txt
 
+- name: deb_gpdb6_ppa_ubuntu18.04
+  type: gcs
+  source:
+    bucket: ((gcs-bucket-intermediates-for-oss))
+    json_key: ((concourse-gcs-resources-service-account-key))
+    versioned_file: ((pipeline-name))/deb_gpdb6_ppa_ubuntu18.04/greenplum-db-6-ubuntu18.04-amd64.deb
+
 - name: greenplum_db_ppa
   type: ppa
   source:
@@ -541,6 +548,9 @@ jobs:
       RELEASE_MESSAGE: ((release-message))
       DEBFULLNAME: ((debian-package-maintainer-fullname))
       DEBEMAIL: ((debian-package-maintainer-email))
+  - put: deb_gpdb6_ppa_ubuntu18.04
+    params:
+      file: gpdb_deb_ppa_installer/*.deb
   - put: ppa_release_version
     params:
       file: ppa_release/version.txt

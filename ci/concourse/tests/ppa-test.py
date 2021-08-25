@@ -90,11 +90,11 @@ class TestSourcePackageBuilder(TestCase):
         self.assertIn('Package: name', control)
 
     def test_install_location(self):
-        self.assertEqual(self.source_package_builder.install_location(), '/opt/name-short-version')
+        self.assertEqual(self.source_package_builder.install_location(), '/opt/greenplum-db-short-version')
 
     def test_install_contains_correct_path(self):
         install = self.source_package_builder._install()
-        self.assertEqual(install, 'bin_gpdb/* /opt/name-short-version\ndoc_files/* /usr/share/doc/greenplum-db/\n')
+        self.assertEqual(install, 'bin_gpdb/* /opt/greenplum-db-short-version\ndoc_files/* /usr/share/doc/greenplum-db/\n')
 
     @patch('oss.utils.Util.run_or_fail')
     def test_generate_changelog_runs_dch_command(self, mocked_run_or_fail):
