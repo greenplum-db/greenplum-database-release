@@ -157,11 +157,6 @@ _main() {
 
 	local greenplum_install_dir="${PREFIX}/greenplum-db-${GPDB_VERSION}"
 
-	# for push to ppa, we use prefix /opt, which installation dir will be different
-	if [ "${PREFIX}" = "/opt" ]; then
-		local greenplum_install_dir="${PREFIX}/greenplum-db-6-${GPDB_VERSION}"
-	fi
-
 	install_python
 	build_gpdb "${greenplum_install_dir}"
 	git_info "${greenplum_install_dir}"
