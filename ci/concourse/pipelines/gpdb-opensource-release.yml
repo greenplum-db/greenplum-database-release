@@ -29,8 +29,7 @@ resource_types:
 
 - name: tanzunet
   source:
-    repository: pivotalcf/pivnet-resource
-    tag: latest-final
+    repository: gcr.io/data-gpdb-public-images/tanzunet-concourse-resource
   type: registry-image
 
 resources:
@@ -272,8 +271,7 @@ resources:
     api_token: ((public-tanzunet-refresh-token))
     endpoint: https://network.tanzu.vmware.com
     product_slug: vmware-tanzu-greenplum
-    product_version: 6.*
-    sort_by: semver
+    version: ^6\..*
 
 jobs:
 - name: pipeline_start_gate
