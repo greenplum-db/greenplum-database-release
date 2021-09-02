@@ -1234,3 +1234,67 @@ jobs:
       gpdb_clients_package_installer: rpm_gpdb6_clients_sles12
     params:
       PLATFORM: sles12
+
+groups:
+- jobs:
+  - create_gpdb5_rpm_installer_sles11
+  - test_functionality_gpdb5_rpm_sles11
+  - create_gpdb5_rpm_installer_centos6
+  - test_functionality_gpdb5_rpm_centos6
+  - create_gpdb5_rpm_installer_centos7
+  - test_functionality_gpdb5_rpm_centos7
+  - create_gpdb6_rpm_installer_centos6
+  - test_functionality_gpdb6_rpm_centos6
+  - create_gpdb6_rpm_installer_centos7
+  - test_functionality_gpdb6_rpm_centos7
+  - create_gpdb6_rpm_installer_photon3
+  - test_functionality_gpdb6_rpm_photon3
+  - create_gpdb6_deb_installer_ubuntu18.04
+  - test_functionality_gpdb6_deb_ubuntu18.04
+  - create_gpdb6_clients_rpm_installer_sles12
+  - test_functionality_clients_gpdb6_rpm_sles12
+  - create_gpdb6_clients_rpm_installer_centos6
+  - test_functionality_clients_gpdb6_rpm_centos6
+  - create_gpdb6_clients_rpm_installer_centos7
+  - test_functionality_clients_gpdb6_rpm_centos7
+  - create_gpdb6_clients_rpm_installer_centos8
+  - test_functionality_clients_gpdb6_rpm_centos8
+  - create_gpdb6_clients_deb_installer_ubuntu18.04
+  - test_functionality_clients_gpdb6_deb_ubuntu18.04
+  - create_gpdb6_deb_ppa_installer_ubuntu18.04
+  - create_gpdb6_rpm_installer_centos6_oss
+  - create_gpdb6_rpm_installer_centos7_oss
+  name: All
+- jobs:
+  - create_gpdb5_rpm_installer_sles11
+  - test_functionality_gpdb5_rpm_sles11
+  - create_gpdb5_rpm_installer_centos6
+  - test_functionality_gpdb5_rpm_centos6
+  - create_gpdb5_rpm_installer_centos7
+  - test_functionality_gpdb5_rpm_centos7
+  name: gpdb 5
+- jobs:
+  - create_gpdb6_rpm_installer_centos6
+  - test_functionality_gpdb6_rpm_centos6
+  - create_gpdb6_rpm_installer_centos7
+  - test_functionality_gpdb6_rpm_centos7
+  - create_gpdb6_rpm_installer_photon3
+  - test_functionality_gpdb6_rpm_photon3
+  - create_gpdb6_deb_installer_ubuntu18.04
+  - test_functionality_gpdb6_deb_ubuntu18.04
+  - create_gpdb6_rpm_installer_centos6_oss
+  - create_gpdb6_rpm_installer_centos7_oss
+  - create_gpdb6_deb_ppa_installer_ubuntu18.04
+  name: gpdb 6 server
+- jobs:
+  - create_gpdb6_clients_rpm_installer_sles12
+  - test_functionality_clients_gpdb6_rpm_sles12
+  - create_gpdb6_clients_rpm_installer_centos6
+  - test_functionality_clients_gpdb6_rpm_centos6
+  - create_gpdb6_clients_rpm_installer_centos7
+  - test_functionality_clients_gpdb6_rpm_centos7
+  - create_gpdb6_clients_rpm_installer_centos8
+  - test_functionality_clients_gpdb6_rpm_centos8
+  - create_gpdb6_clients_deb_installer_ubuntu18.04
+  - test_functionality_clients_gpdb6_deb_ubuntu18.04
+  name: gpdb 6 client
