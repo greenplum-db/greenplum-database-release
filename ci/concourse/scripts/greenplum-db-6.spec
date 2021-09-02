@@ -58,6 +58,10 @@ Requires: zip
 Requires: zlib
 %endif
 
+%if "%{platform}" == "rhel8"
+Requires: openssl-libs
+Requires: libevent
+%endif
 %if "%{platform}" == "rhel7"
 Requires: openssl-libs
 Requires: libevent

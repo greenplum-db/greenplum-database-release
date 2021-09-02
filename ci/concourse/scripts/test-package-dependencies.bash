@@ -13,6 +13,12 @@ if [[ $PLATFORM == "rhel"* ]]; then
 		sed -i -E -e 's/\[(base|updates|extras)\]/[\1]\nenabled=0/' /etc/yum.repos.d/CentOS-Base.repo
 	fi
 
+	if [[ $PLATFORM == "rhel8" ]]; then
+		dnf update && dnf install -y subscription-manager
+		subscription-manager register --username=${RHEL_USER_NAME} --password=${RHEL_PASSWORD}
+		subscription-manager attach --auto
+	fi
+
 	# Install file command
 	yum install -y file
 	# Install greenplum rpm
@@ -23,6 +29,15 @@ if [[ $PLATFORM == "rhel"* ]]; then
 		export GPHOME=$GPHOME_CLIENTS
 	else
 		source /usr/local/greenplum-db/greenplum_path.sh
+	fi
+
+	if [[ $PLATFORM == "rhel8" ]]; then
+		subscription-manager remove --all
+		subscription-manager unregister
+		subscription-manager clean
+		# Remove entitlements and Subscription Manager configs
+		rm -rf /etc/pki/entitlement
+		rm -rf /etc/rhsm
 	fi
 
 elif [[ $PLATFORM == "ubuntu"* ]]; then
