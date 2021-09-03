@@ -91,6 +91,8 @@ ln -sT $RPM_INSTALL_PREFIX/%{name}-%{gpdb_clients_version} $RPM_INSTALL_PREFIX/%
 sed -i -e "1 s~^\(GPHOME_CLIENTS=\).*~\1$RPM_INSTALL_PREFIX/%{name}-%{gpdb_clients_version}~" $RPM_INSTALL_PREFIX/%{name}-%{gpdb_clients_version}/greenplum_clients_path.sh
 
 %postun
-if [[ $(readlink $RPM_INSTALL_PREFIX/%{name}) == $RPM_INSTALL_PREFIX/%{name}-%{gpdb_clients_version} ]]; then
-  unlink $RPM_INSTALL_PREFIX/%{name}
+if [ $1 -eq 0 ] ; then
+  if [[ $(readlink $RPM_INSTALL_PREFIX/%{name}) == $RPM_INSTALL_PREFIX/%{name}-%{gpdb_clients_version} ]]; then
+    unlink $RPM_INSTALL_PREFIX/%{name}
+  fi
 fi

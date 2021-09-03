@@ -157,6 +157,8 @@ else
 fi
 
 %postun
-if [ "$(readlink -f "${RPM_INSTALL_PREFIX}/greenplum-db")" == "${RPM_INSTALL_PREFIX}/greenplum-db-%{gpdb_version}" ]; then
-  unlink "${RPM_INSTALL_PREFIX}/greenplum-db" || :
+if [ $1 -eq 0 ] ; then
+  if [ "$(readlink -f "${RPM_INSTALL_PREFIX}/greenplum-db")" == "${RPM_INSTALL_PREFIX}/greenplum-db-%{gpdb_version}" ]; then
+    unlink "${RPM_INSTALL_PREFIX}/greenplum-db" || :
+  fi
 fi
