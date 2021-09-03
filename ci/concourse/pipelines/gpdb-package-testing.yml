@@ -479,6 +479,7 @@ jobs:
   - in_parallel:
     - get: bin_gpdb
       resource: bin_gpdb5_centos6
+      trigger: true
     - get: license_file
       resource: gpdb5-osl
     - get: centos-gpdb-dev-6
@@ -499,6 +500,7 @@ jobs:
   - in_parallel:
     - get: bin_gpdb
       resource: bin_gpdb5_centos7
+      trigger: true
     - get: license_file
       resource: gpdb5-osl
     - get: centos-gpdb-dev-7
@@ -519,6 +521,7 @@ jobs:
   - in_parallel:
     - get: bin_gpdb
       resource: bin_gpdb5_sles11
+      trigger: true
     - get: license_file
       resource: gpdb5-osl
     - get: greenplum-database-release
@@ -642,6 +645,7 @@ jobs:
   plan:
   - in_parallel:
     - get: bin_gpdb6_centos6
+      trigger: true
     - get: greenplum-database-release
       trigger: true
     - get: gpdb6-centos6-build
@@ -670,6 +674,7 @@ jobs:
     - get: greenplum-database-release
       trigger: true
     - get: bin_gpdb6_centos6
+      trigger: true
     - get: gpdb6-centos6-build
     - get: gpdb6-osl
   - task: retrieve_gpdb6_src
@@ -695,6 +700,7 @@ jobs:
   plan:
   - in_parallel:
     - get: bin_gpdb6_centos7
+      trigger: true
     - get: greenplum-database-release
       trigger: true
     - get: gpdb6-centos7-build
@@ -723,6 +729,7 @@ jobs:
     - get: greenplum-database-release
       trigger: true
     - get: bin_gpdb6_centos7
+      trigger: true
     - get: gpdb6-centos7-build
     - get: gpdb6-osl
   - task: retrieve_gpdb6_src
@@ -748,6 +755,7 @@ jobs:
   plan:
   - in_parallel:
     - get: bin_gpdb6_photon3
+      trigger: true
     - get: greenplum-database-release
       trigger: true
     - get: gpdb6-photon3-build
@@ -774,6 +782,7 @@ jobs:
   plan:
   - in_parallel:
     - get: bin_gpdb6_ubuntu18.04
+      trigger: true
     - get: greenplum-database-release
       trigger: true
     - get: gpdb6-ubuntu18.04-build
@@ -819,6 +828,7 @@ jobs:
     - get: greenplum-database-release
       trigger: true
     - get: bin_gpdb_ubuntu18.04_for_ppa
+      trigger: true
     - get: gpdb6-ubuntu18.04-build
     - get: license_file
     - get: gpdb_src
@@ -844,6 +854,7 @@ jobs:
   plan:
   - in_parallel:
     - get: bin_gpdb6_clients_centos6
+      trigger: true
     - get: gpdb6-centos6-build
     - get: greenplum-database-release
       trigger: true
@@ -1011,7 +1022,6 @@ jobs:
         PLATFORM: rhel6
         GPDB_MAJOR_VERSION: "6"
         CLIENTS: "clients"
-
 
 - name: test_functionality_gpdb6_rpm_centos7
   plan:
