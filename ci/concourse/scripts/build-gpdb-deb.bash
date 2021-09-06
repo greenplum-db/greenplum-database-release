@@ -37,7 +37,7 @@ function build_deb() {
 set -e
 cd ${GPDB_PREFIX}/
 rm -f ${GPDB_NAME}
-ln -s ${GPDB_NAME}-${GPDB_VERSION} ${GPDB_NAME}
+ln -s ${GPDB_PREFIX}/${GPDB_NAME}-${GPDB_VERSION} ${GPDB_NAME}
 cd ${GPDB_NAME}-${GPDB_VERSION}
 ext/python/bin/python -m compileall -q -x test .
 exit 0

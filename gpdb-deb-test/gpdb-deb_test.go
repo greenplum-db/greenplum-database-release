@@ -64,8 +64,8 @@ func gpdbInstalledAsExpected() error {
 	if err != nil {
 		return err
 	}
-	if linkDestination != "greenplum-db-"+gpbdVersion {
-		return fmt.Errorf("/usr/local/greenplum-db links to %s != %s", linkDestination, "greenplum-db-"+gpbdVersion)
+	if linkDestination != filepath.Join("/usr/local", "greenplum-db-"+gpbdVersion) {
+		return fmt.Errorf("/usr/local/greenplum-db links to %s != %s", linkDestination, filepath.Join("/usr/local", "greenplum-db-"+gpbdVersion))
 	}
 	// GPHOME is set
 	gpHome, err := GetEnvFromGreenplumPathFile("/usr/local/greenplum-db/greenplum_path.sh", "GPHOME")
