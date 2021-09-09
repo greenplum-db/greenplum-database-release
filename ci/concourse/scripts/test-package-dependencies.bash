@@ -24,13 +24,6 @@ if [[ $PLATFORM == "rhel"* ]]; then
 	# Install greenplum rpm
 	yum install -y ${GPDB_PKG_PATH}/*.rpm
 
-	if [[ $CLIENTS == "clients" ]]; then
-		source /usr/local/greenplum-db-clients/greenplum_clients_path.sh
-		export GPHOME=$GPHOME_CLIENTS
-	else
-		source /usr/local/greenplum-db/greenplum_path.sh
-	fi
-
 	if [[ $PLATFORM == "rhel8" ]]; then
 		subscription-manager remove --all
 		subscription-manager unregister
@@ -38,6 +31,13 @@ if [[ $PLATFORM == "rhel"* ]]; then
 		# Remove entitlements and Subscription Manager configs
 		rm -rf /etc/pki/entitlement
 		rm -rf /etc/rhsm
+	fi
+
+	if [[ $CLIENTS == "clients" ]]; then
+		source /usr/local/greenplum-db-clients/greenplum_clients_path.sh
+		export GPHOME=$GPHOME_CLIENTS
+	else
+		source /usr/local/greenplum-db/greenplum_path.sh
 	fi
 
 elif [[ $PLATFORM == "ubuntu"* ]]; then
