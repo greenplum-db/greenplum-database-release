@@ -15,7 +15,7 @@ if [[ $PLATFORM == "rhel"* ]]; then
 
 	if [[ $PLATFORM == "rhel8" ]]; then
 		dnf update && dnf install -y subscription-manager
-		subscription-manager register --username=${RHEL_USER_NAME} --password=${RHEL_PASSWORD}
+		subscription-manager register --org=${REDHAT_SUBSCRIPTION_ORG_ID} --activationkey=${REDHAT_SUBSCRIPTION_KEY_ID}
 		subscription-manager attach --auto
 	fi
 

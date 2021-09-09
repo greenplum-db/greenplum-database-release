@@ -1188,8 +1188,8 @@ jobs:
       params:
         PLATFORM: rhel8
         GPDB_MAJOR_VERSION: "6"
-        RHEL_USER_NAME: ((RHEL_USERNAME))
-        RHEL_PASSWORD: ((RHEL_PASSWORD))
+        REDHAT_SUBSCRIPTION_ORG_ID: ((redhat_subscription_org_id))
+        REDHAT_SUBSCRIPTION_KEY_ID: ((redhat_subscription_key_id))
 
 - name: test_functionality_gpdb6_deb_ubuntu18.04
   plan:
@@ -1307,8 +1307,8 @@ jobs:
         PLATFORM: rhel8
         GPDB_MAJOR_VERSION: "6"
         CLIENTS: "clients"
-        RHEL_USER_NAME: ((RHEL_USERNAME))
-        RHEL_PASSWORD: ((RHEL_PASSWORD))
+        REDHAT_SUBSCRIPTION_ORG_ID: ((redhat_subscription_org_id))
+        REDHAT_SUBSCRIPTION_KEY_ID: ((redhat_subscription_key_id))
 
 - name: test_functionality_clients_gpdb6_rpm_sles12
   plan:
