@@ -77,8 +77,8 @@ resources:
   type: git
   icon: git
   source:
-    branch: ((gpdb-git-branch))
     uri: ((gpdb-git-remote))
+    fetch_tags: true
     tag_filter: ((gpdb-git-tag-filter))
 
 - name: greenplum-database-release
