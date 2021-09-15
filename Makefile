@@ -24,7 +24,7 @@ WORKSPACE ?= ${HOME}/workspace
 
 PIPELINE_NAME              = greenplum-database-release-${BRANCH}-${USER}
 FLY_CMD                    = fly
-FLY_OPTION_NON-INTERACTIVE =
+FLY_OPTION_NON_INTERACTIVE ?=
 
 DEV_GPDB-PACKAGE-TESTING_PIPELINE_NAME = dev-gpdb-package-testing-${BRANCH}-${USER}
 
@@ -67,7 +67,7 @@ set-pipeline-dev:
     --var=greenplum-database-release-git-remote=https://github.com/greenplum-db/greenplum-database-release.git \
     --var=pipeline-name=${PIPELINE_NAME} \
     --var=run_mode=dev \
-    ${FLY_OPTION_NON-INTERACTIVE}
+    $(FLY_OPTION_NON_INTERACTIVE)
 
 	@echo using the following command to unpause the pipeline:
 	@echo "\t$(FLY_CMD) -t ${CONCOURSE} unpause-pipeline --pipeline ${PIPELINE_NAME}"
@@ -84,7 +84,7 @@ destroy-pipeline-dev:
 	$(FLY_CMD) --target=${CONCOURSE} \
     destroy-pipeline \
     --pipeline=${PIPELINE_NAME} \
-    ${FLY_OPTION_NON-INTERACTIVE}
+    $(FLY_OPTION_NON_INTERACTIVE)
 
 ## ----------------------------------------------------------------------
 ## Set Production Pipeline
@@ -109,7 +109,7 @@ set-pipeline-prod:
     --var=greenplum-database-release-git-branch=main \
     --var=greenplum-database-release-git-remote=https://github.com/greenplum-db/greenplum-database-release.git \
     --var=run_mode=prod \
-    ${FLY_OPTION_NON-INTERACTIVE}
+    $(FLY_OPTION_NON_INTERACTIVE)
 
 	@echo using the following command to unpause the pipeline:
 	@echo "\t$(FLY_CMD) -t prod unpause-pipeline --pipeline greenplum-database-release"
@@ -130,7 +130,7 @@ set-gpdb-package-testing-prod:
 	--load-vars-from=ci/concourse/vars/greenplum-database-release.dev.yml \
 	--load-vars-from=${WORKSPACE}/gp-continuous-integration/secrets/ppa-debian-release-secrets-dev.yml \
 	--var=pipeline-name=gpdb-package-testing \
-	$(FLY_OPTION_NON-INTERACTIVE)
+	$(FLY_OPTION_NON_INTERACTIVE)
 
 .PHONY: set-gpdb-package-testing-dev
 set-gpdb-package-testing-dev:
@@ -147,7 +147,7 @@ set-gpdb-package-testing-dev:
 	--load-vars-from=${WORKSPACE}/gp-continuous-integration/secrets/ppa-debian-release-secrets-dev.yml \
 	--var=greenplum-database-release-git-branch=${BRANCH} \
 	--var=pipeline-name=${DEV_GPDB-PACKAGE-TESTING_PIPELINE_NAME} \
-	$(FLY_OPTION_NON-INTERACTIVE)
+	$(FLY_OPTION_NON_INTERACTIVE)
 
 
 ## ----------------------------------------------------------------------
