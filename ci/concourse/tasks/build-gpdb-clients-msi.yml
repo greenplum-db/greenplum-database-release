@@ -15,7 +15,9 @@ outputs:
 - name: output_artifacts
 
 run:
-  path: greenplum-database-release/ci/concourse/scripts/build-gpdb-clients-msi.bash
+  path: bash
   args:
-  - bin_gpdb_clients_windows/bin_gpdb_clients.tar.gz
-  - output_artifacts
+  - -ecx
+  - |
+    mv bin_gpdb_clients_windows/greenplum-db-clients-*.tar.gz bin_gpdb_clients_windows/bin_gpdb_clients.tar.gz
+    greenplum-database-release/ci/concourse/scripts/build-gpdb-clients-msi.bash bin_gpdb_clients_windows/bin_gpdb_clients.tar.gz output_artifacts
