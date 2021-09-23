@@ -52,15 +52,13 @@ set-dev: set-pipeline-dev
 .PHONY: set-pipeline-dev
 set-pipeline-dev:
 
-	sed -e 's|tag_filter: *|## tag_filter: |g' -e 's|((tanzunet-refresh-token))|((public-tanzunet-refresh-token))|g' ci/concourse/pipelines/gpdb-opensource-release.yml > ci/concourse/pipelines/${PIPELINE_NAME}.yml
+	sed -e 's|tag_filter: *|## tag_filter: |g' -e 's|((tanzunet.refresh-token))|((tanzunet.public-refresh-token))|g' -e 's|/prod.|/dev.|g' ci/concourse/pipelines/gpdb-opensource-release.yml > ci/concourse/pipelines/${PIPELINE_NAME}.yml
 
 	$(FLY_CMD) --target=${CONCOURSE} \
     set-pipeline \
     --check-creds \
     --pipeline=${PIPELINE_NAME} \
     --config=ci/concourse/pipelines/${PIPELINE_NAME}.yml \
-    --load-vars-from=${WORKSPACE}/gp-continuous-integration/secrets/gpdb-oss-release.dev.yml \
-    --load-vars-from=${WORKSPACE}/gp-continuous-integration/secrets/ppa-debian-release-secrets-dev.yml \
     --load-vars-from=ci/concourse/vars/greenplum-database-release.prod.yml \
     --load-vars-from=ci/concourse/vars/greenplum-database-release.dev.yml \
     --var=greenplum-database-release-git-branch=${BRANCH} \
@@ -125,26 +123,23 @@ set-gpdb-package-testing-prod:
 	--pipeline=gpdb-package-testing \
 	--config=ci/concourse/pipelines/gpdb-package-testing.yml \
 	--load-vars-from=ci/concourse/vars/gpdb-package-testing.prod.yml \
-	--load-vars-from=${WORKSPACE}/gp-continuous-integration/secrets/gpdb-package-testing.prod.yml \
 	--load-vars-from=ci/concourse/vars/greenplum-database-release.prod.yml \
 	--load-vars-from=ci/concourse/vars/greenplum-database-release.dev.yml \
-	--load-vars-from=${WORKSPACE}/gp-continuous-integration/secrets/ppa-debian-release-secrets-dev.yml \
 	--var=pipeline-name=gpdb-package-testing \
 	$(FLY_OPTION_NON_INTERACTIVE)
 
 .PHONY: set-gpdb-package-testing-dev
 set-gpdb-package-testing-dev:
+	sed -e 's|ppa/prod|ppa/dev|g' ci/concourse/pipelines/gpdb-package-testing.yml > ci/concourse/pipelines/gpdb-package-testing-$(BRANCH)-${USER}.yml
 	$(FLY_CMD) --target=$(CONCOURSE) \
 	set-pipeline \
 	--check-creds \
 	--pipeline=gpdb-package-testing-$(BRANCH)-${USER} \
-	--config=ci/concourse/pipelines/gpdb-package-testing.yml \
+	--config=ci/concourse/pipelines/gpdb-package-testing-$(BRANCH)-${USER}.yml \
 	--load-vars-from=ci/concourse/vars/gpdb-package-testing.prod.yml \
 	--load-vars-from=ci/concourse/vars/gpdb-package-testing.dev.yml \
-	--load-vars-from=${WORKSPACE}/gp-continuous-integration/secrets/gpdb-package-testing.prod.yml \
 	--load-vars-from=ci/concourse/vars/greenplum-database-release.prod.yml \
 	--load-vars-from=ci/concourse/vars/greenplum-database-release.dev.yml \
-	--load-vars-from=${WORKSPACE}/gp-continuous-integration/secrets/ppa-debian-release-secrets-dev.yml \
 	--var=greenplum-database-release-git-branch=${BRANCH} \
 	--var=pipeline-name=${DEV_GPDB-PACKAGE-TESTING_PIPELINE_NAME} \
 	$(FLY_OPTION_NON_INTERACTIVE)

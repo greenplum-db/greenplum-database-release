@@ -67,14 +67,14 @@ resources:
     repository: gcr.io/data-gpdb-private-images/gpdb5-sles11-build-test
     tag: latest
     username: _json_key
-    password: ((container-registry-readonly-service-account-key))
+    password: ((gcp.data-gpdb-private-images-readonly))
   type: registry-image
 
 - name: bin_gpdb5_centos6
   type: s3
   source:
-    access_key_id: ((gpdb5-pipeline-s3-access-key-id))
-    secret_access_key: ((gpdb5-pipeline-s3-secret-access-key))
+    access_key_id: ((aws.s3-access-key-id))
+    secret_access_key: ((aws.s3-secret-access-key))
     region_name: ((aws-region))
     bucket: gpdb-stable-concourse-builds
     versioned_file: release_candidates/bin_gpdb_centos6/gpdb5/bin_gpdb.tar.gz
@@ -83,14 +83,14 @@ resources:
   type: gcs
   source:
     bucket: ((gcs-bucket-intermediates))
-    json_key: ((concourse-gcs-resources-service-account-key))
+    json_key: ((gcp.concourse-gcs-resources-service-account-key))
     versioned_file: ((pipeline-name))/rpm_gpdb_centos6/gpdb5/greenplum-db-5-rhel6-x86_64.rpm
 
 - name: bin_gpdb5_centos7
   type: s3
   source:
-    access_key_id: ((gpdb5-pipeline-s3-access-key-id))
-    secret_access_key: ((gpdb5-pipeline-s3-secret-access-key))
+    access_key_id: ((aws.s3-access-key-id))
+    secret_access_key: ((aws.s3-secret-access-key))
     region_name: ((aws-region))
     bucket: gpdb-stable-concourse-builds
     versioned_file: release_candidates/bin_gpdb_centos7/gpdb5/bin_gpdb.tar.gz
@@ -99,7 +99,7 @@ resources:
   type: gcs
   source:
     bucket: pivotal-gpdb-concourse-resources-prod
-    json_key: ((concourse-gcs-resources-service-account-key))
+    json_key: ((gcp.concourse-gcs-resources-service-account-key))
     regexp: clients/published/gpdb6/clients-rc-(.*)-rhel6_x86_64.tar.gz
 
 
@@ -107,7 +107,7 @@ resources:
   type: gcs
   source:
     bucket: pivotal-gpdb-concourse-resources-prod
-    json_key: ((concourse-gcs-resources-service-account-key))
+    json_key: ((gcp.concourse-gcs-resources-service-account-key))
     regexp: clients/published/gpdb6/clients-rc-(.*)-rhel7_x86_64.tar.gz
 
 
@@ -115,7 +115,7 @@ resources:
   type: gcs
   source:
     bucket: pivotal-gpdb-concourse-resources-prod
-    json_key: ((concourse-gcs-resources-service-account-key))
+    json_key: ((gcp.concourse-gcs-resources-service-account-key))
     regexp: clients/published/gpdb6/clients-rc-(.*)-rhel8_x86_64.tar.gz
 
 
@@ -123,28 +123,28 @@ resources:
   type: gcs
   source:
     bucket: pivotal-gpdb-concourse-resources-prod
-    json_key: ((concourse-gcs-resources-service-account-key))
+    json_key: ((gcp.concourse-gcs-resources-service-account-key))
     regexp: clients/published/gpdb6/clients-rc-(.*)-ubuntu18.04_x86_64.tar.gz
 
 - name: bin_gpdb6_clients_sles12
   type: gcs
   source:
     bucket: pivotal-gpdb-concourse-resources-prod
-    json_key: ((concourse-gcs-resources-service-account-key))
+    json_key: ((gcp.concourse-gcs-resources-service-account-key))
     regexp: clients/published/gpdb6/clients-rc-(.*)-sles12_x86_64.tar.gz
 
 - name: rpm_gpdb5_centos7
   type: gcs
   source:
     bucket: ((gcs-bucket-intermediates))
-    json_key: ((concourse-gcs-resources-service-account-key))
+    json_key: ((gcp.concourse-gcs-resources-service-account-key))
     versioned_file: ((pipeline-name))/rpm_gpdb_centos7/gpdb5/greenplum-db-5-rhel7-x86_64.rpm
 
 - name: bin_gpdb5_sles11
   type: s3
   source:
-    access_key_id: ((gpdb5-pipeline-s3-access-key-id))
-    secret_access_key: ((gpdb5-pipeline-s3-secret-access-key))
+    access_key_id: ((aws.s3-access-key-id))
+    secret_access_key: ((aws.s3-secret-access-key))
     region_name: ((aws-region))
     bucket: gpdb-stable-concourse-builds
     versioned_file: release_candidates/bin_gpdb_sles11/gpdb5/bin_gpdb.tar.gz
@@ -152,7 +152,7 @@ resources:
 - name: bin_gpdb_ubuntu18.04_for_ppa
   type: gcs
   source:
-    json_key: ((concourse-gcs-resources-service-account-key))
+    json_key: ((gcp.concourse-gcs-resources-service-account-key))
     bucket: greenplum-database-concourse-resources-intermediates-prod
     versioned_file: greenplum-database-release/bin_gpdb_ubuntu18.04_ppa/bin_gpdb.tar.gz
 
@@ -161,41 +161,41 @@ resources:
   type: gcs
   source:
     bucket: ((gcs-bucket-intermediates))
-    json_key: ((concourse-gcs-resources-service-account-key))
+    json_key: ((gcp.concourse-gcs-resources-service-account-key))
     versioned_file: ((pipeline-name))/rpm_gpdb_sles11/gpdb5/greenplum-db-5-sles11-x86_64.rpm
 
 - name: rpm_gpdb6_clients_centos6
   type: gcs
   source:
     bucket: ((gcs-bucket-intermediates))
-    json_key: ((concourse-gcs-resources-service-account-key))
+    json_key: ((gcp.concourse-gcs-resources-service-account-key))
     versioned_file: ((pipeline-name))/rpm_gpdb_clients_centos6/gpdb6/greenplum-db-clients-0.0.0-rhel6-x86_64.rpm
 
 - name: rpm_gpdb6_clients_centos7
   type: gcs
   source:
     bucket: ((gcs-bucket-intermediates))
-    json_key: ((concourse-gcs-resources-service-account-key))
+    json_key: ((gcp.concourse-gcs-resources-service-account-key))
     versioned_file: ((pipeline-name))/rpm_gpdb_clients_centos7/gpdb6/greenplum-db-clients-0.0.0-rhel7-x86_64.rpm
 
 - name: rpm_gpdb6_clients_rhel8
   type: gcs
   source:
     bucket: ((gcs-bucket-intermediates))
-    json_key: ((concourse-gcs-resources-service-account-key))
+    json_key: ((gcp.concourse-gcs-resources-service-account-key))
     versioned_file: ((pipeline-name))/rpm_gpdb_clients_rhel8/gpdb6/greenplum-db-clients-0.0.0-rhel8-x86_64.rpm
 
 - name: rpm_gpdb6_clients_sles12
   type: gcs
   source:
     bucket: ((gcs-bucket-intermediates))
-    json_key: ((concourse-gcs-resources-service-account-key))
+    json_key: ((gcp.concourse-gcs-resources-service-account-key))
     versioned_file: ((pipeline-name))/rpm_gpdb_clients_sles12/gpdb6/greenplum-db-clients-0.0.0-sles12-x86_64.rpm
 
 - name: previous-6-release
   type: tanzunet
   source:
-    api_token: ((public-tanzunet-refresh-token))
+    api_token: ((tanzunet.public-refresh-token))
     endpoint: ((tanzunet-endpoint))
     product_slug: vmware-tanzu-greenplum
     product_version: 6\.2\.1
@@ -203,7 +203,7 @@ resources:
 - name: previous-6.12.0-release
   type: tanzunet
   source:
-    api_token: ((public-tanzunet-refresh-token))
+    api_token: ((tanzunet.public-refresh-token))
     endpoint: ((tanzunet-endpoint))
     product_slug: vmware-tanzu-greenplum
     product_version: 6\.12\.0
@@ -211,7 +211,7 @@ resources:
 - name: previous-6-oss-release
   type: tanzunet
   source:
-    api_token: ((public-tanzunet-refresh-token))
+    api_token: ((tanzunet.public-refresh-token))
     endpoint: ((tanzunet-endpoint))
     product_slug: greenplum-database
     product_version: 6\.14\.0
@@ -219,7 +219,7 @@ resources:
 - name: previous-5-release
   type: tanzunet
   source:
-    api_token: ((public-tanzunet-refresh-token))
+    api_token: ((tanzunet.public-refresh-token))
     endpoint: ((tanzunet-endpoint))
     product_slug: vmware-tanzu-greenplum
     product_version: 5\.25\.0
@@ -227,7 +227,7 @@ resources:
 - name: previous-5.28.4-release
   type: tanzunet
   source:
-    api_token: ((public-tanzunet-refresh-token))
+    api_token: ((tanzunet.public-refresh-token))
     endpoint: ((tanzunet-endpoint))
     product_slug: vmware-tanzu-greenplum
     product_version: 5\.28\.4
@@ -236,35 +236,35 @@ resources:
   type: gcs
   source:
     bucket: pivotal-gpdb-concourse-resources-prod
-    json_key: ((concourse-gcs-resources-service-account-key))
+    json_key: ((gcp.concourse-gcs-resources-service-account-key))
     regexp: server/published/gpdb6/server-rc-(.*)-rhel6_x86_64.tar.gz
 
 - name: bin_gpdb6_centos7
   type: gcs
   source:
     bucket: pivotal-gpdb-concourse-resources-prod
-    json_key: ((concourse-gcs-resources-service-account-key))
+    json_key: ((gcp.concourse-gcs-resources-service-account-key))
     regexp: server/published/gpdb6/server-rc-(.*)-rhel7_x86_64.tar.gz
 
 - name: bin_gpdb6_rhel8
   type: gcs
   source:
     bucket: pivotal-gpdb-concourse-resources-prod
-    json_key: ((concourse-gcs-resources-service-account-key))
+    json_key: ((gcp.concourse-gcs-resources-service-account-key))
     regexp: server/published/gpdb6/server-rc-(.*)-rhel8_x86_64.tar.gz
 
 - name: bin_gpdb6_photon3
   type: gcs
   source:
     bucket: pivotal-gpdb-concourse-resources-prod
-    json_key: ((concourse-gcs-resources-service-account-key))
+    json_key: ((gcp.concourse-gcs-resources-service-account-key))
     regexp: server/published/gpdb6/server-rc-(.*)-photon3_x86_64.tar.gz
 
 - name: bin_gpdb6_ubuntu18.04
   type: gcs
   source:
     bucket: pivotal-gpdb-concourse-resources-prod
-    json_key: ((concourse-gcs-resources-service-account-key))
+    json_key: ((gcp.concourse-gcs-resources-service-account-key))
     regexp: server/published/gpdb6/server-rc-(.*)-ubuntu18.04_x86_64.tar.gz
 
 - name: gpdb6-centos6-build
@@ -284,7 +284,7 @@ resources:
   source:
     repository: gcr.io/data-gpdb-private-images/gpdb6-rhel8-build
     username: _json_key
-    password: ((container-registry-readonly-service-account-key))
+    password: ((gcp.data-gpdb-private-images-readonly))
     tag: latest
 
 - name: gpdb6-rhel8-test
@@ -292,15 +292,15 @@ resources:
   source:
     repository: gcr.io/data-gpdb-private-images/gpdb6-rhel8-test
     username: _json_key
-    password: ((container-registry-readonly-service-account-key))
+    password: ((gcp.data-gpdb-private-images-readonly))
     tag: latest
 
 - name: rhel-8
   type: registry-image
   source:
     repository: registry.redhat.io/ubi8/ubi
-    username: ((redhat-registry-username))
-    password: ((redhat-registry-token))
+    username: ((redhat.registry-username))
+    password: ((redhat.registry-token))
     tag: latest
 
 - name: gpdb6-ubuntu18.04-build
@@ -314,7 +314,7 @@ resources:
   source:
     repository: gcr.io/data-gpdb-private-images/gpdb6-sles12-build
     username: _json_key
-    password: ((container-registry-readonly-service-account-key))
+    password: ((gcp.data-gpdb-private-images-readonly))
     tag: latest
 
 - name: gpdb6-sles12-test
@@ -322,7 +322,7 @@ resources:
   source:
     repository: gcr.io/data-gpdb-private-images/gpdb6-sles12-test
     username: _json_key
-    password: ((container-registry-readonly-service-account-key))
+    password: ((gcp.data-gpdb-private-images-readonly))
     tag: latest
 
 - name: gpdb6-photon3-build
@@ -341,21 +341,21 @@ resources:
   type: gcs
   source:
     bucket: pivotal-gpdb-concourse-resources-prod
-    json_key: ((concourse-gcs-resources-service-account-key))
+    json_key: ((gcp.concourse-gcs-resources-service-account-key))
     regexp: osl/released/gpdb5/open_source_license_GPDB_-_(((gpdb5-osl-version-regex)))_-_GA.txt
 
 - name: gpdb6-osl
   type: gcs
   source:
     bucket: pivotal-gpdb-concourse-resources-prod
-    json_key: ((concourse-gcs-resources-service-account-key))
+    json_key: ((gcp.concourse-gcs-resources-service-account-key))
     regexp: osl/released/gpdb6/open_source_license_VMware_Tanzu_Greenplum_Database_(((gpdb6-osl-version-regex)))_GA.txt
 
 - name: license_file
   type: gcs
   source:
     bucket: ((gcs-bucket-for-oss))
-    json_key: ((concourse-gcs-resources-service-account-key))
+    json_key: ((gcp.concourse-gcs-resources-service-account-key))
     regexp: osl/released/gpdb6/open_source_license_greenplum-database-6.0.0-97773a0-(.*).txt
 
 - name: gpdb_src
@@ -368,7 +368,7 @@ resources:
 - name: ppa_release_version
   type: gcs
   source:
-    json_key: ((concourse-gcs-resources-service-account-key))
+    json_key: ((gcp.concourse-gcs-resources-service-account-key))
     bucket: ((gcs-bucket-intermediates))
     versioned_file: ((pipeline-name))/ppa_release_version/version.txt
 
@@ -376,63 +376,63 @@ resources:
   type: gcs
   source:
     bucket: ((gcs-bucket-intermediates))
-    json_key: ((concourse-gcs-resources-service-account-key))
+    json_key: ((gcp.concourse-gcs-resources-service-account-key))
     versioned_file: ((pipeline-name))/rpm_gpdb_centos6/gpdb6/greenplum-db-6-rhel6-x86_64.rpm
 
 - name: rpm_gpdb6_centos6_oss
   type: gcs
   source:
     bucket: ((gcs-bucket-intermediates))
-    json_key: ((concourse-gcs-resources-service-account-key))
+    json_key: ((gcp.concourse-gcs-resources-service-account-key))
     versioned_file: ((pipeline-name))/rpm_gpdb_centos6/gpdb6/open-source-greenplum-db-6-rhel6-x86_64.rpm
 
 - name: rpm_gpdb6_centos7
   type: gcs
   source:
     bucket: ((gcs-bucket-intermediates))
-    json_key: ((concourse-gcs-resources-service-account-key))
+    json_key: ((gcp.concourse-gcs-resources-service-account-key))
     versioned_file: ((pipeline-name))/rpm_gpdb_centos7/gpdb6/greenplum-db-6-rhel7-x86_64.rpm
 
 - name: rpm_gpdb6_centos7_oss
   type: gcs
   source:
     bucket: ((gcs-bucket-intermediates))
-    json_key: ((concourse-gcs-resources-service-account-key))
+    json_key: ((gcp.concourse-gcs-resources-service-account-key))
     versioned_file: ((pipeline-name))/rpm_gpdb_centos7/gpdb6/open-source-greenplum-db-6-rhel7-x86_64.rpm
 
 - name: rpm_gpdb6_rhel8
   type: gcs
   source:
     bucket: ((gcs-bucket-intermediates))
-    json_key: ((concourse-gcs-resources-service-account-key))
+    json_key: ((gcp.concourse-gcs-resources-service-account-key))
     versioned_file: ((pipeline-name))/rpm_gpdb_rhel8/gpdb6/greenplum-db-6-rhel8-x86_64.rpm
 
 - name: rpm_gpdb6_photon3
   type: gcs
   source:
     bucket: ((gcs-bucket-intermediates))
-    json_key: ((concourse-gcs-resources-service-account-key))
+    json_key: ((gcp.concourse-gcs-resources-service-account-key))
     versioned_file: ((pipeline-name))/rpm_gpdb_photon3/greenplum-db-6-photon3-x86_64.rpm
 
 - name: deb_gpdb6_ubuntu18.04
   type: gcs
   source:
     bucket: ((gcs-bucket-intermediates))
-    json_key: ((concourse-gcs-resources-service-account-key))
+    json_key: ((gcp.concourse-gcs-resources-service-account-key))
     versioned_file: ((pipeline-name))/deb_gpdb_ubuntu18.04/greenplum-db-6-ubuntu18.04-amd64.deb
 
 - name: deb_gpdb6_clients_ubuntu18.04
   type: gcs
   source:
     bucket: ((gcs-bucket-intermediates))
-    json_key: ((concourse-gcs-resources-service-account-key))
+    json_key: ((gcp.concourse-gcs-resources-service-account-key))
     versioned_file: ((pipeline-name))/deb_gpdb_clients_ubuntu18.04/greenplum-db-clients-0.0.0-ubuntu18.04-amd64.deb
 
 - name: deb_gpdb6_ppa_ubuntu18.04
   type: gcs
   source:
     bucket: ((gcs-bucket-intermediates))
-    json_key: ((concourse-gcs-resources-service-account-key))
+    json_key: ((gcp.concourse-gcs-resources-service-account-key))
     versioned_file: ((pipeline-name))/deb_gpdb6_ppa_ubuntu18.04/greenplum-db-6-ubuntu18.04-amd64.deb
 
 - name: gpdb6-centos6-test
@@ -883,11 +883,11 @@ jobs:
     - get: gpdb6-ubuntu18.04-build
     - get: license_file
     - get: gpdb_src
-  - task: build ppa
+  - task: build_ppa
     file: greenplum-database-release/ci/concourse/tasks/build-ppa.yml
     image: gpdb6-ubuntu18.04-build
     params:
-      GPG_PRIVATE_KEY: ((gpg-private-key))
+      GPG_PRIVATE_KEY: ((ppa/prod.gpg-private-key))
       RELEASE_MESSAGE: ((release-message))
       DEBFULLNAME: ((debian-package-maintainer-fullname))
       DEBEMAIL: ((debian-package-maintainer-email))
@@ -1188,8 +1188,8 @@ jobs:
       params:
         PLATFORM: rhel8
         GPDB_MAJOR_VERSION: "6"
-        REDHAT_SUBSCRIPTION_ORG_ID: ((redhat_subscription_org_id))
-        REDHAT_SUBSCRIPTION_KEY_ID: ((redhat_subscription_key_id))
+        REDHAT_SUBSCRIPTION_ORG_ID: ((redhat.subscription-org-id))
+        REDHAT_SUBSCRIPTION_KEY_ID: ((redhat.subscription-key-id))
 
 - name: test_functionality_gpdb6_deb_ubuntu18.04
   plan:
@@ -1307,8 +1307,8 @@ jobs:
         PLATFORM: rhel8
         GPDB_MAJOR_VERSION: "6"
         CLIENTS: "clients"
-        REDHAT_SUBSCRIPTION_ORG_ID: ((redhat_subscription_org_id))
-        REDHAT_SUBSCRIPTION_KEY_ID: ((redhat_subscription_key_id))
+        REDHAT_SUBSCRIPTION_ORG_ID: ((redhat.subscription-org-id))
+        REDHAT_SUBSCRIPTION_KEY_ID: ((redhat.subscription-key-id))
 
 - name: test_functionality_clients_gpdb6_rpm_sles12
   plan:

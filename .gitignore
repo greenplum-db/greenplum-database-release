@@ -12,7 +12,8 @@
 
 /**/*.pyc
 ci/concourse/pipelines/greenplum-database-release-*.yml
-ci/concourse/pipelines/gpdb_opensource_release_prod.yml
+ci/concourse/pipelines/gpdb-opensource-release-prod.yml
+ci/concourse/pipelines/gpdb-package-testing-*.yml
 ci/concourse/oss/__pycache__/
 ci/concourse/tests/__pycache__/
 /bin_gpdb
