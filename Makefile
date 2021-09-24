@@ -69,8 +69,7 @@ set-pipeline-dev:
     --var=run_mode=dev \
     $(FLY_OPTION_NON_INTERACTIVE)
 
-	@echo using the following command to unpause the pipeline:
-	@echo "\t$(FLY_CMD) -t ${CONCOURSE} unpause-pipeline --pipeline ${PIPELINE_NAME}"
+	$(FLY_CMD) --target=releng unpause-pipeline --pipeline=${PIPELINE_NAME}
 
 ## ----------------------------------------------------------------------
 ## Destroy Development Pipeline
@@ -148,6 +147,8 @@ set-gpdb-package-testing-dev:
 	--var=greenplum-database-release-git-branch=${BRANCH} \
 	--var=pipeline-name=${DEV_GPDB-PACKAGE-TESTING_PIPELINE_NAME} \
 	$(FLY_OPTION_NON_INTERACTIVE)
+
+	$(FLY_CMD) --target=releng unpause-pipeline --pipeline=gpdb-package-testing-$(BRANCH)-${USER}
 
 
 ## ----------------------------------------------------------------------
