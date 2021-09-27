@@ -33,7 +33,6 @@ Requires: less
 Requires: libcurl
 Requires: libxml2
 Requires: libyaml
-Requires: net-tools
 Requires: openldap
 Requires: openssh
 Requires: openssh-clients
