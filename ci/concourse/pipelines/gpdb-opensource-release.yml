@@ -94,7 +94,7 @@ resources:
   source:
     owner: ((gpdb-release-owner))
     repository: ((gpdb-release-repository))
-    access_token: ((gpdb-release-access-token))
+    access_token: ((github-token-gp-releng))
 
 - name: license_file
   type: gcs
