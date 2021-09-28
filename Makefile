@@ -52,7 +52,7 @@ set-dev: set-pipeline-dev
 .PHONY: set-pipeline-dev
 set-pipeline-dev:
 
-	sed -e 's|tag_filter: *|## tag_filter: |g' -e 's|((tanzunet-refresh-token))|((public-tanzunet-refresh-token))|g' ci/concourse/pipelines/gpdb-opensource-release.yml > ci/concourse/pipelines/${PIPELINE_NAME}.yml
+	sed -e 's|((tanzunet-refresh-token))|((public-tanzunet-refresh-token))|g' ci/concourse/pipelines/gpdb-opensource-release.yml > ci/concourse/pipelines/${PIPELINE_NAME}.yml
 
 	$(FLY_CMD) --target=${CONCOURSE} \
     set-pipeline \
