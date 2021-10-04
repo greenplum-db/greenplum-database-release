@@ -158,7 +158,7 @@ function _main() {
 	if [[ -f bin_gpdb/bin_gpdb.tar.gz ]]; then
 		build_deb "${__final_package_name}" bin_gpdb/bin_gpdb.tar.gz
 	else
-		build_deb "${__final_package_name}" bin_gpdb/server-*.tar.gz
+		build_deb "${__final_package_name}" bin_gpdb/*.tar.gz
 	fi
 	# Export the built deb and include a sha256 hash
 	__built_deb="gpdb_deb_installer/${__final_deb_name}"

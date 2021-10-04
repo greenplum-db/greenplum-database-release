@@ -33,6 +33,7 @@ run:
   args:
   - -ec
   - |
+    mv bin_gpdb_ubuntu18.04/*.tar.gz bin_gpdb_ubuntu18.04/bin_gpdb.tar.gz
     cp greenplum-database-release/ci/concourse/scripts/dput.cf ~/.dput.cf
     apt-get update -q=2
     apt-get install -q=2 -y software-properties-common debmake equivs git

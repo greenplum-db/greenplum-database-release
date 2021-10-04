@@ -42,6 +42,12 @@ list:
 	grep -v '__\$$' | \
 	sort"
 
+RELEASE_CONSIST ?= ${WORKSPACE}/gp-release-train/consist/6.99.99.toml
+FILE_NAME ?= $(shell basename ${RELEASE_CONSIST})
+RELEASE_VERSION ?= $(shell v='$(FILE_NAME)'; echo "$${v%.*}")
+RELEASE_VERSION_REGEX ?= $(shell echo "${RELEASE_VERSION}" | sed 's/[][()\.^?+*${}|]/\\&/g')
+COMMIT_SHA ?= $(shell grep commit ${RELEASE_CONSIST} | uniq | sed 's/.*"\(.*\)"/\1/' | uniq | cut -c 1-7 )
+
 ## ----------------------------------------------------------------------
 ## Set Development Pipeline
 ## ----------------------------------------------------------------------
@@ -66,6 +72,8 @@ set-pipeline-dev:
     --var=greenplum-database-release-git-branch=${BRANCH} \
     --var=greenplum-database-release-git-remote=https://github.com/greenplum-db/greenplum-database-release.git \
     --var=pipeline-name=${PIPELINE_NAME} \
+	--var=release-version="${RELEASE_VERSION_REGEX}" \
+	--var=commit-sha=.* \
     --var=run_mode=dev \
     $(FLY_OPTION_NON_INTERACTIVE)
 
@@ -107,6 +115,8 @@ set-pipeline-prod:
     --var=pipeline-name=greenplum-database-release \
     --var=greenplum-database-release-git-branch=main \
     --var=greenplum-database-release-git-remote=https://github.com/greenplum-db/greenplum-database-release.git \
+	--var=release-version="${RELEASE_VERSION_REGEX}" \
+	--var=commit-sha=${COMMIT_SHA} \
     --var=run_mode=prod \
     $(FLY_OPTION_NON_INTERACTIVE)
 
