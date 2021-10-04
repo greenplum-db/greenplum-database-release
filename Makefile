@@ -42,6 +42,18 @@ list:
 	grep -v '__\$$' | \
 	sort"
 
+RELEASE_CONSIST ?= ${WORKSPACE}/gp-release-train/consist/6.17.7.toml
+RELEASE_CONFIG ?= ci/concourse/vars/gp6-release.yml
+
+${WORKSPACE}/gp-release/release-tools/generate-release-configuration:
+	$(MAKE) -C ${WORKSPACE}/gp-release/release-tools build-generate-release-configuration
+
+.PHONY: $(RELEASE_CONFIG)
+$(RELEASE_CONFIG): ${WORKSPACE}/gp-release/release-tools/generate-release-configuration $(RELEASE_CONSIST)
+	${WORKSPACE}/gp-release/release-tools/generate-release-configuration -path $(RELEASE_CONSIST) 1>$(RELEASE_CONFIG)
+
+release-env: $(RELEASE_CONFIG)
+
 ## ----------------------------------------------------------------------
 ## Set Development Pipeline
 ## ----------------------------------------------------------------------
@@ -49,7 +61,7 @@ list:
 .PHONY: set-dev
 set-dev: set-pipeline-dev
 
-.PHONY: set-pipeline-dev
+.PHONY: release-env set-pipeline-dev
 set-pipeline-dev:
 
 	sed -e 's|((tanzunet-refresh-token))|((public-tanzunet-refresh-token))|g' ci/concourse/pipelines/gpdb-opensource-release.yml > ci/concourse/pipelines/${PIPELINE_NAME}.yml
@@ -63,6 +75,7 @@ set-pipeline-dev:
     --load-vars-from=${WORKSPACE}/gp-continuous-integration/secrets/ppa-debian-release-secrets-dev.yml \
     --load-vars-from=ci/concourse/vars/greenplum-database-release.prod.yml \
     --load-vars-from=ci/concourse/vars/greenplum-database-release.dev.yml \
+	--load-vars-from=ci/concourse/vars/gp6-release.yml \
     --var=greenplum-database-release-git-branch=${BRANCH} \
     --var=greenplum-database-release-git-remote=https://github.com/greenplum-db/greenplum-database-release.git \
     --var=pipeline-name=${PIPELINE_NAME} \
