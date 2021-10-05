@@ -17,6 +17,7 @@ image_resource:
 
 inputs:
 - name: bin_gpdb
+- name: gpdb_src
 - name: greenplum-database-release
 - name: license_file
   optional: true
@@ -25,7 +26,12 @@ outputs:
 - name: gpdb_deb_installer
 
 run:
-  path: greenplum-database-release/ci/concourse/scripts/build-gpdb-deb.bash
+  path: bash
+  args:
+  - -ec
+  - |
+    export PYTHONPATH=greenplum-database-release/ci/concourse/
+    python3 greenplum-database-release/ci/concourse/scripts/build-gpdb-deb.py
 
 params:
   PLATFORM:

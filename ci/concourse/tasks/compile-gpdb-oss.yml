@@ -16,7 +16,6 @@ image_resource:
   type: registry-image
 
 inputs:
-- name: gpdb_src
 - name: greenplum-database-release
 
 outputs:

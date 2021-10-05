@@ -14,7 +14,12 @@ outputs:
 - name: gpdb_clients_deb_installer
 
 run:
-  path: greenplum-database-release/ci/concourse/scripts/build-gpdb-clients-deb.bash
+  path: bash
+  args:
+  - -ec
+  - |
+    export PYTHONPATH=greenplum-database-release/ci/concourse/
+    python3 greenplum-database-release/ci/concourse/scripts/build-gpdb-clients-deb.py
 
 params:
   PLATFORM:

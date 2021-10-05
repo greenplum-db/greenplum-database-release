@@ -67,7 +67,7 @@ class TestSourcePackageBuilder(TestCase):
     @patch('oss.utils.Util.extract_gpdb_version')
     def setUp(self, mock_extract_gpdb_version):
         mock_extract_gpdb_version.return_value = 'short-version'
-        self.source_package_builder = SourcePackageBuilder('path', 'name', 'message', "gpdb_src", "license_file")
+        self.source_package_builder = SourcePackageBuilder('path', 'name', 'message', "gpdb_src", "license_file", True)
         self.temp_dir = tempfile.mkdtemp()
 
     def tearDown(self):

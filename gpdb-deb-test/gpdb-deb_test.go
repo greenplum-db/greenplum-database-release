@@ -193,7 +193,7 @@ func gpdbClientInstalledAsExpected() error {
 	if err != nil {
 		return err
 	}
-	if linkDestination != "greenplum-db-clients-"+gpdbClientVersion {
+	if linkDestination != "/usr/local/greenplum-db-clients-"+gpdbClientVersion {
 		return fmt.Errorf("/usr/local/greenplum-db-clients links to %s != %s", linkDestination, "greenplum-db-clients-"+gpdbClientVersion)
 	}
 	// GPHOME_CLIENT is set

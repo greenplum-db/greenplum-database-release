@@ -838,6 +838,7 @@ jobs:
       trigger: true
     - get: gpdb6-ubuntu18.04-build
     - get: gpdb6-osl
+    - get: gpdb_src
   - task: build_deb_gpdb6_ubuntu18.04
     file: greenplum-database-release/ci/concourse/tasks/build-gpdb-deb.yml
     image: gpdb6-ubuntu18.04-build

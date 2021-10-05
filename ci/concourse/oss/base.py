@@ -12,11 +12,18 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 from oss.utils import Util
+import os
 
 
 class BasePackageBuilder(object):
-    def __init__(self, bin_gpdb_path):
-        self._gpdb_version_short = None
+    def __init__(self, bin_gpdb_path, clients):
+        if clients:
+            if "GPDB_VERSION" in os.environ:
+                self._gpdb_version_short = os.environ["GPDB_VERSION"]
+            else:
+                self._gpdb_version_short = os.environ["RELEASE_VERSION"]
+        else:
+            self._gpdb_version_short = None
         self.bin_gpdb_path = bin_gpdb_path
 
     @property
