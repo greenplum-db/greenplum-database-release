@@ -26,7 +26,7 @@ file_groups:
     file_version: ${VERSION_REGEX}
 
 product_files:
-- file: file://gpdb-osl/open_source_license_greenplum_database_by_vmware_tanzu_(.*)_GA.txt
+- file: file://gpdb-osl/open_source_license_Greenplum_Database_by_VMware_Tanzu_(.*)_GA.txt
   upload_as: Open Source Licenses for Greenplum Database by VMware Tanzu 6
   description:
   file_type: Open Source License
