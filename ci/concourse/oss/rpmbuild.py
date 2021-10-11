@@ -52,7 +52,7 @@ class RPMPackageBuilder(BasePackageBuilder):
         self.license_file_path = license_file_path
         self.gpdb_src_path = gpdb_src_path
 
-        self._pre_check()
+        #self._pre_check()
 
     def _pre_check(self):
         if self.is_oss and not os.path.exists(self.gpdb_src_path):
@@ -115,7 +115,7 @@ class RPMPackageBuilder(BasePackageBuilder):
         shutil.copy(self.license_file_path,
                     os.path.join(temp_dir, "bin_gpdb/", osl_file_name))
 
-        if self.is_oss:
+        if False:
             print("Copy the license file to the %s/bin_gpdb/LICENSE" % temp_dir)
             shutil.copy(os.path.join(self.gpdb_src_path, "LICENSE"), os.path.join(temp_dir, "bin_gpdb/LICENSE"))
 

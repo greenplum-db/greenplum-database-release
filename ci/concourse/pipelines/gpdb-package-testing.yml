@@ -235,35 +235,35 @@ resources:
 - name: bin_gpdb6_centos6
   type: gcs
   source:
-    bucket: pivotal-gpdb-concourse-resources-prod
+    bucket: pivotal-gpdb-concourse-resources-dev
     json_key: ((concourse-gcs-resources-service-account-key))
     regexp: server/published/gpdb6/server-rc-(.*)-rhel6_x86_64.tar.gz
 
 - name: bin_gpdb6_centos7
   type: gcs
   source:
-    bucket: pivotal-gpdb-concourse-resources-prod
+    bucket: pivotal-gpdb-concourse-resources-dev
     json_key: ((concourse-gcs-resources-service-account-key))
     regexp: server/published/gpdb6/server-rc-(.*)-rhel7_x86_64.tar.gz
 
 - name: bin_gpdb6_rhel8
   type: gcs
   source:
-    bucket: pivotal-gpdb-concourse-resources-prod
+    bucket: pivotal-gpdb-concourse-resources-dev
     json_key: ((concourse-gcs-resources-service-account-key))
     regexp: server/published/gpdb6/server-rc-(.*)-rhel8_x86_64.tar.gz
 
 - name: bin_gpdb6_photon3
   type: gcs
   source:
-    bucket: pivotal-gpdb-concourse-resources-prod
+    bucket: pivotal-gpdb-concourse-resources-dev
     json_key: ((concourse-gcs-resources-service-account-key))
     regexp: server/published/gpdb6/server-rc-(.*)-photon3_x86_64.tar.gz
 
 - name: bin_gpdb6_ubuntu18.04
   type: gcs
   source:
-    bucket: pivotal-gpdb-concourse-resources-prod
+    bucket: pivotal-gpdb-concourse-resources-dev
     json_key: ((concourse-gcs-resources-service-account-key))
     regexp: server/published/gpdb6/server-rc-(.*)-ubuntu18.04_x86_64.tar.gz
 
