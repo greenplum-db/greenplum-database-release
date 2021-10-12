@@ -891,8 +891,11 @@ jobs:
       RELEASE_MESSAGE: ((release-message))
       DEBFULLNAME: ((debian-package-maintainer-fullname))
       DEBEMAIL: ((debian-package-maintainer-email))
+      GPDB_OSS: true
+      PLATFORM: "ubuntu18.04"
+      PPA: true
     input_mapping:
-      bin_gpdb_ubuntu18.04: bin_gpdb_ubuntu18.04_for_ppa
+      bin_gpdb: bin_gpdb_ubuntu18.04_for_ppa
   - in_parallel:
     - put: deb_gpdb6_ppa_ubuntu18.04
       params:

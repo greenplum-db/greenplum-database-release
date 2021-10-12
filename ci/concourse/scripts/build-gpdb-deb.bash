@@ -26,48 +26,41 @@ function build_deb() {
 
 	local __package_name=$1
 	local __gpdb_binary_tarbal=$2
+	DEB_DIR="DEBIAN"
+	doc_dir="usr/share/doc/greenplum-db"
 	gpdb_major_version="$(echo "${GPDB_VERSION}" | cut -d '.' -f1)"
 
 	mkdir -p "deb_build_dir"
 
 	pushd "deb_build_dir"
-	mkdir -p "${__package_name}/DEBIAN"
-	cat <<EOF >"${__package_name}/DEBIAN/postinst"
-#!/bin/sh
-set -e
-cd ${GPDB_PREFIX}/
-rm -f ${GPDB_NAME}
-ln -s ${GPDB_PREFIX}/${GPDB_NAME}-${GPDB_VERSION} ${GPDB_NAME}
-cd ${GPDB_NAME}-${GPDB_VERSION}
-ext/python/bin/python -m compileall -q -x test .
-exit 0
-EOF
-	chmod 0775 "${__package_name}/DEBIAN/postinst"
-	cat <<EOF >"${__package_name}/DEBIAN/prerm"
+	if [[ "${PPA}" == 'true' ]]; then
+		__package_name="greenplum-db-${gpdb_major_version}-${GPDB_VERSION}"
+		DEB_DIR="debian"
+		revision_number=1
+		mkdir -p "${__package_name}/bin_gpdb"
+		tar -xf "../${__gpdb_binary_tarbal}" -C "${__package_name}/bin_gpdb"
+		tar cvzf greenplum-db-${gpdb_major_version}_${GPDB_VERSION}.orig.tar.gz ${__package_name}
+		doc_dir="doc_files"
+	fi
+	mkdir -p "${__package_name}/${DEB_DIR}"
+	cat <<EOF >"${__package_name}/${DEB_DIR}/prerm"
 #!/bin/sh
 set -e
 dpkg -L "greenplum-db-${gpdb_major_version}" | grep '\.py$' | while read file; do rm -f "\${file}"[co] >/dev/null; done
 exit 0
 EOF
-	chmod 0775 "${__package_name}/DEBIAN/prerm"
-	cat <<EOF >"${__package_name}/DEBIAN/postrm"
-#!/bin/sh
-set -e
-rm -f ${GPDB_PREFIX}/${GPDB_NAME}
-exit 0
-EOF
-	chmod 0775 "${__package_name}/DEBIAN/postrm"
-	mkdir -p "${__package_name}/usr/share/doc/greenplum-db/"
+	chmod 0775 "${__package_name}/${DEB_DIR}/prerm"
+	mkdir -p "${__package_name}/${doc_dir}"
 	if [ -d ../license_file ]; then
 		if [[ "${GPDB_OSS}" == 'true' ]]; then
-			cp ../license_file/*.txt "${__package_name}/usr/share/doc/greenplum-db/open_source_license_greenplum_database.txt"
+			cp ../license_file/*.txt "${__package_name}/${doc_dir}/open_source_license_greenplum_database.txt"
 		else
-			cp ../license_file/*.txt "${__package_name}/usr/share/doc/greenplum-db/open_source_licenses.txt"
+			cp ../license_file/*.txt "${__package_name}/${doc_dir}/open_source_licenses.txt"
 		fi
 	fi
 
 	if [[ "${GPDB_OSS}" == 'true' ]]; then
-		SHARE_DOC_ROOT="${__package_name}/usr/share/doc/greenplum-db"
+		SHARE_DOC_ROOT="${__package_name}/${doc_dir}"
 
 		cp ../gpdb_src/LICENSE "${SHARE_DOC_ROOT}/LICENSE"
 		cp ../gpdb_src/COPYRIGHT "${SHARE_DOC_ROOT}/COPYRIGHT"
@@ -89,49 +82,86 @@ NOTICE_EOF
 		# TODO: Pivotal EUAL file should be here!
 	fi
 
-	cat <<EOF >"${__package_name}/DEBIAN/control"
-Package: greenplum-db-${gpdb_major_version}
-Priority: extra
-Maintainer: gp-releng@pivotal.io
-Architecture: ${GPDB_BUILDARCH}
-Version: ${GPDB_VERSION}
-Provides: Pivotal
-Description: ${GPDB_DESCRIPTION}
-Homepage: ${GPDB_URL}
-Depends: libapr1,
-    libaprutil1,
-    bash,
-    bzip2,
-    krb5-multidev,
-    libcurl3-gnutls,
-    libcurl4,
-    libevent-2.1-6,
-    libreadline7,
-    libxml2,
-    libyaml-0-2,
-    zlib1g,
-    libldap-2.4-2,
-    openssh-client,
-    openssh-server,
-    openssl,
-    perl,
-    rsync,
-    sed,
-    tar,
-    zip,
-    net-tools,
-    less,
-    iproute2,
-    iputils-ping,
-    locales
+	if [[ "${PPA}" == 'true' ]]; then
+		cp "../greenplum-database-release/ci/concourse/scripts/greenplum-db-${gpdb_major_version}-ppa-control" "${__package_name}/${DEB_DIR}/control"
+		cat <<EOF >"${__package_name}/${DEB_DIR}/compat"
+9
 EOF
+		cat <<EOF >"${__package_name}/${DEB_DIR}/rules"
+#!/usr/bin/make -f
 
-	mkdir -p "${__package_name}/${GPDB_PREFIX}/${GPDB_NAME}-${GPDB_VERSION}"
-	tar -xf "../${__gpdb_binary_tarbal}" -C "${__package_name}/${GPDB_PREFIX}/${GPDB_NAME}-${GPDB_VERSION}"
-	dpkg-deb --build "${__package_name}"
+include /usr/share/dpkg/default.mk
+
+%:
+	dh \$@ --parallel
+
+# debian policy is to not use /usr/local
+# dh_usrlocal does some funny stuff; override to do nothing
+override_dh_usrlocal:
+
+# skip scanning for shlibdeps?
+override_dh_shlibdeps:
+
+# skip removing debug output
+override_dh_strip:
+EOF
+		cat <<EOF >"${__package_name}/${DEB_DIR}/install"
+bin_gpdb/* /opt/greenplum-db-${GPDB_VERSION}
+doc_files/* /usr/share/doc/greenplum-db/
+EOF
+		chmod -x "${__package_name}/${DEB_DIR}/install"
+		cat <<EOF >"${__package_name}/${DEB_DIR}/postinst"
+#!/bin/sh
+set -e
+cd /opt/greenplum-db-${GPDB_VERSION}
+ext/python/bin/python -m compileall -q -x test .
+exit 0
+EOF
+		chmod 0775 "${__package_name}/${DEB_DIR}/postinst"
+		pushd ${__package_name}
+		dch --create --package greenplum-db-${gpdb_major_version} --newversion "${GPDB_VERSION}"-${revision_number} "${RELEASE_MESSAGE}"
+		dch --release "ignored message"
+		debuild --unsigned-changes --unsigned-source --build=binary
+		debuild -S -sa
+		popd
+		cp "greenplum-db-${gpdb_major_version}_${GPDB_VERSION}-${revision_number}_amd64.deb" ../gpdb_deb_ppa_installer/
+		if [[ "${PUBLISH_PPA}" == 'true' ]]; then
+			dput "${PPA_REPO}" greenplum-db-${gpdb_major_version}_${GPDB_VERSION}-${revision_number}_source.changes
+		fi
+
+		cat <<EOF >"../ppa_release/version.txt"
+${GPDB_VERSION}-${revision_number}
+EOF
+	else
+		cat <<EOF >"${__package_name}/${DEB_DIR}/postinst"
+#!/bin/sh
+set -e
+cd ${GPDB_PREFIX}/
+rm -f ${GPDB_NAME}
+ln -s ${GPDB_PREFIX}/${GPDB_NAME}-${GPDB_VERSION} ${GPDB_NAME}
+cd ${GPDB_NAME}-${GPDB_VERSION}
+ext/python/bin/python -m compileall -q -x test .
+exit 0
+EOF
+		chmod 0775 "${__package_name}/${DEB_DIR}/postinst"
+		cat <<EOF >"${__package_name}/${DEB_DIR}/postrm"
+#!/bin/sh
+set -e
+rm -f ${GPDB_PREFIX}/${GPDB_NAME}
+exit 0
+EOF
+		chmod 0775 "${__package_name}/${DEB_DIR}/postrm"
+		cp "../greenplum-database-release/ci/concourse/scripts/greenplum-db-${gpdb_major_version}-control" "${__package_name}/${DEB_DIR}/control"
+
+		sed -i "s|\${GPDB_VERSION}|${GPDB_VERSION}|g" "${__package_name}/${DEB_DIR}/control"
+		mkdir -p "${__package_name}/${GPDB_PREFIX}/${GPDB_NAME}-${GPDB_VERSION}"
+		tar -xf "../${__gpdb_binary_tarbal}" -C "${__package_name}/${GPDB_PREFIX}/${GPDB_NAME}-${GPDB_VERSION}"
+		dpkg-deb --build "${__package_name}"
+		cp "${__package_name}.deb" ../gpdb_deb_installer/
+
+	fi
 	popd
 
-	cp "deb_build_dir/${__package_name}.deb" gpdb_deb_installer/
 }
 
 function _main() {
@@ -160,11 +190,13 @@ function _main() {
 	else
 		build_deb "${__final_package_name}" bin_gpdb/*.tar.gz
 	fi
-	# Export the built deb and include a sha256 hash
-	__built_deb="gpdb_deb_installer/${__final_deb_name}"
-	openssl dgst -sha256 "${__built_deb}" >"${__built_deb}".sha256 || exit 1
-	echo "[INFO] Final Debian installer: ${__built_deb}"
-	echo "[INFO] Final Debian installer sha: $(cat "${__built_deb}".sha256)" || exit 1
+	if [[ "${PPA}" != 'true' ]]; then
+		# Export the built deb and include a sha256 hash
+		__built_deb="gpdb_deb_installer/${__final_deb_name}"
+		openssl dgst -sha256 "${__built_deb}" >"${__built_deb}".sha256 || exit 1
+		echo "[INFO] Final Debian installer: ${__built_deb}"
+		echo "[INFO] Final Debian installer sha: $(cat "${__built_deb}".sha256)" || exit 1
+	fi
 }
 
 _main || exit 1

@@ -43,32 +43,9 @@ exit 0
 EOF
 	chmod 0775 "${__package_name}/DEBIAN/postrm"
 
-	cat <<EOF >"${__package_name}/DEBIAN/control"
-Package: greenplum-db-clients
-Priority: extra
-Maintainer: gp-releng@pivotal.io
-Architecture: ${GPDB_BUILDARCH}
-Version: ${GPDB_VERSION}
-Provides: Pivotal
-Description: ${GPDB_DESCRIPTION}
-Homepage: ${GPDB_URL}
-Depends: libapr1,
-    libaprutil1,
-	libreadline7,
-    bzip2,
-    krb5-multidev,
-    libcurl3-gnutls,
-    libcurl4,
-    libedit2,
-    libevent-2.1-6,
-    libxml2,
-    libyaml-0-2,
-    zlib1g,
-    libldap-2.4-2,
-    openssh-client,
-    openssl,
-    zip
-EOF
+	cp "../greenplum-database-release/ci/concourse/scripts/greenplum-db-clients-control" "${__package_name}/DEBIAN/control"
+
+	sed -i "s|\${GPDB_VERSION}|${GPDB_VERSION}|g" "${__package_name}/DEBIAN/control"
 
 	mkdir -p "${__package_name}/${GPDB_PREFIX}/${GPDB_NAME}-${GPDB_VERSION}"
 	tar -xf "../${__gpdb_clients_binary_tarball}" -C "${__package_name}/${GPDB_PREFIX}/${GPDB_NAME}-${GPDB_VERSION}"

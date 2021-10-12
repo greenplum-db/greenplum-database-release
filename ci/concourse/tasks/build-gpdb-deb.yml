@@ -32,10 +32,6 @@ params:
   # Default values passed to deb package
   #  To override, please do so in pipeline
   GPDB_NAME: greenplum-db
-  GPDB_SUMMARY: Greenplum-DB
-  GPDB_URL: https://github.com/greenplum-db/gpdb
-  GPDB_BUILDARCH: amd64
-  GPDB_DESCRIPTION: Pivotal Greenplum Server
   GPDB_PREFIX: /usr/local
   # build the Open Source gpdb, set this variable to 'true'
   GPDB_OSS:

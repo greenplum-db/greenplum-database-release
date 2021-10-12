@@ -451,16 +451,22 @@ jobs:
       passed: [compilation-gate]
       trigger: true
     - get: license_file
+    - get: gpdb6-ubuntu18.04-build
   - task: push to ppa
-    file: greenplum-database-release/ci/concourse/tasks/publish-to-ppa.yml
+    file: greenplum-database-release/ci/concourse/tasks/build-ppa.yml
+    image: gpdb6-ubuntu18.04-build
     input_mapping:
-      bin_gpdb_ubuntu18.04: bin_gpdb_ubuntu18.04_for_ppa
+      bin_gpdb: bin_gpdb_ubuntu18.04_for_ppa
     params:
       PPA_REPO: ((ppa-repository))
       GPG_PRIVATE_KEY: ((gpg-private-key))
       RELEASE_MESSAGE: ((release-message))
       DEBFULLNAME: ((debian-package-maintainer-fullname))
       DEBEMAIL: ((debian-package-maintainer-email))
+      PUBLISH_PPA: true
+      GPDB_OSS: true
+      PPA: true
+      PLATFORM: "ubuntu18.04"
   - put: deb_gpdb6_ppa_ubuntu18.04
     params:
       file: gpdb_deb_ppa_installer/*.deb

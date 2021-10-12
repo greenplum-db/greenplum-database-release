@@ -17,7 +17,7 @@ image_resource:
   type: registry-image
 
 inputs:
-- name: bin_gpdb_ubuntu18.04
+- name: bin_gpdb
 - name: gpdb_src
 - name: greenplum-database-release
 - name: license_file
@@ -31,16 +31,18 @@ run:
   args:
   - -ec
   - |
+    cp greenplum-database-release/ci/concourse/scripts/dput.cf ~/.dput.cf
     apt-get update -q=2
     apt-get install -q=2 -y software-properties-common debmake equivs git
     gpg --import <(echo "${GPG_PRIVATE_KEY}")
-
-    export PYTHONPATH=${PWD}/greenplum-database-release/ci/concourse/
-    pushd greenplum-database-release/ci/concourse && python3 -m unittest tests/ppa-test.py && popd
-    python3 greenplum-database-release/ci/concourse/scripts/buildppa.py
+    greenplum-database-release/ci/concourse/scripts/build-gpdb-deb.bash
 
 params:
   GPG_PRIVATE_KEY:
   RELEASE_MESSAGE:
   DEBFULLNAME:
   DEBEMAIL:
+  GPDB_OSS:
+  PLATFORM:
+  PPA:
+  PUBLISH_PPA:
