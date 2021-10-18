@@ -52,9 +52,11 @@ Requires: zlib
 %if "%{platform}" == "rhel7"
 Requires: openssl-libs
 Requires: libevent
+Requires: libcgroup-tools
 %endif
 %if "%{platform}" == "rhel6"
 Requires: libevent2
+Requires: libcgroup
 %endif
 
 %if "%{platform}" == "photon3"

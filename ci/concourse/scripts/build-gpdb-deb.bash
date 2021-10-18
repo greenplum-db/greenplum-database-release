@@ -122,8 +122,8 @@ Depends: libapr1,
     net-tools,
     less,
     iproute2,
-	iputils-ping,
-	locales
+    iputils-ping,
+    locales
 EOF
 
 	mkdir -p "${__package_name}/${GPDB_PREFIX}/${GPDB_NAME}-${GPDB_VERSION}"
