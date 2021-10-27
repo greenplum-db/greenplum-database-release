@@ -48,7 +48,7 @@ function build_deb() {
 set -e
 if [ "${gpdb_major_version}" = "7" ]; then
 	cd ${GPDB_PREFIX}/${GPDB_NAME}-${GPDB_VERSION}
-	find . | grep __pycache__ | xargs rm -rf
+	find . -name *.pyc -delete
 else
 	dpkg -L "greenplum-db-${gpdb_major_version}" | grep '\.py$' | while read file; do rm -f "\${file}"[co] >/dev/null; done
 fi

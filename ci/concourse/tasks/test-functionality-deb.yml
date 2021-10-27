@@ -12,3 +12,4 @@ run:
 
 params:
   PLATFORM:
+  PPA:

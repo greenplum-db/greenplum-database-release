@@ -267,6 +267,13 @@ resources:
     json_key: ((concourse-gcs-resources-service-account-key))
     regexp: server/published/gpdb6/server-rc-(.*)-ubuntu18.04_x86_64.tar.gz
 
+- name: bin_gpdb7_ubuntu18.04
+  type: gcs
+  source:
+    bucket: pivotal-gpdb-concourse-resources-intermediates-prod
+    json_key: ((concourse-gcs-resources-service-account-key))
+    versioned_file: gpdb_master/bin_gpdb_ubuntu18.04/bin_gpdb.tar.gz
+
 - name: gpdb6-centos6-build
   type: registry-image
   source:
@@ -307,6 +314,12 @@ resources:
   type: registry-image
   source:
     repository: gcr.io/data-gpdb-public-images/gpdb6-ubuntu18.04-build
+    tag: latest
+
+- name: gpdb7-ubuntu18.04-build
+  type: registry-image
+  source:
+    repository: gcr.io/data-gpdb-public-images/gpdb7-ubuntu18.04-build
     tag: latest
 
 - name: gpdb6-sles12-build
@@ -421,6 +434,13 @@ resources:
     json_key: ((concourse-gcs-resources-service-account-key))
     versioned_file: ((pipeline-name))/deb_gpdb_ubuntu18.04/greenplum-db-6-ubuntu18.04-amd64.deb
 
+- name: deb_gpdb7_ubuntu18.04
+  type: gcs
+  source:
+    bucket: ((gcs-bucket-intermediates))
+    json_key: ((concourse-gcs-resources-service-account-key))
+    versioned_file: ((pipeline-name))/deb_gpdb_ubuntu18.04/greenplum-db-7-ubuntu18.04-amd64.deb
+
 - name: deb_gpdb6_clients_ubuntu18.04
   type: gcs
   source:
@@ -463,6 +483,12 @@ resources:
   type: registry-image
   source:
     repository: gcr.io/data-gpdb-public-images/gpdb6-ubuntu18.04-test-packaging
+    tag: latest
+
+- name: gpdb7-ubuntu18.04-test-packaging
+  type: registry-image
+  source:
+    repository: gcr.io/data-gpdb-public-images/gpdb7-ubuntu18.04-test-packaging
     tag: latest
 ## ======================================================================
 ##                   _
@@ -851,6 +877,27 @@ jobs:
     params:
       file: gpdb_deb_installer/*.deb
 
+- name: create_gpdb7_deb_installer_ubuntu18.04
+  plan:
+  - in_parallel:
+    - get: bin_gpdb7_ubuntu18.04
+      trigger: true
+    - get: greenplum-database-release
+      trigger: true
+    - get: gpdb7-ubuntu18.04-build
+    - get: gpdb6-osl
+  - task: build_deb_gpdb7_ubuntu18.04
+    file: greenplum-database-release/ci/concourse/tasks/build-gpdb-deb.yml
+    image: gpdb7-ubuntu18.04-build
+    input_mapping:
+      bin_gpdb: bin_gpdb7_ubuntu18.04
+    params:
+      GPDB_OSS: false
+      PLATFORM: ubuntu18.04
+  - put: deb_gpdb7_ubuntu18.04
+    params:
+      file: gpdb_deb_installer/*.deb
+
 - name: create_gpdb6_clients_deb_installer_ubuntu18.04
   plan:
   - in_parallel:
@@ -1220,6 +1267,7 @@ jobs:
       params:
         PLATFORM: ubuntu18.04
         GPDB_MAJOR_VERSION: "6"
+        PPA: true
     - task: test_package_dependencies
       file: greenplum-database-release/ci/concourse/tasks/test-package-dependencies.yml
       image: ubuntu-18.04
@@ -1228,6 +1276,36 @@ jobs:
       params:
         PLATFORM: ubuntu18.04
         GPDB_MAJOR_VERSION: "6"
+
+- name: test_functionality_gpdb7_deb_ubuntu18.04
+  plan:
+  - in_parallel:
+    - get: deb_gpdb7_ubuntu18.04
+      passed:
+      - create_gpdb7_deb_installer_ubuntu18.04
+      trigger: true
+    - get: greenplum-database-release
+      passed:
+      - create_gpdb7_deb_installer_ubuntu18.04
+    - get: gpdb7-ubuntu18.04-test-packaging
+    - get: ubuntu-18.04
+  - in_parallel:
+    - task: test_gpdb6_deb_functionality
+      file: greenplum-database-release/ci/concourse/tasks/test-functionality-deb.yml
+      image: gpdb7-ubuntu18.04-test-packaging
+      input_mapping:
+        gpdb_deb_installer: deb_gpdb7_ubuntu18.04
+      params:
+        PLATFORM: ubuntu18.04
+        GPDB_MAJOR_VERSION: "7"
+    - task: test_package_dependencies
+      file: greenplum-database-release/ci/concourse/tasks/test-package-dependencies.yml
+      image: ubuntu-18.04
+      input_mapping:
+        gpdb_pkg_installer: deb_gpdb7_ubuntu18.04
+      params:
+        PLATFORM: ubuntu18.04
+        GPDB_MAJOR_VERSION: "7"
 
 - name: test_functionality_gpdb6_rpm_photon3
   plan:
@@ -1363,6 +1441,8 @@ groups:
   - create_gpdb6_deb_ppa_installer_ubuntu18.04
   - create_gpdb6_rpm_installer_centos6_oss
   - create_gpdb6_rpm_installer_centos7_oss
+  - create_gpdb7_deb_installer_ubuntu18.04
+  - test_functionality_gpdb7_deb_ubuntu18.04
   name: All
 - jobs:
   - create_gpdb5_rpm_installer_sles11
