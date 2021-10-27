@@ -13,7 +13,7 @@ import (
 
 func gpdbDebHasCorrectMetadata() error {
 	// get Homepage from debian package field and check it's reacheable
-	homePage, err := GetDebField("Homepage", "gpdb_deb_installer/greenplum-db-6-ubuntu18.04-amd64.deb")
+	homePage, err := GetDebField("Homepage", "gpdb_deb_installer/greenplum-db-ubuntu18.04-amd64.deb")
 	if err != nil {
 		return err
 	}
@@ -24,12 +24,17 @@ func gpdbDebHasCorrectMetadata() error {
 }
 
 func gpdbInstalled() error {
-	return CheckPackageInstalled("greenplum-db-6")
+	gpbdVersion, err := GetDebField("Version", "gpdb_deb_installer/greenplum-db-ubuntu18.04-amd64.deb")
+	if err != nil {
+		return err
+	}
+	gpdbMajorVersion := strings.Split(gpbdVersion, ".")[0]
+	return CheckPackageInstalled("greenplum-db-" + gpdbMajorVersion)
 }
 
 func ppaInstalledAsExpected() error {
 	// get gpdbVersion
-	gpbdVersion, err := GetDebField("Version", "gpdb_deb_installer/greenplum-db-6-ubuntu18.04-amd64.deb")
+	gpbdVersion, err := GetDebField("Version", "gpdb_deb_installer/greenplum-db-ubuntu18.04-amd64.deb")
 	if err != nil {
 		return err
 	}
@@ -46,7 +51,7 @@ func ppaInstalledAsExpected() error {
 		return fmt.Errorf("postgres --gp-version: %s should contains %s", string(postgresGpbdVersion), string(gpbdVersion))
 	}
 
-	err = gpdbGeneratedPythonBytecode(fmt.Sprintf("/opt/greenplum-db-%s/ext/python/lib/python2.7/cmd.py", gpbdVersion))
+	err = gpdb6GeneratedPythonBytecode(fmt.Sprintf("/opt/greenplum-db-%s/ext/python/lib/python2.7/cmd.py", gpbdVersion))
 	if err != nil {
 		return err
 	}
@@ -55,7 +60,7 @@ func ppaInstalledAsExpected() error {
 
 func gpdbInstalledAsExpected() error {
 	// get gpdbVersion
-	gpbdVersion, err := GetDebField("Version", "gpdb_deb_installer/greenplum-db-6-ubuntu18.04-amd64.deb")
+	gpbdVersion, err := GetDebField("Version", "gpdb_deb_installer/greenplum-db-ubuntu18.04-amd64.deb")
 	if err != nil {
 		return err
 	}
@@ -86,20 +91,47 @@ func gpdbInstalledAsExpected() error {
 		return fmt.Errorf("postgres --gp-version: %s should contains %s", string(postgresGpbdVersion), string(gpbdVersion))
 	}
 
-	err = gpdbGeneratedPythonBytecode("/usr/local/greenplum-db/ext/python/lib/python2.7/cmd.py")
-	if err != nil {
-		return err
-	}
+	gpdbMajorVersion := strings.Split(gpbdVersion, ".")[0]
+	if gpdbMajorVersion == "6" {
+		err = gpdb6GeneratedPythonBytecode("/usr/local/greenplum-db/ext/python/lib/python2.7/cmd.py")
+		if err != nil {
+			return err
+		}
 
-	err = gpdbGeneratedPythonBytecode("/usr/local/greenplum-db/lib/python/subprocess32.py")
-	if err != nil {
-		return err
+		err = gpdb6GeneratedPythonBytecode("/usr/local/greenplum-db/lib/python/subprocess32.py")
+		if err != nil {
+			return err
+		}
+	} else if gpdbMajorVersion == "7" {
+		err = gpdb7GeneratedPythonBytecode("/usr/local/greenplum-db/lib/python/pg.py")
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
 }
 
-func gpdbGeneratedPythonBytecode(fileName string) error {
+func gpdb7GeneratedPythonBytecode(fileName string) error {
+	// Check that vendored .pyc files were created after their associated .py files
+
+	pyFile, err := os.Stat(fileName)
+	if os.IsNotExist(err) {
+		return fmt.Errorf(pyFile.Name() + " should exist")
+	}
+	lastInd := strings.LastIndex(fileName, "/")
+	pycNameInd := strings.LastIndex(fileName[lastInd+1:], ".")
+	pycFile, err := os.Stat(fileName[:lastInd] + "/__pycache__/" + fileName[lastInd+1:][:pycNameInd] + ".cpython-36" + ".pyc")
+	if os.IsNotExist(err) {
+		return fmt.Errorf(pycFile.Name() + " should exist")
+	}
+	if pycFile.ModTime().Before(pyFile.ModTime()) {
+		return fmt.Errorf(pycFile.Name() + " should have modified time after " + pyFile.Name())
+	}
+	return nil
+}
+
+func gpdb6GeneratedPythonBytecode(fileName string) error {
 	// Check that vendored .pyc files were created after their associated .py files
 
 	pyFile, err := os.Stat(fileName)
@@ -126,7 +158,7 @@ func gpdbLinkRemovedAsExpected() error {
 
 func ppaRemovedAsExpected() error {
 	// get gpdbVersion
-	gpbdVersion, err := GetDebField("Version", "gpdb_deb_installer/greenplum-db-6-ubuntu18.04-amd64.deb")
+	gpbdVersion, err := GetDebField("Version", "gpdb_deb_installer/greenplum-db-ubuntu18.04-amd64.deb")
 	if err != nil {
 		return err
 	}
@@ -139,7 +171,7 @@ func ppaRemovedAsExpected() error {
 
 func gpdbRemovedAsExpected() error {
 	// get gpdbVersion
-	gpbdVersion, err := GetDebField("Version", "gpdb_deb_installer/greenplum-db-6-ubuntu18.04-amd64.deb")
+	gpbdVersion, err := GetDebField("Version", "gpdb_deb_installer/greenplum-db-ubuntu18.04-amd64.deb")
 	if err != nil {
 		return err
 	}
@@ -151,11 +183,16 @@ func gpdbRemovedAsExpected() error {
 }
 
 func installGpdb() error {
-	return InstallPackage("gpdb_deb_installer/greenplum-db-6-ubuntu18.04-amd64.deb")
+	return InstallPackage("gpdb_deb_installer/greenplum-db-ubuntu18.04-amd64.deb")
 }
 
 func removeGpdb() error {
-	return RemovePackage("greenplum-db-6")
+	gpbdVersion, err := GetDebField("Version", "gpdb_deb_installer/greenplum-db-ubuntu18.04-amd64.deb")
+	if err != nil {
+		return err
+	}
+	gpdbMajorVersion := strings.Split(gpbdVersion, ".")[0]
+	return RemovePackage("greenplum-db-" + gpdbMajorVersion)
 }
 
 func gpdbClientDebHasCorrectMetadata() error {
@@ -205,7 +242,7 @@ func gpdbClientInstalledAsExpected() error {
 		return fmt.Errorf("GPHOME_CLIENTS:%s is not set to %s", gpClientHome, "/usr/local/greenplum-db-clients-"+gpdbClientVersion)
 	}
 
-	err = gpdbGeneratedPythonBytecode("/usr/local/greenplum-db-clients/ext/python/lib/python2.7/cmd.py")
+	err = gpdb6GeneratedPythonBytecode("/usr/local/greenplum-db-clients/ext/python/lib/python2.7/cmd.py")
 	if err != nil {
 		return err
 	}

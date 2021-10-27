@@ -5,6 +5,7 @@ inputs:
 - name: greenplum-database-release
 - name: gpdb_deb_installer
 - name: gpdb_deb_ppa_installer
+  optional: true
 
 run:
   path: greenplum-database-release/ci/concourse/scripts/test-functionality-deb.bash

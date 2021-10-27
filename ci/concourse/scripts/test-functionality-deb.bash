@@ -7,12 +7,14 @@ if [[ ${PLATFORM} != "ubuntu"* ]]; then
 fi
 
 mkdir greenplum-database-release/gpdb-deb-test/gpdb_deb_installer
-mv gpdb_deb_installer/*.deb greenplum-database-release/gpdb-deb-test/gpdb_deb_installer/greenplum-db-6-ubuntu18.04-amd64.deb
+mv gpdb_deb_installer/*.deb greenplum-database-release/gpdb-deb-test/gpdb_deb_installer/greenplum-db-ubuntu18.04-amd64.deb
 pushd greenplum-database-release/gpdb-deb-test
 godog features/gpdb-deb.feature
 popd
 
-mv gpdb_deb_ppa_installer/*.deb greenplum-database-release/gpdb-deb-test/gpdb_deb_installer/greenplum-db-6-ubuntu18.04-amd64.deb
-pushd greenplum-database-release/gpdb-deb-test
-godog features/gpdb-ppa.feature
-popd
+if [[ -d gpdb_deb_ppa_installer ]]; then
+	mv gpdb_deb_ppa_installer/*.deb greenplum-database-release/gpdb-deb-test/gpdb_deb_installer/greenplum-db-ubuntu18.04-amd64.deb
+	pushd greenplum-database-release/gpdb-deb-test
+	godog features/gpdb-ppa.feature
+	popd
+fi

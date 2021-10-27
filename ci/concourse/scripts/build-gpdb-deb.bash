@@ -46,7 +46,12 @@ function build_deb() {
 	cat <<EOF >"${__package_name}/${DEB_DIR}/prerm"
 #!/bin/sh
 set -e
-dpkg -L "greenplum-db-${gpdb_major_version}" | grep '\.py$' | while read file; do rm -f "\${file}"[co] >/dev/null; done
+if [ "${gpdb_major_version}" = "7" ]; then
+	cd ${GPDB_PREFIX}/${GPDB_NAME}-${GPDB_VERSION}
+	find . | grep __pycache__ | xargs rm -rf
+else
+	dpkg -L "greenplum-db-${gpdb_major_version}" | grep '\.py$' | while read file; do rm -f "\${file}"[co] >/dev/null; done
+fi
 exit 0
 EOF
 	chmod 0775 "${__package_name}/${DEB_DIR}/prerm"
@@ -140,7 +145,11 @@ cd ${GPDB_PREFIX}/
 rm -f ${GPDB_NAME}
 ln -s ${GPDB_PREFIX}/${GPDB_NAME}-${GPDB_VERSION} ${GPDB_NAME}
 cd ${GPDB_NAME}-${GPDB_VERSION}
-ext/python/bin/python -m compileall -q -x test .
+if [ "${gpdb_major_version}" = "7" ]; then
+	python3 -m compileall -q -x test .
+else
+	ext/python/bin/python -m compileall -q -x test .
+fi
 exit 0
 EOF
 		chmod 0775 "${__package_name}/${DEB_DIR}/postinst"
