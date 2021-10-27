@@ -1,4 +1,10 @@
 ---
 greenplum-database-release-git-branch:
-gcs-bucket-intermediates: pivotal-gpdb-concourse-resources-intermediates-dev
+greenplum-database-release-git-remote: https://github.com/greenplum-db/greenplum-database-release.git
+
+aws-region: us-west-2
 gpdb-stable-builds-bucket-name: gpdb-stable-concourse-builds-dev
+gcs-bucket-intermediates: pivotal-gpdb-concourse-resources-intermediates-dev
+tanzunet-endpoint: https://network.tanzu.vmware.com
+gpdb6-osl-version-regex: '6\.10\.0'
+gpdb5-osl-version-regex: '5\.18\.0\.0'
