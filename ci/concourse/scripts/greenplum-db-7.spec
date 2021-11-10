@@ -140,8 +140,18 @@ exit 0
 %config(noreplace) %{prefix}/greenplum-db-%{gpdb_version}/greenplum_path.sh
 
 %post
-if [ ! -e "${RPM_INSTALL_PREFIX}/greenplum-db" ] || [ -L "${RPM_INSTALL_PREFIX}/greenplum-db" ];then
+if [ ! -e "${RPM_INSTALL_PREFIX}/greenplum-db" ];then
   ln -fsT "${RPM_INSTALL_PREFIX}/greenplum-db-%{gpdb_version}" "${RPM_INSTALL_PREFIX}/greenplum-db" || :
+elif [ -L "${RPM_INSTALL_PREFIX}/greenplum-db" ] && [ -e "${RPM_INSTALL_PREFIX}/greenplum-db/bin/postgres" ] && [ -e "${RPM_INSTALL_PREFIX}/greenplum-db/greenplum_path.sh" ] ; then
+  # Get the gpdb version from user's environment e.g. 7.0.0
+  original_version=$(source ${RPM_INSTALL_PREFIX}/greenplum-db/greenplum_path.sh; ${RPM_INSTALL_PREFIX}/greenplum-db/bin/postgres --gp-version | grep -Eo "[0-9]\.[0-9]+\.[0-9]+")
+  # Get the gpdb major version from user's environment e.g. 7
+  original_major_version=${original_version:0:1}
+  if [ ${original_major_version} == %{gpdb_major_version} ];then
+    ln -fsT "${RPM_INSTALL_PREFIX}/greenplum-db-%{gpdb_version}" "${RPM_INSTALL_PREFIX}/greenplum-db" || :
+  else
+    echo "The expected symlink was not created because a file exists at that location symlinked to a different installed Greenplum Major version"
+  fi
 else
   echo "the expected symlink was not created because a file exists at that location"
 fi
