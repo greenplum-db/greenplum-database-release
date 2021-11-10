@@ -242,7 +242,11 @@ func gpdbClientInstalledAsExpected() error {
 		return fmt.Errorf("GPHOME_CLIENTS:%s is not set to %s", gpClientHome, "/usr/local/greenplum-db-clients-"+gpdbClientVersion)
 	}
 
-	err = gpdb6GeneratedPythonBytecode("/usr/local/greenplum-db-clients/ext/python/lib/python2.7/cmd.py")
+	if os.Getenv("GPDB_MAJOR_VERSION") == "7" {
+		err = gpdb7GeneratedPythonBytecode("/usr/local/greenplum-db-clients/bin/gpload.py")
+	} else {
+		err = gpdb6GeneratedPythonBytecode("/usr/local/greenplum-db-clients/ext/python/lib/python2.7/cmd.py")
+	}
 	if err != nil {
 		return err
 	}

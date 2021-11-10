@@ -77,6 +77,28 @@ elif [[ $GPDB_MAJOR_VERSION == "6" ]]; then
 		echo "${PLATFORM} is not yet supported for Greenplum 6.X"
 		exit 1
 	fi
+elif [[ $GPDB_MAJOR_VERSION == "7" ]]; then
+	export RPM_GPDB_VERSION="$(rpm --query --info --package ${GPDB_RPM_PATH}/greenplum-db-7-"${GPDB_RPM_ARCH}"-x86_64.rpm | awk '/Version/{printf "%s", $3}')"
+	if [[ $PLATFORM == "rhel7" ]]; then
+		curl https://omnitruck.chef.io/install.sh | bash -s -- -P inspec -v 3
+		test_prefix='greenplum-database-release/ci/concourse/tests/gpdb7/server'
+		inspec exec ${test_prefix}/conflicts --reporter documentation --no-distinct-exit --no-backend-cache
+		inspec exec ${test_prefix}/install --reporter documentation --no-distinct-exit --no-backend-cache
+		inspec exec ${test_prefix}/remove --reporter documentation --no-backend-cache
+		inspec exec ${test_prefix}/upgrade --reporter documentation --no-distinct-exit --no-backend-cache
+	elif [[ $PLATFORM == "rhel8" ]]; then
+		curl https://omnitruck.chef.io/install.sh | bash -s -- -P inspec -v 3
+		test_prefix='greenplum-database-release/ci/concourse/tests/gpdb7/server'
+		#TODO add conflicts test when rhel8 has oss release
+		#inspec exec ${test_prefix}/conflicts --reporter documentation --no-distinct-exit --no-backend-cache
+		inspec exec ${test_prefix}/install --reporter documentation --no-distinct-exit --no-backend-cache
+		inspec exec ${test_prefix}/remove --reporter documentation --no-backend-cache
+		#TODO add upgrade test when rhel8 released to tanzunet
+		#inspec exec ${test_prefix}/upgrade --reporter documentation --no-distinct-exit --no-backend-cache
+	else
+		echo "${PLATFORM} is not yet supported for Greenplum 7.X"
+		exit 1
+	fi
 else
 	echo "Can't determine Greenplum Version: $GPDB_MAJOR_VERSION"
 	exit 1

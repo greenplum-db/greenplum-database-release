@@ -24,14 +24,23 @@ cd ${GPDB_PREFIX}/
 rm -f ${GPDB_NAME}
 ln -s ${GPDB_NAME}-${GPDB_VERSION} ${GPDB_NAME}
 cd ${GPDB_NAME}-${GPDB_VERSION}
-ext/python/bin/python -m compileall -q -x test .
+if [ "${GPDB_MAJOR_VERSION}" = "7" ]; then
+	python3 -m compileall -q -x test .
+else
+	ext/python/bin/python -m compileall -q -x test .
+fi
 exit 0
 EOF
 	chmod 0775 "${__package_name}/DEBIAN/postinst"
 	cat <<EOF >"${__package_name}/DEBIAN/prerm"
 #!/bin/sh
 set -e
-dpkg -L greenplum-db-clients | grep '\.py$' | while read file; do rm -f "\${file}"[co] >/dev/null; done
+if [ "${GPDB_MAJOR_VERSION}" = "7" ]; then
+	cd ${GPDB_PREFIX}/${GPDB_NAME}-${GPDB_VERSION}
+	find . | grep __pycache__ | xargs rm -rf
+else
+	dpkg -L greenplum-db-clients | grep '\.py$' | while read file; do rm -f "\${file}"[co] >/dev/null; done
+fi
 exit 0
 EOF
 	chmod 0775 "${__package_name}/DEBIAN/prerm"
@@ -43,7 +52,11 @@ exit 0
 EOF
 	chmod 0775 "${__package_name}/DEBIAN/postrm"
 
-	cp "../greenplum-database-release/ci/concourse/scripts/greenplum-db-clients-control" "${__package_name}/DEBIAN/control"
+	if [ "${GPDB_MAJOR_VERSION}" = "7" ]; then
+		cp "../greenplum-database-release/ci/concourse/scripts/greenplum-db-7-clients-control" "${__package_name}/DEBIAN/control"
+	else
+		cp "../greenplum-database-release/ci/concourse/scripts/greenplum-db-clients-control" "${__package_name}/DEBIAN/control"
+	fi
 
 	sed -i "s|\${GPDB_VERSION}|${GPDB_VERSION}|g" "${__package_name}/DEBIAN/control"
 

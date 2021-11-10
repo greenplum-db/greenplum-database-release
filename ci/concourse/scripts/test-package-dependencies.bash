@@ -17,10 +17,18 @@ if [[ $PLATFORM == "rhel"* ]]; then
 		dnf update -y && dnf install -y subscription-manager
 		subscription-manager register --org=${REDHAT_SUBSCRIPTION_ORG_ID} --activationkey=${REDHAT_SUBSCRIPTION_KEY_ID}
 		subscription-manager attach --auto
+		# Required to install *-devel pacakges.
+		subscription-manager repos --enable codeready-builder-for-rhel-8-x86_64-rpms
 	fi
 
 	# Install file command
 	yum install -y file
+	if [[ $CLIENTS == "clients" ]]; then
+		if [[ $PLATFORM == "rhel7" && "${GPDB_MAJOR_VERSION}" == "7" ]]; then
+			# Required for installing libzstd-devel
+			yum install -y epel-release
+		fi
+	fi
 	# Install greenplum rpm
 	yum install -y ${GPDB_PKG_PATH}/*.rpm
 
@@ -34,6 +42,9 @@ if [[ $PLATFORM == "rhel"* ]]; then
 	fi
 
 	if [[ $CLIENTS == "clients" ]]; then
+		if [[ $PLATFORM == "rhel8" && "${GPDB_MAJOR_VERSION}" == "7" ]]; then
+			ln -s /usr/bin/python3 /usr/bin/python
+		fi
 		source /usr/local/greenplum-db-clients/greenplum_clients_path.sh
 		export GPHOME=$GPHOME_CLIENTS
 	else
@@ -49,6 +60,9 @@ elif [[ $PLATFORM == "ubuntu"* ]]; then
 	# Install greenplum deb
 	apt-get --quiet=8 --yes install ./*.deb
 	if [[ $CLIENTS == "clients" ]]; then
+		if [[ "${GPDB_MAJOR_VERSION}" == "7" ]]; then
+			ln -s /usr/bin/python3 /usr/bin/python
+		fi
 		source /usr/local/greenplum-db-clients/greenplum_clients_path.sh
 		export GPHOME=$GPHOME_CLIENTS
 	else
@@ -67,8 +81,13 @@ libraries=($(echo ${file_names[*]} | xargs file | grep ELF | awk -F':' '{print $
 missing_deps=($(echo ${libraries[*]} | xargs ldd | grep "not found" | cut -d " " -f 1)) || true
 
 for j in "${missing_deps[@]}"; do
-	# Ignore the following missing dependencies
-	if [[ $j != "libgpbsa.so" && $j != "libperl.so" && $j != "libdes425.so.3" ]]; then
+	# Ignore the following missing dependencies for GPDB5
+	if [[ "${GPDB_MAJOR_VERSION}" == "5" ]]; then
+		if [[ $j != "libgpbsa.so" && $j != "libperl.so" && $j != "libdes425.so.3" ]]; then
+			echo "Shared library $j missing"
+			exit 1
+		fi
+	else
 		echo "Shared library $j missing"
 		exit 1
 	fi

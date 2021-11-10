@@ -10,3 +10,4 @@ run:
 
 params:
   PLATFORM:
+  GPDB_MAJOR_VERSION:

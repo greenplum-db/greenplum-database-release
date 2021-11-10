@@ -14,7 +14,11 @@ if [[ $PLATFORM == "rhel"* || $PLATFORM == "sles"* ]]; then
 
 	GPDB_CLIENTS_VERSION="$(rpm -qip ${GPDB_CLIENTS_PATH}/greenplum-db-clients-*-"${GPDB_CLIENTS_ARCH}"-x86_64.rpm | grep Version | awk '{print $3}' | tr --delete '\n')"
 	export GPDB_CLIENTS_VERSION
-	inspec exec greenplum-database-release/ci/concourse/tests/gpdb6/clients/rpm --reporter documentation --no-distinct-exit --no-backend-cache
+	if [[ "${GPDB_MAJOR_VERSION}" == 7 ]]; then
+		inspec exec greenplum-database-release/ci/concourse/tests/gpdb7/clients/rpm --reporter documentation --no-distinct-exit --no-backend-cache
+	else
+		inspec exec greenplum-database-release/ci/concourse/tests/gpdb6/clients/rpm --reporter documentation --no-distinct-exit --no-backend-cache
+	fi
 
 elif [[ $PLATFORM == "ubuntu"* ]]; then
 	mkdir greenplum-database-release/gpdb-deb-test/gpdb_client_deb_installer

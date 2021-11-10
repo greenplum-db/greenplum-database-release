@@ -1,33 +1,25 @@
-Package: greenplum-db-7
+Package: greenplum-db-clients
 Priority: extra
 Maintainer: gp-releng@pivotal.io
 Architecture: amd64
 Version: ${GPDB_VERSION}
-Description: Pivotal Greenplum Server
-Homepage: https://github.com/greenplum-db/gpdb
+Description: Pivotal Greenplum Clients
+Homepage: https://network.tanzu.vmware.com/products/vmware-tanzu-greenplum/
 Depends: libapr1,
     libaprutil1,
-    bash,
+    libreadline7,
     bzip2,
     krb5-multidev,
     libcurl3-gnutls,
     libcurl4,
+    libedit2,
     libevent-2.1-6,
-    libreadline7,
     libxml2,
     libyaml-0-2,
+    libzstd-dev,
+    python3-dev,
     zlib1g,
     libldap-2.4-2,
     openssh-client,
-    openssh-server,
     openssl,
-    perl,
-    python3-dev,
-    rsync,
-    sed,
-    tar,
-    zip,
-    less,
-    iproute2,
-    iputils-ping,
-    locales
+    zip

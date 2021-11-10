@@ -131,7 +131,11 @@ function _main() {
 	setup_rpm_buildroot "${__rpm_build_dir}" bin_gpdb_clients/*.tar.gz
 
 	# The spec file must be in the RPM building location
-	cp "${BASEDIR}/gpdb-clients.spec" "${__rpm_build_dir}"/SPECS/gpdb-clients.spec
+	if [[ "${GPDB_MAJOR_VERSION}" == 7 ]]; then
+		cp "${BASEDIR}/gpdb-7-clients.spec" "${__rpm_build_dir}"/SPECS/gpdb-clients.spec
+	else
+		cp "${BASEDIR}/gpdb-clients.spec" "${__rpm_build_dir}"/SPECS/gpdb-clients.spec
+	fi
 
 	# Generate the flags for building the RPM based on pipeline values
 	__rpm_build_flags=$(create_rpmbuild_flags "${__gpdb_clients_version}" "${__rpm_gpdb_clients_version}")

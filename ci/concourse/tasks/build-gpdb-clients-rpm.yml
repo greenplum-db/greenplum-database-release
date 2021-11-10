@@ -32,3 +32,4 @@ params:
   GPDB_CLIENTS_DESCRIPTION: Greenplum Database Clients
   GPDB_CLIENTS_PREFIX: /usr/local
   RELEASE_VERSION:
+  GPDB__MAJOR_VERSION:

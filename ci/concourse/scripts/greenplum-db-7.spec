@@ -13,7 +13,13 @@
 # Disable automatic dependency processing both for requirements and provides
 AutoReqProv: no
 
+%if "%{gpdb_oss}" == "true"
+Name: open-source-greenplum-db-7
+Conflicts: greenplum-db-7
+%else
 Name: greenplum-db-7
+Conflicts: open-source-greenplum-db-7 <= %{rpm_gpdb_version}
+%endif
 Version: %{rpm_gpdb_version}
 Release: %{gpdb_release}%{?dist}
 Summary: Greenplum-DB
@@ -39,6 +45,7 @@ Requires: openssh-clients
 Requires: openssh-server
 Requires: openssl
 Requires: perl
+Requires: python3-devel
 Requires: readline
 Requires: rsync
 Requires: sed
@@ -48,6 +55,11 @@ Requires: zip
 Requires: zlib
 %endif
 
+%if "%{platform}" == "rhel8"
+Requires: libevent
+Requires: libuv-devel
+Requires: libzstd-devel
+%endif
 %if "%{platform}" == "rhel7"
 Requires: openssl-libs
 Requires: libevent
@@ -157,6 +169,8 @@ else
 fi
 
 %postun
-if [ "$(readlink -f "${RPM_INSTALL_PREFIX}/greenplum-db")" == "${RPM_INSTALL_PREFIX}/greenplum-db-%{gpdb_version}" ]; then
-  unlink "${RPM_INSTALL_PREFIX}/greenplum-db" || :
+if [ $1 -eq 0 ] ; then
+  if [ "$(readlink -f "${RPM_INSTALL_PREFIX}/greenplum-db")" == "${RPM_INSTALL_PREFIX}/greenplum-db-%{gpdb_version}" ]; then
+    unlink "${RPM_INSTALL_PREFIX}/greenplum-db" || :
+  fi
 fi
