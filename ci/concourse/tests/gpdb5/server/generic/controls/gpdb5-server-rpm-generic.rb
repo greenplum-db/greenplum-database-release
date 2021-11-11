@@ -95,6 +95,11 @@ control 'rpm_upgradable' do
     its('exit_status') { should eq 0 }
   end
 
+  describe command("readlink /usr/local/greenplum-db") do
+    its('exit_status') { should eq 0 }
+    its('stdout') { should eq "/usr/local/greenplum-db-5.28.4\n" }
+  end
+
   describe command("rpm --query greenplum-db-5") do
     its('stdout') { should match /greenplum-db-5-5.28.4*/ }
     its('exit_status') { should eq 0 }
@@ -109,6 +114,10 @@ control 'rpm_upgradable' do
     gpdb_version_regex = gpdb_version.gsub("+", "\\\\+")
     its('stdout') { should match /greenplum-db-5-#{gpdb_version_regex}-1/}
     its('exit_status') { should eq 0 }
+  end
+
+  describe file("/usr/local/greenplum-db") do
+    it { should be_linked_to "/usr/local/greenplum-db-#{gpdb_version}" }
   end
 
   describe command('rpm --erase greenplum-db-5') do

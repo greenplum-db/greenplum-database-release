@@ -54,9 +54,17 @@ control 'Category:server-installs' do
       its('exit_status') { should eq 0 }
     end
 
+   describe file('/usr/local/greenplum-db') do
+     it { should be_linked_to "/usr/local/greenplum-db-#{gpdb_version}" }
+   end
+
     describe command("yum reinstall -y #{rpm_full_path}") do
       its('exit_status') { should eq 0 }
     end
+
+   describe file('/usr/local/greenplum-db') do
+     it { should be_linked_to "/usr/local/greenplum-db-#{gpdb_version}" }
+   end
 
     # Should report installed
     describe command("sleep 5;yum -q list installed #{rpm_gpdb_name}") do

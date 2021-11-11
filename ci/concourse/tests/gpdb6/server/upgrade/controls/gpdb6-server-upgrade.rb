@@ -32,6 +32,11 @@ control 'Category:server-rpm_is_upgradable' do
       its('exit_status') { should eq 0 }
     end
 
+    describe file("/usr/local/greenplum-db") do
+      it { should be_symlink }
+      its('link_path') { should eq "/usr/local/greenplum-db-6.12.0" }
+    end
+
     describe command("rpm --upgrade #{rpm_full_path}") do
       its('exit_status') { should eq 0 }
     end
@@ -39,6 +44,11 @@ control 'Category:server-rpm_is_upgradable' do
     describe command("rpm --query greenplum-db-6") do
       its('stdout') { should eq "greenplum-db-6-#{gpdb_version}-1.#{gpdb_rpm_arch_string}.x86_64\n"}
       its('exit_status') { should eq 0 }
+    end
+
+    describe file("/usr/local/greenplum-db") do
+      it { should be_symlink }
+      its('link_path') { should eq "/usr/local/greenplum-db-#{gpdb_version}" }
     end
 
     describe command('rpm --erase greenplum-db-6') do
@@ -85,6 +95,10 @@ control 'RPM obsoletes GPDB 6' do
     describe command("yum remove -y #{rpm_gpdb_name}") do
       its('exit_status') { should eq 0 }
     end
+
+    describe file("/usr/local/greenplum-db") do
+      it { should_not exist }
+    end
   end
 end
 
@@ -113,7 +127,7 @@ control 'RPM with GPDB 5' do
 
     describe file("/usr/local/greenplum-db") do
       it { should be_symlink }
-      its('link_path') { should eq "/usr/local/greenplum-db-#{gpdb_version}" }
+      its('link_path') { should eq "/usr/local/greenplum-db-#{previous_5_version}" }
     end
 
     describe file("/usr/local/greenplum-db-#{gpdb_version}") do
@@ -124,8 +138,17 @@ control 'RPM with GPDB 5' do
       its('exit_status') { should eq 0 }
     end
 
+    describe file("/usr/local/greenplum-db") do
+      it { should be_symlink }
+      its('link_path') { should eq "/usr/local/greenplum-db-#{previous_5_version}" }
+    end
+
     describe command("yum remove -y greenplum-db") do
       its('exit_status') { should eq 0 }
+    end
+
+    describe file("/usr/local/greenplum-db") do
+      it { should_not exist }
     end
   end
 end

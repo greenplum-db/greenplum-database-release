@@ -186,7 +186,7 @@ control 'RPM with GPDB 6' do
 
   describe file("/usr/local/greenplum-db") do
     it { should be_symlink }
-    its('link_path') { should eq "/usr/local/greenplum-db-#{gpdb_version}" }
+    its('link_path') { should eq "/usr/local/greenplum-db-#{previous_6_version}" }
   end
 
   describe file("/usr/local/greenplum-db-#{gpdb_version}") do
@@ -197,8 +197,17 @@ control 'RPM with GPDB 6' do
     its('exit_status') { should eq 0 }
   end
 
+  describe file("/usr/local/greenplum-db") do
+    it { should be_symlink }
+    its('link_path') { should eq "/usr/local/greenplum-db-#{previous_6_version}" }
+  end
+
   describe command("yum remove -y greenplum-db") do
     its('exit_status') { should eq 0 }
+  end
+
+  describe file("/usr/local/greenplum-db") do
+    it { should_not exist }
   end
 end
 
