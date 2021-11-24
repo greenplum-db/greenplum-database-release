@@ -19,4 +19,5 @@ tanzunet-client-git-remote: git@github.com:pivotal/gp-tanzunet-client.git
 tanzunet-client-branch: main
 tanzunet-endpoint: "https://network.tanzu.vmware.com"
 tanzunet-product-slug: toolsmiths-gpdb-test
+tanzunet-product-slug-oss: toolsmiths-gpdb-test
 tanzunet-metadata-file-path: ci/tanzunet/metadata.yml

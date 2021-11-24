@@ -20,5 +20,6 @@ tanzunet-client-version: v4.5.2
 tanzunet-client-git-remote: git@github.com:pivotal/gp-tanzunet-client.git
 tanzunet-client-branch: main
 tanzunet-endpoint: "https://network.tanzu.vmware.com"
-tanzunet-product-slug: greenplum-database
+tanzunet-product-slug-oss: greenplum-database
+tanzunet-product-slug: vmware-tanzu-greenplum
 tanzunet-metadata-file-path: ci/tanzunet/metadata.yml

@@ -277,7 +277,7 @@ resources:
   source:
     api_token: ((public-tanzunet-refresh-token))
     endpoint: https://network.tanzu.vmware.com
-    product_slug: vmware-tanzu-greenplum
+    product_slug: ((tanzunet-product-slug))
     version: ^6\..*
 
 jobs:
@@ -701,7 +701,7 @@ jobs:
       TANZUNET_ENDPOINT: ((tanzunet-endpoint))
       TANZUNET_METADATA_FILE: ((tanzunet-metadata-file-path))
       TANZUNET_REFRESH_TOKEN: ((tanzunet-refresh-token))
-      TANZUNET_PRODUCT_SLUG: ((tanzunet-product-slug))
+      TANZUNET_PRODUCT_SLUG: ((tanzunet-product-slug-oss))
   - task: make_release_to_all_users
     config:
       platform: linux
@@ -716,7 +716,7 @@ jobs:
       params:
         TANZUNET_ENDPOINT: ((tanzunet-endpoint))
         TANZUNET_REFRESH_TOKEN: ((tanzunet-refresh-token))
-        TANZUNET_PRODUCT_SLUG: ((tanzunet-product-slug))
+        TANZUNET_PRODUCT_SLUG: ((tanzunet-product-slug-oss))
       run:
         path: bash
         args:
