@@ -279,6 +279,7 @@ resources:
     endpoint: https://network.tanzu.vmware.com
     product_slug: ((tanzunet-product-slug))
     version: ^6\..*
+    availability: "All Users"
 
 jobs:
 - name: pipeline_start_gate
