@@ -22,7 +22,7 @@ CONCOURSE ?= releng
 BRANCH ?= $(shell git rev-parse --abbrev-ref HEAD)
 WORKSPACE ?= ${HOME}/workspace
 
-PIPELINE_NAME              = greenplum-database-release-${BRANCH}-${USER}
+DEV_PIPELINE_NAME              = dev-greenplum-database-release-${BRANCH}-${USER}
 FLY_CMD                    = fly
 FLY_OPTION_NON_INTERACTIVE ?=
 
@@ -58,25 +58,25 @@ set-dev: set-pipeline-dev
 .PHONY: set-pipeline-dev
 set-pipeline-dev:
 
-	sed -e 's|((tanzunet-refresh-token))|((public-tanzunet-refresh-token))|g' ci/concourse/pipelines/gpdb-opensource-release.yml > ci/concourse/pipelines/${PIPELINE_NAME}.yml
+	sed -e 's|((tanzunet-refresh-token))|((public-tanzunet-refresh-token))|g' ci/concourse/pipelines/gpdb-opensource-release.yml > ci/concourse/pipelines/${DEV_PIPELINE_NAME}.yml
 
 	$(FLY_CMD) --target=${CONCOURSE} \
     set-pipeline \
     --check-creds \
-    --pipeline=${PIPELINE_NAME} \
-    --config=ci/concourse/pipelines/${PIPELINE_NAME}.yml \
+    --pipeline=${DEV_PIPELINE_NAME} \
+    --config=ci/concourse/pipelines/${DEV_PIPELINE_NAME}.yml \
     --load-vars-from=${WORKSPACE}/gp-continuous-integration/secrets/gpdb-oss-release.dev.yml \
     --load-vars-from=${WORKSPACE}/gp-continuous-integration/secrets/ppa-debian-release-secrets-dev.yml \
     --load-vars-from=ci/concourse/vars/greenplum-database-release.dev.yml \
     --var=greenplum-database-release-git-branch=${BRANCH} \
     --var=greenplum-database-release-git-remote=https://github.com/greenplum-db/greenplum-database-release.git \
-    --var=pipeline-name=${PIPELINE_NAME} \
+    --var=pipeline-name=${DEV_PIPELINE_NAME} \
 	--var=release-version="${RELEASE_VERSION_REGEX}" \
 	--var=commit-sha=.* \
     --var=run_mode=dev \
     $(FLY_OPTION_NON_INTERACTIVE)
 
-	$(FLY_CMD) --target=releng unpause-pipeline --pipeline=${PIPELINE_NAME}
+	$(FLY_CMD) --target=releng unpause-pipeline --pipeline=${DEV_PIPELINE_NAME}
 
 ## ----------------------------------------------------------------------
 ## Destroy Development Pipeline
@@ -89,7 +89,7 @@ destroy-dev: destroy-pipeline-dev
 destroy-pipeline-dev:
 	$(FLY_CMD) --target=${CONCOURSE} \
     destroy-pipeline \
-    --pipeline=${PIPELINE_NAME} \
+    --pipeline=${DEV_PIPELINE_NAME} \
     $(FLY_OPTION_NON_INTERACTIVE)
 
 ## ----------------------------------------------------------------------
