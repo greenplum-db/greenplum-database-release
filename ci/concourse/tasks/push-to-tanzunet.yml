@@ -8,7 +8,7 @@ image_resource:
     tag: 1.16-buster
 
 inputs:
-- name: gpdb_src
+- name: pivotal-gpdb
 - name: greenplum-database-release
 - name: tanzunet_client
 - name: gpdb_rpm_installer_centos6
