@@ -699,6 +699,7 @@ jobs:
   - task: push_to_tanzunet
     file: greenplum-database-release/ci/concourse/tasks/push-to-tanzunet.yml
     params:
+      RUN_MODE: ((run_mode))
       TANZUNET_ENDPOINT: ((tanzunet-endpoint))
       TANZUNET_METADATA_FILE: ((tanzunet-metadata-file-path))
       TANZUNET_REFRESH_TOKEN: ((tanzunet-refresh-token))

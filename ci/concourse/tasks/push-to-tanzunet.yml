@@ -18,6 +18,7 @@ inputs:
 - name: gpdb-odp
 
 params:
+  RUN_MODE:
   TANZUNET_ENDPOINT:
   TANZUNET_REFRESH_TOKEN:
   TANZUNET_PRODUCT_SLUG:
