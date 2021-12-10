@@ -615,7 +615,7 @@ jobs:
           gpdb_semver=$(cat pivotal-gpdb/version |cut -d "#" -f 1)
           RELEASE_CONSIST=gp-release-train/consist/${gpdb_semver}.toml
           export GPDB_SRC_SHA=$(grep commit ${RELEASE_CONSIST} | uniq | sed 's/.*"\(.*\)"/\1/' | uniq)
-          greenplum-database-release/concourse/scripts/verify_gpdb_versions.bash
+          greenplum-database-release/ci/concourse/scripts/verify_gpdb_versions.bash
   - in_parallel:
     - put: bin_gpdb_centos6_release
       params:
