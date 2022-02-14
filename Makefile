@@ -59,15 +59,13 @@ set-dev: set-pipeline-dev
 .PHONY: set-pipeline-dev
 set-pipeline-dev:
 
-	sed -e 's|((tanzunet-refresh-token))|((public-tanzunet-refresh-token))|g' ci/concourse/pipelines/gpdb-opensource-release.yml > ci/concourse/pipelines/${DEV_PIPELINE_NAME}.yml
+	sed -e 's|/prod/|/dev/|g' -e 's|((resources/tanzunet/tanzunet-refresh-token))|((resources/tanzunet/public-tanzunet-refresh-token))|g' ci/concourse/pipelines/gpdb-opensource-release.yml > ci/concourse/pipelines/${DEV_PIPELINE_NAME}.yml
 
-	$(FLY_CMD) --target=${CONCOURSE} \
+	fly_7.6 --target=release \
     set-pipeline \
     --check-creds \
     --pipeline=${DEV_PIPELINE_NAME} \
     --config=ci/concourse/pipelines/${DEV_PIPELINE_NAME}.yml \
-    --load-vars-from=${WORKSPACE}/gp-continuous-integration/secrets/gpdb-oss-release.dev.yml \
-    --load-vars-from=${WORKSPACE}/gp-continuous-integration/secrets/ppa-debian-release-secrets-dev.yml \
     --load-vars-from=ci/concourse/vars/greenplum-database-release.dev.yml \
     --var=greenplum-database-release-git-branch=${BRANCH} \
     --var=greenplum-database-release-git-remote=https://github.com/greenplum-db/greenplum-database-release.git \
@@ -78,7 +76,7 @@ set-pipeline-dev:
     --var=golang_version=$(GOLANG_VERSION) \
     $(FLY_OPTION_NON_INTERACTIVE)
 
-	$(FLY_CMD) --target=releng unpause-pipeline --pipeline=${DEV_PIPELINE_NAME}
+	fly_7.6 --target=release unpause-pipeline --pipeline=${DEV_PIPELINE_NAME}
 
 ## ----------------------------------------------------------------------
 ## Destroy Development Pipeline
@@ -105,13 +103,11 @@ set-prod: set-pipeline-prod
 set-pipeline-prod:
 	sed -e 's|commitish: release_artifacts/commitish|## commitish: release_artifacts/commitish|g' ci/concourse/pipelines/gpdb-opensource-release.yml > ci/concourse/pipelines/gpdb-opensource-release-prod.yml
 
-	$(FLY_CMD) --target=prod \
+	fly_7.6 --target=release \
     set-pipeline \
     --check-creds \
     --pipeline=greenplum-database-release \
     --config=ci/concourse/pipelines/gpdb-opensource-release-prod.yml \
-    --load-vars-from=${WORKSPACE}/gp-continuous-integration/secrets/gpdb-oss-release.prod.yml \
-    --load-vars-from=${WORKSPACE}/gp-continuous-integration/secrets/ppa-debian-release-secrets.yml \
     --load-vars-from=ci/concourse/vars/greenplum-database-release.prod.yml \
     --var=pipeline-name=greenplum-database-release \
     --var=greenplum-database-release-git-branch=main \
@@ -123,7 +119,7 @@ set-pipeline-prod:
     $(FLY_OPTION_NON_INTERACTIVE)
 
 	@echo using the following command to unpause the pipeline:
-	@echo "\t$(FLY_CMD) -t prod unpause-pipeline --pipeline greenplum-database-release"
+	@echo "\tfly_7.6 -t release unpause-pipeline --pipeline greenplum-database-release"
 
 ## ----------------------------------------------------------------------
 ## Package Testing Pipelines
