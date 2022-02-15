@@ -28,6 +28,7 @@ FLY_OPTION_NON_INTERACTIVE ?=
 
 DEV_GPDB-PACKAGE-TESTING_PIPELINE_NAME = dev-gpdb-package-testing-${BRANCH}-${USER}
 
+GOLANG_VERSION = 1.17.6
 
 ## ----------------------------------------------------------------------
 ## List explicit rules
@@ -74,6 +75,7 @@ set-pipeline-dev:
 	--var=release-version="${RELEASE_VERSION_REGEX}" \
 	--var=commit-sha=.* \
     --var=run_mode=dev \
+    --var=golang_version=$(GOLANG_VERSION) \
     $(FLY_OPTION_NON_INTERACTIVE)
 
 	$(FLY_CMD) --target=releng unpause-pipeline --pipeline=${DEV_PIPELINE_NAME}
@@ -117,6 +119,7 @@ set-pipeline-prod:
 	--var=release-version="${RELEASE_VERSION_REGEX}" \
 	--var=commit-sha=${COMMIT_SHA} \
     --var=run_mode=prod \
+    --var=golang_version=$(GOLANG_VERSION) \
     $(FLY_OPTION_NON_INTERACTIVE)
 
 	@echo using the following command to unpause the pipeline:

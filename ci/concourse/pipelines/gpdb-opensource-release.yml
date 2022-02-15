@@ -44,6 +44,12 @@ resources:
   source:
     url: ((releng-webhook-url))
 
+- name: golang
+  source:
+    repository: golang
+    tag: ((golang_version))-buster
+  type: registry-image
+
 ## Image Resources
 - name: gpdb6-centos6-build
   type: registry-image
@@ -696,8 +702,10 @@ jobs:
     - get: greenplum-database-release
       passed: [release]
       trigger: true
+    - get: golang
   - task: push_to_tanzunet
     file: greenplum-database-release/ci/concourse/tasks/push-to-tanzunet.yml
+    image: golang
     params:
       RUN_MODE: ((run_mode))
       TANZUNET_ENDPOINT: ((tanzunet-endpoint))
@@ -711,7 +719,7 @@ jobs:
         type: registry-image
         source:
           repository: golang
-          tag: 1.17.6-buster
+          tag: ((golang_version))-buster
       inputs:
       - name: pivotal-cf-tanzunet-cli
       - name: pivotal-gpdb
