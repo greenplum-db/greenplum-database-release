@@ -7,7 +7,7 @@ export GPDB_PKG_PATH="gpdb_pkg_installer"
 if [[ $PLATFORM == "rhel"* ]]; then
 
 	if [[ $PLATFORM == "rhel6" ]]; then
-		# add repo configuration for vault.centos.org
+		# add repo configuration for vault.epel.cloud
 		cp greenplum-database-release/ci/concourse/scripts/CentOS6.10-Vault.repo /etc/yum.repos.d/
 		# disable base repo
 		sed -i -E -e 's/\[(base|updates|extras)\]/[\1]\nenabled=0/' /etc/yum.repos.d/CentOS-Base.repo
