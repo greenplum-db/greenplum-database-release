@@ -20,8 +20,6 @@ assert_postgres_version_matches() {
 	fi
 }
 
-yum -d0 -y install git
-
 GREENPLUM_INSTALL_DIR=/usr/local/greenplum-db-devel
 
 for bin_gpdb in bin_gpdb_{centos{6,7},ubuntu18.04}; do
