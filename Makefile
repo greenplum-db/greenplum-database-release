@@ -48,6 +48,7 @@ FILE_NAME ?= $(shell basename ${RELEASE_CONSIST})
 RELEASE_VERSION ?= $(shell v='$(FILE_NAME)'; echo "$${v%.*}")
 RELEASE_VERSION_REGEX ?= $(shell echo "${RELEASE_VERSION}" | sed 's/[][()\.^?+*${}|]/\\&/g')
 COMMIT_SHA ?= $(shell grep commit ${RELEASE_CONSIST} | uniq | sed 's/.*"\(.*\)"/\1/' | uniq | cut -c 1-7 )
+MINOR_VERSION ?= $(shell echo "${RELEASE_VERSION}" | sed 's/\(\.[0-9]*\)/\.0/2' | cut -d '+' -f1 )
 
 ## ----------------------------------------------------------------------
 ## Set Development Pipeline
@@ -74,6 +75,7 @@ set-pipeline-dev:
 	--var=commit-sha=.* \
     --var=run_mode=dev \
     --var=golang_version=$(GOLANG_VERSION) \
+	--var=minor-version=.* \
     $(FLY_OPTION_NON_INTERACTIVE)
 
 	fly_7.6 --target=release unpause-pipeline --pipeline=${DEV_PIPELINE_NAME}
@@ -116,6 +118,7 @@ set-pipeline-prod:
 	--var=commit-sha=${COMMIT_SHA} \
     --var=run_mode=prod \
     --var=golang_version=$(GOLANG_VERSION) \
+	--var=minor-version=$(MINOR_VERSION) \
     $(FLY_OPTION_NON_INTERACTIVE)
 
 	@echo using the following command to unpause the pipeline:
