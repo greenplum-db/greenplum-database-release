@@ -10,6 +10,7 @@ inputs:
 - name: tanzunet_client
 - name: gpdb_rpm_installer_centos6
 - name: gpdb_rpm_installer_centos7
+- name: gpdb_rpm_installer_rhel8
 - name: gpdb_deb_package
 - name: gpdb-osl
 - name: gpdb-odp
