@@ -59,6 +59,7 @@ Requires: zlib
 Requires: libevent
 Requires: libuv-devel
 Requires: libzstd-devel
+Requires: libcgroup-tools
 %endif
 %if "%{platform}" == "rhel7"
 Requires: openssl-libs
