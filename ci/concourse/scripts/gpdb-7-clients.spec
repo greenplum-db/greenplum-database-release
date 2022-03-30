@@ -1,3 +1,5 @@
+%define _build_id_links none
+
 %{!?gpdb_clients_name: %define gpdb_clients_name greenplum-db-clients}
 # %%{rpm_gpdb_clients_version} must be supplied or will exit in %%prep
 # %%{gpdb_clients_version} must be supplied or will exit in %%prep

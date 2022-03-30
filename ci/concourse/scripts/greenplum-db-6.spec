@@ -10,6 +10,8 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
+%define _build_id_links none
+
 %{!?gpdb_major_version:%global gpdb_major_version 6}
 
 # Disable automatic dependency processing both for requirements and provides
