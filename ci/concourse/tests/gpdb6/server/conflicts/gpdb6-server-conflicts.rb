@@ -10,7 +10,7 @@ gpdb_rpm_oss_path = ENV['GPDB_RPM_OSS_PATH']
 gpdb_rpm_arch = ENV['GPDB_RPM_ARCH']
 
 
-previous_version = File.read('previous-6.12.0-release/version').split('#').first if File.exist?('previous-6.12.0-release/version')
+previous_version = File.read('previous-6.20.0-release/version').split('#').first if File.exist?('previous-6.20.0-release/version')
 previous_oss_version = File.read('previous-6-oss-release/version').split('#').first if File.exist?('previous-6-oss-release/version')
 
 
@@ -24,6 +24,7 @@ rpm_gpdb_version = `#{rpm_query("Version", rpm_full_path)}`
 
 control 'Category:server-conflict_enterprise_to_oss_same_version' do
   # Previous 6 release not yet available for Photon
+  version = os.release
   if os.redhat?
 
     title "Install VTGP (Enterprise) first and GPDBVT (OSS) second for same version."
@@ -34,8 +35,14 @@ control 'Category:server-conflict_enterprise_to_oss_same_version' do
     end
     describe command("yum install -y -q #{rpm_oss_full_path}") do
       its('exit_status') {should eq 1}
-      its('stderr') { should match /Error: greenplum-db-6 conflicts with open-source-greenplum-db-6*/ }
-      its('stderr') { should match /Error: open-source-greenplum-db-6 conflicts with greenplum-db-6*/ }
+      if version =~ /8/
+        # Error message for rhel8 is different from centos 6 and 7
+        its('stderr') { should match /greenplum-db-6-.* conflicts with open-source-greenplum-db-6*/ }
+        its('stderr') { should match /open-source-greenplum-db-6-.* conflicts with greenplum-db-6*/ }
+      else
+        its('stderr') { should match /Error: greenplum-db-6 conflicts with open-source-greenplum-db-6*/ }
+        its('stderr') { should match /Error: open-source-greenplum-db-6 conflicts with greenplum-db-6*/ }
+      end
     end
     describe command("yum remove -y #{rpm_gpdb_name}") do
       its('exit_status') {should eq 0}
@@ -43,13 +50,18 @@ control 'Category:server-conflict_enterprise_to_oss_same_version' do
 
     title "Install VTGP (Enterprise) first and GPDBVT (OSS) second for different version."
 
-    describe command("yum install -y previous-6.12.0-release/greenplum-db-#{previous_version}-#{gpdb_rpm_arch}-x86_64.rpm") do
+    describe command("yum install -y previous-6.20.0-release/greenplum-db-#{previous_version}-#{gpdb_rpm_arch}-x86_64.rpm") do
     its('exit_status') {should eq 0}
     its('stdout') { should match /greenplum-db-6*/ }
     end
     describe command("yum install -y -q #{rpm_oss_full_path}") do
     its('exit_status') {should eq 1}
-    its('stderr') { should match /Error: open-source-greenplum-db-6 conflicts with greenplum-db-6*/ }
+    if version =~ /8/
+      # Error message for rhel8 is different from centos 6 and 7
+      its('stderr') { should match /open-source-greenplum-db-6-.* conflicts with greenplum-db-6*/ }
+    else
+      its('stderr') { should match /Error: open-source-greenplum-db-6 conflicts with greenplum-db-6*/ }
+    end
     end
     describe command("yum remove -y #{rpm_gpdb_name}") do
     its('exit_status') {should eq 0}
@@ -65,8 +77,14 @@ control 'Category:server-conflict_enterprise_to_oss_same_version' do
 
     describe command("yum install -y -q #{rpm_full_path}") do
     its('exit_status') {should eq 1}
-    its('stderr') { should match /Error: greenplum-db-6 conflicts with open-source-greenplum-db-6*/ }
-    its('stderr') { should match /Error: open-source-greenplum-db-6 conflicts with greenplum-db-6*/ }
+    if version =~ /8/
+      # Error message for rhel8 is different from centos 6 and 7
+      its('stderr') { should match /greenplum-db-6-.* conflicts with open-source-greenplum-db-6*/ }
+      its('stderr') { should match /open-source-greenplum-db-6-.* conflicts with greenplum-db-6*/ }
+    else
+      its('stderr') { should match /Error: greenplum-db-6 conflicts with open-source-greenplum-db-6*/ }
+      its('stderr') { should match /Error: open-source-greenplum-db-6 conflicts with greenplum-db-6*/ }
+    end
     end
 
     describe command("yum remove -y #{rpm_gpdb_oss_name}") do
@@ -82,7 +100,12 @@ control 'Category:server-conflict_enterprise_to_oss_same_version' do
 
     describe command("yum install -y -q #{rpm_full_path}") do
     its('exit_status') {should eq 1}
-    its('stderr') { should match /Error: greenplum-db-6 conflicts with open-source-greenplum-db-6*/ }
+    if version =~ /8/
+      # Error message for rhel8 is different from centos 6 and 7
+      its('stderr') { should match /greenplum-db-6-.* conflicts with open-source-greenplum-db-6*/ }
+    else
+      its('stderr') { should match /Error: greenplum-db-6 conflicts with open-source-greenplum-db-6*/ }
+    end
     end
 
     describe command("yum remove -y #{rpm_gpdb_oss_name}") do

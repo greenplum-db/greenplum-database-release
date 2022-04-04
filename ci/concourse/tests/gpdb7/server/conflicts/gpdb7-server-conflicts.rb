@@ -18,6 +18,7 @@ rpm_full_path = "#{gpdb_rpm_path}/#{rpm_gpdb_name}-#{gpdb_rpm_arch}-x86_64.rpm"
 rpm_gpdb_version = `#{rpm_query("Version", rpm_full_path)}`
 
 control 'Category:server-conflict_enterprise_to_oss_same_version' do
+  version = os.release
   if os.redhat?
 
     title "Install VTGP (Enterprise) first and GPDBVT (OSS) second for same version."
@@ -28,8 +29,14 @@ control 'Category:server-conflict_enterprise_to_oss_same_version' do
     end
     describe command("yum install -y -q #{rpm_oss_full_path}") do
       its('exit_status') {should eq 1}
-      its('stderr') { should match /Error: greenplum-db-7 conflicts with open-source-greenplum-db-7*/ }
-      its('stderr') { should match /Error: open-source-greenplum-db-7 conflicts with greenplum-db-7*/ }
+      if version =~ /8/
+        # Error message for rhel8 is different from centos 6 and 7
+        its('stderr') { should match /greenplum-db-7-.* conflicts with open-source-greenplum-db-7*/ }
+        its('stderr') { should match /open-source-greenplum-db-7-.* conflicts with greenplum-db-7*/ }
+      else
+        its('stderr') { should match /Error: greenplum-db-7 conflicts with open-source-greenplum-db-7*/ }
+        its('stderr') { should match /Error: open-source-greenplum-db-7 conflicts with greenplum-db-7*/ }
+      end
     end
     describe command("yum remove -y #{rpm_gpdb_name}") do
       its('exit_status') {should eq 0}
@@ -45,8 +52,14 @@ control 'Category:server-conflict_enterprise_to_oss_same_version' do
 
     describe command("yum install -y -q #{rpm_full_path}") do
     its('exit_status') {should eq 1}
-    its('stderr') { should match /Error: greenplum-db-7 conflicts with open-source-greenplum-db-7*/ }
-    its('stderr') { should match /Error: open-source-greenplum-db-7 conflicts with greenplum-db-7*/ }
+    if version =~ /8/
+      # Error message for rhel8 is different from centos 6 and 7
+      its('stderr') { should match /greenplum-db-7-.* conflicts with open-source-greenplum-db-7*/ }
+      its('stderr') { should match /open-source-greenplum-db-7-.* conflicts with greenplum-db-7*/ }
+    else
+      its('stderr') { should match /Error: greenplum-db-7 conflicts with open-source-greenplum-db-7*/ }
+      its('stderr') { should match /Error: open-source-greenplum-db-7 conflicts with greenplum-db-7*/ }
+    end
     end
 
     describe command("yum remove -y #{rpm_gpdb_oss_name}") do

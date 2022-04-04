@@ -17,14 +17,14 @@ rpm_gpdb_version = `#{rpm_query("Version", rpm_full_path)}`
 # for RPMs `-` is an invalid character for the version string
 # when the RPM was built, any `-` was converted to `_`
 gpdb_version = rpm_gpdb_version.sub("_", "-") if rpm_gpdb_version != nil
-previous_6_version = File.read('previous-6.12.0-release/version').split('#').first if File.exist?('previous-6.12.0-release/version')
+previous_6_version = File.read('previous-6.20.0-release/version').split('#').first if File.exist?('previous-6.20.0-release/version')
 
 control 'RPM with GPDB 6' do
 
-  title 'when both greenplum-db version 6.12.0 and greenplum-db-7 are installed.'
+  title 'when both greenplum-db version 6.20.0 and greenplum-db-7 are installed.'
   # Previous 6 release not yet available for Photon
   if os.redhat?
-    describe command("yum install -y previous-6.12.0-release/greenplum-db-#{previous_6_version}-#{gpdb_rpm_arch}-x86_64.rpm") do
+    describe command("yum install -y previous-6.20.0-release/greenplum-db-#{previous_6_version}-#{gpdb_rpm_arch}-x86_64.rpm") do
       its('exit_status') { should eq 0 }
     end
 
