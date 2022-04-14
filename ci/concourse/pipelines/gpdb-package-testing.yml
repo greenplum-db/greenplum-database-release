@@ -941,6 +941,7 @@ jobs:
   plan:
   - in_parallel:
     - get: bin_gpdb6_rhel8
+      trigger: true
     - get: greenplum-database-release
       trigger: true
     - get: gpdb6-rhel8-build
@@ -1687,6 +1688,7 @@ jobs:
   plan:
   - in_parallel:
     - get: bin_gpdb7_rhel8
+      trigger: true
     - get: greenplum-database-release
       trigger: true
     - get: gpdb7-rhel8-build
