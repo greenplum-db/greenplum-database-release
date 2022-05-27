@@ -6,6 +6,8 @@ require github.com/cucumber/godog v0.12.5
 
 replace github.com/gogo/protobuf => github.com/gogo/protobuf v1.3.2
 
+replace gopkg.in/yaml.v3 => gopkg.in/yaml.v3 v3.0.0
+
 require (
 	github.com/cucumber/gherkin-go/v19 v19.0.3 // indirect
 	github.com/cucumber/messages-go/v16 v16.0.1 // indirect
