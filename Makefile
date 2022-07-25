@@ -129,29 +129,29 @@ set-pipeline-prod:
 ## ----------------------------------------------------------------------
 .PHONY: set-gpdb-package-testing-prod
 set-gpdb-package-testing-prod:
+	sed -e 's|/env|/prod|g' ci/concourse/pipelines/gpdb-package-testing.yml > ci/concourse/pipelines/gpdb-package-testing-prod.yml
+
 	$(FLY_CMD) --target=$(CONCOURSE) \
 	set-pipeline \
 	--check-creds \
 	--pipeline=gpdb-package-testing \
-	--config=ci/concourse/pipelines/gpdb-package-testing.yml \
+	--config=ci/concourse/pipelines/gpdb-package-testing-prod.yml \
 	--load-vars-from=ci/concourse/vars/gpdb-package-testing.prod.yml \
-	--load-vars-from=${WORKSPACE}/gp-continuous-integration/secrets/gpdb-package-testing.prod.yml \
 	--load-vars-from=ci/concourse/vars/greenplum-database-release.prod.yml \
-	--load-vars-from=${WORKSPACE}/gp-continuous-integration/secrets/ppa-debian-release-secrets.yml \
 	--var=pipeline-name=gpdb-package-testing \
 	$(FLY_OPTION_NON_INTERACTIVE)
 
 .PHONY: set-gpdb-package-testing-dev
 set-gpdb-package-testing-dev:
+	sed -e 's|/env|/dev|g' ci/concourse/pipelines/gpdb-package-testing.yml > ci/concourse/pipelines/gpdb-package-testing-dev.yml
+
 	$(FLY_CMD) --target=$(CONCOURSE) \
 	set-pipeline \
 	--check-creds \
 	--pipeline=gpdb-package-testing-$(BRANCH)-${USER} \
-	--config=ci/concourse/pipelines/gpdb-package-testing.yml \
+	--config=ci/concourse/pipelines/gpdb-package-testing-dev.yml \
 	--load-vars-from=ci/concourse/vars/gpdb-package-testing.dev.yml \
-	--load-vars-from=${WORKSPACE}/gp-continuous-integration/secrets/gpdb-package-testing.dev.yml \
 	--load-vars-from=ci/concourse/vars/greenplum-database-release.dev.yml \
-	--load-vars-from=${WORKSPACE}/gp-continuous-integration/secrets/ppa-debian-release-secrets-dev.yml \
 	--var=greenplum-database-release-git-branch=${BRANCH} \
 	--var=pipeline-name=${DEV_GPDB-PACKAGE-TESTING_PIPELINE_NAME} \
 	$(FLY_OPTION_NON_INTERACTIVE)
