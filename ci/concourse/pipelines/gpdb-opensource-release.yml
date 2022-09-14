@@ -529,6 +529,8 @@ jobs:
     params:
       PLATFORM: "ubuntu18.04"
       GPDB_OSS: true
+  - task: verify_gpdb_deb_package
+    file: greenplum-database-release/ci/concourse/tasks/verify-gpdb-deb.yml
   - put: gpdb_deb_package
     params:
       file: gpdb_deb_installer/*.deb
@@ -550,7 +552,7 @@ jobs:
       passed: [compilation-gate]
     - get: license_file
     - get: gpdb6-ubuntu18.04-build
-  - task: push_to_ppa
+  - task: build-ppa-deb-package
     file: greenplum-database-release/ci/concourse/tasks/build-ppa.yml
     image: gpdb6-ubuntu18.04-build
     input_mapping:
@@ -565,6 +567,12 @@ jobs:
       GPDB_OSS: true
       PPA: true
       PLATFORM: "ubuntu18.04"
+  - task: verify-ppa-deb-package
+    file: greenplum-database-release/ci/concourse/tasks/verify-gpdb-deb.yml
+    input_mapping:
+      gpdb_deb_installer: gpdb_deb_ppa_installer
+    params:
+      GPDB_DEB_PACKAGE: ./gpdb_deb_installer/greenplum-db-*_amd64.deb
   - put: deb_gpdb6_ppa_ubuntu18.04
     params:
       file: gpdb_deb_ppa_installer/*.deb
