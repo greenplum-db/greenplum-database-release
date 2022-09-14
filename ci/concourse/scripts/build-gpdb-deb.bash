@@ -119,7 +119,7 @@ EOF
 #!/bin/sh
 set -e
 cd /opt/greenplum-db-${GPDB_VERSION}
-ext/python/bin/python -m compileall -q -x test .
+ext/python/bin/python -m compileall -q -x "(test|python3)" .
 exit 0
 EOF
 		chmod 0775 "${__package_name}/${DEB_DIR}/postinst"
@@ -148,7 +148,7 @@ cd ${GPDB_NAME}-${GPDB_VERSION}
 if [ "${gpdb_major_version}" = "7" ]; then
 	python3 -m compileall -q -x test .
 else
-	ext/python/bin/python -m compileall -q -x test .
+	ext/python/bin/python -m compileall -q -x "(test|python3)" .
 fi
 exit 0
 EOF
