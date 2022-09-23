@@ -71,8 +71,8 @@ elif [[ $PLATFORM == "ubuntu"* ]]; then
 	popd
 fi
 
-# Get all file names in $GPHOME directory excluding python2.7 directory
-file_names=($(find "${GPHOME}" -path "${GPHOME}"/ext/python/lib/python2.7 -prune -o -type f))
+# Get all file names in $GPHOME directory excluding python2.7 directory and python3.9 directory
+file_names=($(find "${GPHOME}" \( -path "${GPHOME}"/ext/python/lib/python2.7 -prune -o -path "${GPHOME}"/ext/python3.9/lib/python3.9 -prune \) -o -type f))
 
 # For each file name, check if the file is of type 'ELF'
 libraries=($(echo ${file_names[*]} | xargs file | grep ELF | awk -F':' '{print $1}'))
