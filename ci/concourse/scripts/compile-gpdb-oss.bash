@@ -26,10 +26,12 @@ generate_build_number() {
 install_python() {
 	echo "Installing python"
 	# shellcheck disable=SC2155
-	export PYTHONHOME=$(find /opt -maxdepth 1 -type d -name "python*")
+	export PYTHONHOME=$(find /opt -maxdepth 1 -type d -name "python-2*")
 	export PATH="${PYTHONHOME}/bin:${PATH}"
 	echo "${PYTHONHOME}/lib" >>/etc/ld.so.conf.d/gpdb.conf
 	ldconfig
+	export PYTHONHOME39=$(find /opt -maxdepth 1 -type d -name "python-3.9.*")
+	export PATH="${PYTHONHOME39}/bin:${PATH}"
 }
 
 build_gpdb() {
