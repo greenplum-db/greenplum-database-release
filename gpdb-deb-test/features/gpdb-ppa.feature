@@ -1,4 +1,4 @@
-Feature: ppa install and remove works
+Feature: ppa install, remove and upgrade works
   Scenario: gpdb ppa can be installed
     When install gpdb
     Then gpdb installed
@@ -7,3 +7,7 @@ Feature: ppa install and remove works
     Given gpdb installed
     When remove gpdb
     Then gpdb ppa removed as expected
+  Scenario: gpdb ppa can be upgraded
+    When install previous version gpdb
+    Then install gpdb
+    And gpdb ppa installed as expected

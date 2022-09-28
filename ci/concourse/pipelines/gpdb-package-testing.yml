@@ -241,6 +241,17 @@ resources:
     product_slug: vmware-tanzu-greenplum
     product_version: 6\.20\.0
 
+# the file is comming from https://concourse.releng.gpdb.pivotal.io/teams/main/pipelines/greenplum-database-release/jobs/publish_to_ppa/builds/11
+# it is 6.21.2 ppa deb package, manully updloaded to the following command
+# yamllint disable-line rule:line-length
+# gsutil cp gs://greenplum-database-concourse-resources-intermediates-prod/greenplum-database-release/deb_gpdb6_ppa_ubuntu18.04/greenplum-db-6-ubuntu18.04-amd64.deb#1661554503065107 gs://greenplum-database-concourse-resources-prod/deb_gpdb6_ppa_ubuntu18.04/released/gpdb6/greenplum-db-6.21.2-ubuntu18.04-amd64.deb
+- name: previous_gpdb_deb_ppa_installer
+  type: gcs
+  source:
+    bucket: greenplum-database-concourse-resources-prod
+    json_key: ((concourse-gcs-resources-service-account-key))
+    regexp: deb_gpdb6_ppa_ubuntu18.04/released/gpdb6/greenplum-db-(6.21.*)-ubuntu18.04-amd64.deb
+
 - name: previous-6-oss-release
   type: tanzunet
   source:
@@ -1413,6 +1424,11 @@ jobs:
       - create_gpdb6_deb_installer_ubuntu18.04
     - get: gpdb6-ubuntu18.04-test-packaging
     - get: ubuntu-18.04
+    - get: previous-6.20.0-release
+      params:
+        globs:
+        - greenplum-db-6.*-ubuntu18.04-amd64.deb
+    - get: previous_gpdb_deb_ppa_installer
   - in_parallel:
     - task: test_gpdb6_deb_functionality
       file: greenplum-database-release/ci/concourse/tasks/test-functionality-deb.yml
@@ -1420,6 +1436,7 @@ jobs:
       input_mapping:
         gpdb_deb_installer: deb_gpdb6_ubuntu18.04
         gpdb_deb_ppa_installer: deb_gpdb6_ppa_ubuntu18.04
+        previous_gpdb_deb_installer: previous-6.20.0-release
       params:
         PLATFORM: ubuntu18.04
         GPDB_MAJOR_VERSION: "6"

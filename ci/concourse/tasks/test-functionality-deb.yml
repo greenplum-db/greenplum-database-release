@@ -4,7 +4,11 @@ platform: linux
 inputs:
 - name: greenplum-database-release
 - name: gpdb_deb_installer
+- name: previous_gpdb_deb_installer
+  optional: true
 - name: gpdb_deb_ppa_installer
+  optional: true
+- name: previous_gpdb_deb_ppa_installer
   optional: true
 
 run:

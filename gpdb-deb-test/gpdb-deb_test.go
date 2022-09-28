@@ -186,6 +186,10 @@ func installGpdb() error {
 	return InstallPackage("gpdb_deb_installer/greenplum-db-ubuntu18.04-amd64.deb")
 }
 
+func installPreviousVersionGpdb() error {
+	return InstallPackage("gpdb_deb_installer/previous-greenplum-db-ubuntu18.04-amd64.deb")
+}
+
 func removeGpdb() error {
 	gpbdVersion, err := GetDebField("Version", "gpdb_deb_installer/greenplum-db-ubuntu18.04-amd64.deb")
 	if err != nil {
@@ -292,6 +296,7 @@ func InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Step(`^gpdb removed as expected$`, gpdbRemovedAsExpected)
 	ctx.Step(`^gpdb ppa removed as expected$`, ppaRemovedAsExpected)
 	ctx.Step(`^install gpdb$`, installGpdb)
+	ctx.Step(`^^install previous version gpdb$`, installPreviousVersionGpdb)
 	ctx.Step(`^remove gpdb$`, removeGpdb)
 	ctx.Step(`^gpdb client deb has correct metadata$`, gpdbClientDebHasCorrectMetadata)
 	ctx.Step(`^gpdb client installed$`, gpdbClientInstalled)
