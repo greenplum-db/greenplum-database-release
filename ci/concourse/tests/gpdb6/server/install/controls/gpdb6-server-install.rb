@@ -89,8 +89,43 @@ control 'Category:server-installs' do
       end
   end
 
-  describe file("/usr/local/greenplum-db/ext/python/lib/python2.7/cmd.pyc") do
-    it { should exist}
+
+  # python2 sum of .pyc file
+  version = os.release
+  if os.redhat?
+    describe command("find /usr/local/greenplum-db/ -name *.pyc | grep -v python3.9|  wc -l") do
+      # rhel8 has a different python2 version: 2.7.17
+      if version =~ /^8/
+        its('stdout') { should eq "793\n" }
+      # rhel6 and rhel7 has python2 version: 2.7.12
+      else
+        its('stdout') { should eq "795\n" }
+      end
+    end
+  # photon3 platform
+  else
+    describe command("find /usr/local/greenplum-db/ -name *.pyc | grep -v python3.9|  wc -l") do
+      its('stdout') { should eq "779\n" }
+    end
+  end
+
+  # python3 sum of .pyc file
+  version = os.release
+  if os.redhat?
+    describe command("find /usr/local/greenplum-db/ext/python3.9/ -name *.pyc | wc -l") do
+      # rhel6 does not vendor python3.9
+      if version =~ /^6/
+        its('stdout') { should eq "0\n" }
+      # rhel7 and rhel8 vendor python3.9
+      else
+        its('stdout') { should eq "3481\n" }
+      end
+    end
+  # photon3 does not has python3 integrated
+  else
+    describe command("find /usr/local/greenplum-db/ext/python3.9/ -name *.pyc | wc -l") do
+      its('stdout') { should eq "0\n" }
+    end
   end
 
 end

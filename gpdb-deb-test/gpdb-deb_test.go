@@ -93,6 +93,10 @@ func gpdbInstalledAsExpected() error {
 
 	gpdbMajorVersion := strings.Split(gpbdVersion, ".")[0]
 	if gpdbMajorVersion == "6" {
+		err = CheckHasExpectedPythonBytecodeFileNumber()
+		if err != nil {
+			return err
+		}
 		err = gpdb6GeneratedPythonBytecode("/usr/local/greenplum-db/ext/python/lib/python2.7/cmd.py")
 		if err != nil {
 			return err
@@ -110,6 +114,30 @@ func gpdbInstalledAsExpected() error {
 	}
 
 	return nil
+}
+
+func CheckHasExpectedPythonBytecodeFileNumber() error {
+	cmd := exec.Command("/bin/bash", "-c", "find /usr/local/greenplum-db/ -name *.pyc | grep -v python3.9|  wc -l")
+	FileNumber, err := cmd.Output()
+	if err != nil {
+		return err
+	}
+	if strings.TrimSpace(string(FileNumber)) == "780" {
+		return nil
+	} else {
+		return fmt.Errorf("expect has 780 pyc for python2, actual is %s", strings.TrimSpace(string(FileNumber)))
+	}
+
+	cmd = exec.Command("/bin/bash", "-c", "find /usr/local/greenplum-db/ext/python3.9/ -name *.pyc | wc -l")
+	FileNumber, err = cmd.Output()
+	if err != nil {
+		return err
+	}
+	if strings.TrimSpace(string(FileNumber)) == "3481" {
+		return nil
+	} else {
+		return fmt.Errorf("expect has 3481 pyc for python3.9, actual is %s", strings.TrimSpace(string(FileNumber)))
+	}
 }
 
 func gpdb7GeneratedPythonBytecode(fileName string) error {
