@@ -44,6 +44,7 @@ list:
 	sort"
 
 RELEASE_CONSIST ?= ${WORKSPACE}/gp-release-train/consist/6.99.99.toml
+RELEASE_CONFIG ?= ci/concourse/vars/gp6-release.yml
 FILE_NAME ?= $(shell basename ${RELEASE_CONSIST})
 RELEASE_VERSION ?= $(shell v='$(FILE_NAME)'; echo "$${v%.*}")
 RELEASE_VERSION_REGEX ?= $(shell echo "${RELEASE_VERSION}" | sed 's/[][()\.^?+*${}|]/\\&/g')
@@ -127,8 +128,15 @@ set-pipeline-prod:
 ## ----------------------------------------------------------------------
 ## Package Testing Pipelines
 ## ----------------------------------------------------------------------
+${WORKSPACE}/gp-release/release-tools/generate-release-configuration:
+	$(MAKE) -C ${WORKSPACE}/gp-release/release-tools build-generate-release-configuration
+
+.PHONY: generate-variables
+generate-variables: ${WORKSPACE}/gp-release/release-tools/generate-release-configuration $(RELEASE_CONSIST)
+	${WORKSPACE}/gp-release/release-tools/generate-release-configuration -path $(RELEASE_CONSIST) 1>$(RELEASE_CONFIG)
+
 .PHONY: set-gpdb-package-testing-prod
-set-gpdb-package-testing-prod:
+set-gpdb-package-testing-prod: generate-variables
 	sed -e 's|/env|/prod|g' ci/concourse/pipelines/gpdb-package-testing.yml > ci/concourse/pipelines/gpdb-package-testing-prod.yml
 
 	$(FLY_CMD) --target=$(CONCOURSE) \
@@ -136,13 +144,14 @@ set-gpdb-package-testing-prod:
 	--check-creds \
 	--pipeline=gpdb-package-testing \
 	--config=ci/concourse/pipelines/gpdb-package-testing-prod.yml \
+	--load-vars-from=${RELEASE_CONFIG} \
 	--load-vars-from=ci/concourse/vars/gpdb-package-testing.prod.yml \
 	--load-vars-from=ci/concourse/vars/greenplum-database-release.prod.yml \
 	--var=pipeline-name=gpdb-package-testing \
 	$(FLY_OPTION_NON_INTERACTIVE)
 
 .PHONY: set-gpdb-package-testing-dev
-set-gpdb-package-testing-dev:
+set-gpdb-package-testing-dev: generate-variables
 	sed -e 's|/env|/dev|g' ci/concourse/pipelines/gpdb-package-testing.yml > ci/concourse/pipelines/gpdb-package-testing-dev.yml
 
 	$(FLY_CMD) --target=$(CONCOURSE) \
@@ -150,6 +159,7 @@ set-gpdb-package-testing-dev:
 	--check-creds \
 	--pipeline=gpdb-package-testing-$(BRANCH)-${USER} \
 	--config=ci/concourse/pipelines/gpdb-package-testing-dev.yml \
+	--load-vars-from=${RELEASE_CONFIG} \
 	--load-vars-from=ci/concourse/vars/gpdb-package-testing.dev.yml \
 	--load-vars-from=ci/concourse/vars/greenplum-database-release.dev.yml \
 	--var=greenplum-database-release-git-branch=${BRANCH} \

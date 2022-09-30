@@ -32,6 +32,26 @@ resources:
     branch: ((greenplum-database-release-git-branch))
     uri: ((greenplum-database-release-git-remote))
 
+- name: gp-release
+  source:
+    branch: main
+    private_key: ((gp-release-deploy-key))
+    uri: git@github.com:pivotal/gp-release
+  type: git
+
+- name: gp-greenplum-morgan-stanley
+  source:
+    branch: main
+    private_key: ((releng/gp-greenplum-morgan-stanley-deploy-key))
+    uri: git@github.com:pivotal/gp-greenplum-morgan-stanley.git
+  type: git
+
+- name: google-cloud-build
+  source:
+    repository: gcr.io/data-gpdb-public-images/google-cloud-build
+    tag: latest
+  type: registry-image
+
 - name: centos-gpdb-dev-6
   type: registry-image
   source:
@@ -320,6 +340,41 @@ resources:
     bucket: pivotal-gpdb-concourse-resources-prod
     json_key: ((concourse-gcs-resources-service-account-key))
     regexp: server/published/master/server-rc-(.*)-ubuntu18.04_x86_64.tar.gz
+
+- name: bin_gpdb6_centos6_with_components
+  type: gcs
+  source:
+    bucket: ((gcs-bucket-intermediates))
+    json_key: ((concourse-gcs-resources-service-account-key))
+    versioned_file: ((pipeline-name))/bin_gpdb6_centos6_with_components/bin_gpdb.tar.gz
+
+- name: bin_gpdb6_centos7_with_components
+  type: gcs
+  source:
+    bucket: ((gcs-bucket-intermediates))
+    json_key: ((concourse-gcs-resources-service-account-key))
+    versioned_file: ((pipeline-name))/bin_gpdb6_centos7_with_components/bin_gpdb.tar.gz
+
+- name: bin_gpdb6_rhel8_with_components
+  type: gcs
+  source:
+    bucket: ((gcs-bucket-intermediates))
+    json_key: ((concourse-gcs-resources-service-account-key))
+    versioned_file: ((pipeline-name))/bin_gpdb6_rhel8_with_components/bin_gpdb.tar.gz
+
+- name: bin_gpdb6_photon3_with_components
+  type: gcs
+  source:
+    bucket: ((gcs-bucket-intermediates))
+    json_key: ((concourse-gcs-resources-service-account-key))
+    versioned_file: ((pipeline-name))/bin_gpdb6_photon3_with_components/bin_gpdb.tar.gz
+
+- name: bin_gpdb6_ubuntu18.04_with_components
+  type: gcs
+  source:
+    bucket: ((gcs-bucket-intermediates))
+    json_key: ((concourse-gcs-resources-service-account-key))
+    versioned_file: ((pipeline-name))/bin_gpdb6_ubuntu18.04_with_components/bin_gpdb.tar.gz
 
 - name: gpdb6-centos6-build
   type: registry-image
@@ -827,25 +882,178 @@ jobs:
       PLATFORM: "sles11"
       GPDB_MAJOR_VERSION: "5"
 
+- name: gpdb_component_packaging_centos6
+  plan:
+  - in_parallel:
+    - get: gp-greenplum-morgan-stanley
+    - get: bin_gpdb6_centos6
+      trigger: true
+    - get: google-cloud-build
+    - get: gp-release
+    - get: greenplum-database-release
+      trigger: true
+  - file: gp-release/gpdb6/concourse/tasks/add_components.yml
+    image: google-cloud-build
+    input_mapping:
+      bin_gpdb: bin_gpdb6_centos6
+    output_mapping:
+      bin_gpdb_with_components: bin_gpdb_centos6_with_components
+    task: add_components_to_bin_gpdb_centos6
+    params:
+      COMPONENT_GPSS_LOCATION: ((gpss-RHEL6-gcs-location))
+      COMPONENT_DISKQUOTA_LOCATION: ((diskquota-RHEL6-gcs-location))
+      COMPONENT_METRICS_COLLECTOR_LOCATION: ((metrics-collector-RHEL6-gcs-location))
+      COMPONENT_ADVANCED_PASSWORD_CHECK_LOCATION: ((advanced-password-check-RHEL6-gcs-location))
+      COMPONENT_GPMT_LOCATION: ((gpmt-RHEL6-gcs-location))
+      COMPONENT_IP4R_LOCATION: ((ip4r-RHEL6-gcs-location))
+      COMPONENT_POSTGRESQL_HLL_LOCATION: ((postgresql-hll-RHEL6-gcs-location))
+      COMPONENT_GPTEXT_GPCC_PLUGIN_LOCATION: ((gptext-gpcc-plugin-RHEL6-gcs-location))
+      GCLOUD_SERVICE_ACCOUNT_KEY: ((concourse-gcs-resources-service-account-key))
+  - params:
+      file: bin_gpdb_centos6_with_components/bin_gpdb.tar.gz
+    put: bin_gpdb6_centos6_with_components
+
+- name: gpdb_component_packaging_centos7
+  plan:
+  - in_parallel:
+    - get: gp-greenplum-morgan-stanley
+    - get: bin_gpdb6_centos7
+      trigger: true
+    - get: google-cloud-build
+    - get: gp-release
+    - get: greenplum-database-release
+      trigger: true
+  - file: gp-release/gpdb6/concourse/tasks/add_components.yml
+    image: google-cloud-build
+    input_mapping:
+      bin_gpdb: bin_gpdb6_centos7
+    output_mapping:
+      bin_gpdb_with_components: bin_gpdb_centos7_with_components
+    task: add_components_to_bin_gpdb_centos7
+    params:
+      COMPONENT_GPSS_LOCATION: ((gpss-RHEL7-gcs-location))
+      COMPONENT_DISKQUOTA_LOCATION: ((diskquota-RHEL7-gcs-location))
+      COMPONENT_METRICS_COLLECTOR_LOCATION: ((metrics-collector-RHEL7-gcs-location))
+      COMPONENT_ADVANCED_PASSWORD_CHECK_LOCATION: ((advanced-password-check-RHEL7-gcs-location))
+      COMPONENT_GPMT_LOCATION: ((gpmt-RHEL7-gcs-location))
+      COMPONENT_PLPYTHON3_LOCATION: ((plpython3-RHEL7-gcs-location))
+      COMPONENT_IP4R_LOCATION: ((ip4r-RHEL7-gcs-location))
+      COMPONENT_POSTGRESQL_HLL_LOCATION: ((postgresql-hll-RHEL7-gcs-location))
+      COMPONENT_GPTEXT_GPCC_PLUGIN_LOCATION: ((gptext-gpcc-plugin-RHEL7-gcs-location))
+      GCLOUD_SERVICE_ACCOUNT_KEY: ((concourse-gcs-resources-service-account-key))
+  - params:
+      file: bin_gpdb_centos7_with_components/bin_gpdb.tar.gz
+    put: bin_gpdb6_centos7_with_components
+
+- name: gpdb_component_packaging_rhel8
+  plan:
+  - in_parallel:
+    - get: gp-greenplum-morgan-stanley
+    - get: bin_gpdb6_rhel8
+      trigger: true
+    - get: google-cloud-build
+    - get: gp-release
+    - get: greenplum-database-release
+      trigger: true
+  - file: gp-release/gpdb6/concourse/tasks/add_components.yml
+    image: google-cloud-build
+    input_mapping:
+      bin_gpdb: bin_gpdb6_rhel8
+    output_mapping:
+      bin_gpdb_with_components: bin_gpdb_rhel8_with_components
+    task: add_components_to_bin_gpdb_rhel8
+    params:
+      COMPONENT_GPSS_LOCATION: ((gpss-RHEL8-gcs-location))
+      COMPONENT_DISKQUOTA_LOCATION: ((diskquota-RHEL8-gcs-location))
+      COMPONENT_METRICS_COLLECTOR_LOCATION: ((metrics-collector-RHEL8-gcs-location))
+      COMPONENT_ADVANCED_PASSWORD_CHECK_LOCATION: ((advanced-password-check-RHEL8-gcs-location))
+      COMPONENT_GPMT_LOCATION: ((gpmt-RHEL8-gcs-location))
+      COMPONENT_PLPYTHON3_LOCATION: ((plpython3-RHEL8-gcs-location))
+      COMPONENT_IP4R_LOCATION: ((ip4r-RHEL8-gcs-location))
+      COMPONENT_POSTGRESQL_HLL_LOCATION: ((postgresql-hll-RHEL8-gcs-location))
+      COMPONENT_GPTEXT_GPCC_PLUGIN_LOCATION: ((gptext-gpcc-plugin-RHEL8-gcs-location))
+      GCLOUD_SERVICE_ACCOUNT_KEY: ((concourse-gcs-resources-service-account-key))
+  - params:
+      file: bin_gpdb_rhel8_with_components/bin_gpdb.tar.gz
+    put: bin_gpdb6_rhel8_with_components
+
+- name: gpdb_component_packaging_photon3
+  plan:
+  - in_parallel:
+    - get: gp-greenplum-morgan-stanley
+    - get: bin_gpdb6_photon3
+      trigger: true
+    - get: google-cloud-build
+    - get: gp-release
+    - get: greenplum-database-release
+      trigger: true
+  - file: gp-release/gpdb6/concourse/tasks/add_components.yml
+    image: google-cloud-build
+    input_mapping:
+      bin_gpdb: bin_gpdb6_photon3
+    output_mapping:
+      bin_gpdb_with_components: bin_gpdb_photon3_with_components
+    task: add_components_to_bin_gpdb_photon3
+    params:
+      COMPONENT_METRICS_COLLECTOR_LOCATION: ((metrics-collector-PHOTON3-gcs-location))
+      GCLOUD_SERVICE_ACCOUNT_KEY: ((concourse-gcs-resources-service-account-key))
+  - params:
+      file: bin_gpdb_photon3_with_components/bin_gpdb.tar.gz
+    put: bin_gpdb6_photon3_with_components
+
+- name: gpdb_component_packaging_ubuntu18.04
+  plan:
+  - in_parallel:
+    - get: gp-greenplum-morgan-stanley
+    - get: bin_gpdb6_ubuntu18.04
+      trigger: true
+    - get: google-cloud-build
+    - get: gp-release
+    - get: greenplum-database-release
+      trigger: true
+  - file: gp-release/gpdb6/concourse/tasks/add_components.yml
+    image: google-cloud-build
+    input_mapping:
+      bin_gpdb: bin_gpdb6_ubuntu18.04
+    output_mapping:
+      bin_gpdb_with_components: bin_gpdb_ubuntu18.04_with_components
+    task: add_components_to_bin_gpdb_ubuntu18.04
+    params:
+      COMPONENT_GPSS_LOCATION: ((gpss-BIONIC-gcs-location))
+      COMPONENT_DISKQUOTA_LOCATION: ((diskquota-BIONIC-gcs-location))
+      COMPONENT_METRICS_COLLECTOR_LOCATION: ((metrics-collector-BIONIC-gcs-location))
+      COMPONENT_ADVANCED_PASSWORD_CHECK_LOCATION: ((advanced-password-check-BIONIC-gcs-location))
+      COMPONENT_GPMT_LOCATION: ((gpmt-BIONIC-gcs-location))
+      COMPONENT_PLPYTHON3_LOCATION: ((plpython3-BIONIC-gcs-location))
+      COMPONENT_IP4R_LOCATION: ((ip4r-BIONIC-gcs-location))
+      COMPONENT_POSTGRESQL_HLL_LOCATION: ((postgresql-hll-BIONIC-gcs-location))
+      GCLOUD_SERVICE_ACCOUNT_KEY: ((concourse-gcs-resources-service-account-key))
+  - params:
+      file: bin_gpdb_ubuntu18.04_with_components/bin_gpdb.tar.gz
+    put: bin_gpdb6_ubuntu18.04_with_components
+
 - name: create_gpdb6_rpm_installer_centos6
   plan:
   - in_parallel:
-    - get: bin_gpdb6_centos6
+    - get: bin_gpdb6_centos6_with_components
       trigger: true
+      passed:
+      - gpdb_component_packaging_centos6
     - get: greenplum-database-release
-      trigger: true
+      passed:
+      - gpdb_component_packaging_centos6
     - get: gpdb6-centos6-build
     - get: gpdb6-osl
   - task: retrieve_gpdb6_src
     file: greenplum-database-release/ci/concourse/tasks/retrieve-gpdb-src.yml
     image: gpdb6-centos6-build
     input_mapping:
-      bin_gpdb: bin_gpdb6_centos6
+      bin_gpdb: bin_gpdb6_centos6_with_components
   - task: build_rpm_gpdb6_centos6
     file: greenplum-database-release/ci/concourse/tasks/build-gpdb-rpm.yml
     image: gpdb6-centos6-build
     input_mapping:
-      bin_gpdb: bin_gpdb6_centos6
+      bin_gpdb: bin_gpdb6_centos6_with_components
       license_file: gpdb6-osl
     params:
       <<: *gpdb6-rpm-params
@@ -858,21 +1066,24 @@ jobs:
   plan:
   - in_parallel:
     - get: greenplum-database-release
+      passed:
+      - gpdb_component_packaging_centos6
+    - get: bin_gpdb6_centos6_with_components
       trigger: true
-    - get: bin_gpdb6_centos6
-      trigger: true
+      passed:
+      - gpdb_component_packaging_centos6
     - get: gpdb6-centos6-build
     - get: gpdb6-osl
   - task: retrieve_gpdb6_src
     file: greenplum-database-release/ci/concourse/tasks/retrieve-gpdb-src.yml
     image: gpdb6-centos6-build
     input_mapping:
-      bin_gpdb: bin_gpdb6_centos6
+      bin_gpdb: bin_gpdb6_centos6_with_components
   - task: build_rpm_gpdb6_centos6
     file: greenplum-database-release/ci/concourse/tasks/build-gpdb-rpm.yml
     image: gpdb6-centos6-build
     input_mapping:
-      bin_gpdb: bin_gpdb6_centos6
+      bin_gpdb: bin_gpdb6_centos6_with_components
       license_file: gpdb6-osl
     params:
       <<: *gpdb6-rpm-params-oss
@@ -885,22 +1096,25 @@ jobs:
 - name: create_gpdb6_rpm_installer_centos7
   plan:
   - in_parallel:
-    - get: bin_gpdb6_centos7
+    - get: bin_gpdb6_centos7_with_components
       trigger: true
+      passed:
+      - gpdb_component_packaging_centos7
     - get: greenplum-database-release
-      trigger: true
+      passed:
+      - gpdb_component_packaging_centos7
     - get: gpdb6-centos7-build
     - get: gpdb6-osl
   - task: retrieve_gpdb6_src
     file: greenplum-database-release/ci/concourse/tasks/retrieve-gpdb-src.yml
     image: gpdb6-centos7-build
     input_mapping:
-      bin_gpdb: bin_gpdb6_centos7
+      bin_gpdb: bin_gpdb6_centos7_with_components
   - task: build_rpm_gpdb6_centos7
     file: greenplum-database-release/ci/concourse/tasks/build-gpdb-rpm.yml
     image: gpdb6-centos7-build
     input_mapping:
-      bin_gpdb: bin_gpdb6_centos7
+      bin_gpdb: bin_gpdb6_centos7_with_components
       license_file: gpdb6-osl
     params:
       <<: *gpdb6-rpm-params
@@ -913,21 +1127,24 @@ jobs:
   plan:
   - in_parallel:
     - get: greenplum-database-release
+      passed:
+      - gpdb_component_packaging_centos7
+    - get: bin_gpdb6_centos7_with_components
       trigger: true
-    - get: bin_gpdb6_centos7
-      trigger: true
+      passed:
+      - gpdb_component_packaging_centos7
     - get: gpdb6-centos7-build
     - get: gpdb6-osl
   - task: retrieve_gpdb6_src
     file: greenplum-database-release/ci/concourse/tasks/retrieve-gpdb-src.yml
     image: gpdb6-centos7-build
     input_mapping:
-      bin_gpdb: bin_gpdb6_centos7
+      bin_gpdb: bin_gpdb6_centos7_with_components
   - task: build_rpm_gpdb6_centos7
     file: greenplum-database-release/ci/concourse/tasks/build-gpdb-rpm.yml
     image: gpdb6-centos7-build
     input_mapping:
-      bin_gpdb: bin_gpdb6_centos7
+      bin_gpdb: bin_gpdb6_centos7_with_components
       license_file: gpdb6-osl
     params:
       <<: *gpdb6-rpm-params-oss
@@ -940,22 +1157,25 @@ jobs:
 - name: create_gpdb6_rpm_installer_rhel8
   plan:
   - in_parallel:
-    - get: bin_gpdb6_rhel8
+    - get: bin_gpdb6_rhel8_with_components
       trigger: true
+      passed:
+      - gpdb_component_packaging_rhel8
     - get: greenplum-database-release
-      trigger: true
+      passed:
+      - gpdb_component_packaging_rhel8
     - get: gpdb6-rhel8-build
     - get: gpdb6-osl
   - task: retrieve_gpdb6_src
     file: greenplum-database-release/ci/concourse/tasks/retrieve-gpdb-src.yml
     image: gpdb6-rhel8-build
     input_mapping:
-      bin_gpdb: bin_gpdb6_rhel8
+      bin_gpdb: bin_gpdb6_rhel8_with_components
   - task: build_rpm_gpdb6_rhel8
     file: greenplum-database-release/ci/concourse/tasks/build-gpdb-rpm.yml
     image: gpdb6-rhel8-build
     input_mapping:
-      bin_gpdb: bin_gpdb6_rhel8
+      bin_gpdb: bin_gpdb6_rhel8_with_components
       license_file: gpdb6-osl
     params:
       <<: *gpdb6-rpm-params
@@ -968,21 +1188,24 @@ jobs:
   plan:
   - in_parallel:
     - get: greenplum-database-release
+      passed:
+      - gpdb_component_packaging_rhel8
+    - get: bin_gpdb6_rhel8_with_components
       trigger: true
-    - get: bin_gpdb6_rhel8
-      trigger: true
+      passed:
+      - gpdb_component_packaging_rhel8
     - get: gpdb6-rhel8-build
     - get: gpdb6-osl
   - task: retrieve_gpdb6_src
     file: greenplum-database-release/ci/concourse/tasks/retrieve-gpdb-src.yml
     image: gpdb6-rhel8-build
     input_mapping:
-      bin_gpdb: bin_gpdb6_rhel8
+      bin_gpdb: bin_gpdb6_rhel8_with_components
   - task: build_rpm_gpdb6_rhel8
     file: greenplum-database-release/ci/concourse/tasks/build-gpdb-rpm.yml
     image: gpdb6-rhel8-build
     input_mapping:
-      bin_gpdb: bin_gpdb6_rhel8
+      bin_gpdb: bin_gpdb6_rhel8_with_components
       license_file: gpdb6-osl
     params:
       <<: *gpdb6-rpm-params-oss
@@ -995,22 +1218,25 @@ jobs:
 - name: create_gpdb6_rpm_installer_photon3
   plan:
   - in_parallel:
-    - get: bin_gpdb6_photon3
+    - get: bin_gpdb6_photon3_with_components
       trigger: true
+      passed:
+      - gpdb_component_packaging_photon3
     - get: greenplum-database-release
-      trigger: true
+      passed:
+      - gpdb_component_packaging_photon3
     - get: gpdb6-photon3-build
     - get: gpdb6-osl
   - task: retrieve_gpdb6_src
     file: greenplum-database-release/ci/concourse/tasks/retrieve-gpdb-src.yml
     image: gpdb6-photon3-build
     input_mapping:
-      bin_gpdb: bin_gpdb6_photon3
+      bin_gpdb: bin_gpdb6_photon3_with_components
   - task: build_rpm_gpdb6_photon3
     file: greenplum-database-release/ci/concourse/tasks/build-gpdb-rpm.yml
     image: gpdb6-photon3-build
     input_mapping:
-      bin_gpdb: bin_gpdb6_photon3
+      bin_gpdb: bin_gpdb6_photon3_with_components
       license_file: gpdb6-osl
     params:
       <<: *gpdb6-rpm-params
@@ -1022,17 +1248,20 @@ jobs:
 - name: create_gpdb6_deb_installer_ubuntu18.04
   plan:
   - in_parallel:
-    - get: bin_gpdb6_ubuntu18.04
+    - get: bin_gpdb6_ubuntu18.04_with_components
       trigger: true
+      passed:
+      - gpdb_component_packaging_ubuntu18.04
     - get: greenplum-database-release
-      trigger: true
+      passed:
+      - gpdb_component_packaging_ubuntu18.04
     - get: gpdb6-ubuntu18.04-build
     - get: gpdb6-osl
   - task: build_deb_gpdb6_ubuntu18.04
     file: greenplum-database-release/ci/concourse/tasks/build-gpdb-deb.yml
     image: gpdb6-ubuntu18.04-build
     input_mapping:
-      bin_gpdb: bin_gpdb6_ubuntu18.04
+      bin_gpdb: bin_gpdb6_ubuntu18.04_with_components
       license_file: gpdb6-osl
     params:
       GPDB_OSS: false
@@ -1993,6 +2222,11 @@ groups:
   - test_functionality_gpdb7_rpm_rhel8
   - create_gpdb6_rpm_installer_rhel8_oss
   - create_gpdb7_rpm_installer_rhel8_oss
+  - gpdb_component_packaging_centos6
+  - gpdb_component_packaging_centos7
+  - gpdb_component_packaging_rhel8
+  - gpdb_component_packaging_ubuntu18.04
+  - gpdb_component_packaging_photon3
   name: All
 - jobs:
   - create_gpdb5_rpm_installer_sles11
@@ -2017,6 +2251,11 @@ groups:
   - create_gpdb6_rpm_installer_centos7_oss
   - create_gpdb6_deb_ppa_installer_ubuntu18.04
   - create_gpdb6_rpm_installer_rhel8_oss
+  - gpdb_component_packaging_centos6
+  - gpdb_component_packaging_centos7
+  - gpdb_component_packaging_rhel8
+  - gpdb_component_packaging_ubuntu18.04
+  - gpdb_component_packaging_photon3
   name: gpdb 6 server
 - jobs:
   - create_gpdb6_clients_rpm_installer_sles12

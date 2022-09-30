@@ -20,3 +20,4 @@ ci/concourse/tests/__pycache__/
 /*.rpm.sha256
 *.swp
 .idea/
+gp6-release.yml
