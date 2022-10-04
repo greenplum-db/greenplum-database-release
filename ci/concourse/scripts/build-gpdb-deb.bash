@@ -51,6 +51,7 @@ if [ "${gpdb_major_version}" = "7" ]; then
 	find . | grep __pycache__ | xargs rm -rf
 else
 	dpkg -L "greenplum-db-${gpdb_major_version}" | grep '\.py$' | while read file; do rm -f "\${file}"[co] >/dev/null; done
+	find . | grep __pycache__ | xargs rm -rf
 fi
 exit 0
 EOF
@@ -120,6 +121,12 @@ EOF
 set -e
 cd /opt/greenplum-db-${GPDB_VERSION}
 ext/python/bin/python -m compileall -q -x "(test|python3)" .
+if [ -f ext/python3.9/bin/python3 ];then
+  cd ext/python3.9/
+  bin/python3 -m compileall -q -o 0 -o 1 -o 2 -x "(lib/python3.9/lib2to3/tests/data|lib/python3.9/site-packages/|lib/python3.9/test/)" .
+  cd lib/python3.9/site-packages/
+  ../../../bin/python3.9 -m compileall -q -o 0 .
+fi
 exit 0
 EOF
 		chmod 0775 "${__package_name}/${DEB_DIR}/postinst"
@@ -149,6 +156,12 @@ if [ "${gpdb_major_version}" = "7" ]; then
 	python3 -m compileall -q -x test .
 else
 	ext/python/bin/python -m compileall -q -x "(test|python3)" .
+	if [ -f ext/python3.9/bin/python3 ];then
+		cd ext/python3.9/
+		bin/python3 -m compileall -q -o 0 -o 1 -o 2 -x "(lib/python3.9/lib2to3/tests/data|lib/python3.9/site-packages/|lib/python3.9/test/)" .
+		cd lib/python3.9/site-packages/
+		../../../bin/python3.9 -m compileall -q -o 0 .
+	fi
 fi
 exit 0
 EOF
