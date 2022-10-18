@@ -39,6 +39,15 @@ resources:
     uri: git@github.com:pivotal/gp-release
   type: git
 
+- name: gp-release-train
+  type: git
+  source:
+    uri: git@github.com:pivotal/gp-release-train.git
+    paths:
+    - consist/6.99.99.toml
+    branch: main
+    private_key: ((releng/gp-release-train-deploy-key))
+
 - name: gp-greenplum-morgan-stanley
   source:
     branch: main
@@ -49,6 +58,12 @@ resources:
 - name: google-cloud-build
   source:
     repository: gcr.io/data-gpdb-public-images/google-cloud-build
+    tag: latest
+  type: registry-image
+
+- name: start-release-process
+  source:
+    repository: gcr.io/data-gpdb-public-images/start-release-process
     tag: latest
   type: registry-image
 
@@ -893,6 +908,34 @@ jobs:
       PLATFORM: "sles11"
       GPDB_MAJOR_VERSION: "5"
 
+- name: refresh_integrated_components
+  plan:
+  - in_parallel:
+    - get: gp-release-train
+      trigger: true
+    - get: greenplum-database-release
+      trigger: true
+    - get: gp-release
+    - get: start-release-process
+  - task: refresh_components
+    image: start-release-process
+    config:
+      platform: linux
+      inputs:
+      - name: gp-release-train
+      - name: gp-release
+      - name: greenplum-database-release
+      params:
+        BASIC_AUTH_PASSWORD: ((releng/basic_auth_password_releng))
+      run:
+        path: /bin/sh
+        args:
+        - -exc
+        - |
+          fly -t releng login -c https://releng.ci.gpdb.pivotal.io -u pivotal -p ${BASIC_AUTH_PASSWORD}
+          export WORKSPACE=`pwd`
+          make -C greenplum-database-release set-gpdb-package-testing-prod
+
 - name: gpdb_component_packaging_centos6
   plan:
   - in_parallel:
@@ -901,7 +944,11 @@ jobs:
       trigger: true
     - get: google-cloud-build
     - get: gp-release
+      passed:
+      - refresh_integrated_components
     - get: greenplum-database-release
+      passed:
+      - refresh_integrated_components
       trigger: true
   - file: gp-release/gpdb6/concourse/tasks/add_components.yml
     image: google-cloud-build
@@ -932,7 +979,11 @@ jobs:
       trigger: true
     - get: google-cloud-build
     - get: gp-release
+      passed:
+      - refresh_integrated_components
     - get: greenplum-database-release
+      passed:
+      - refresh_integrated_components
       trigger: true
   - file: gp-release/gpdb6/concourse/tasks/add_components.yml
     image: google-cloud-build
@@ -964,7 +1015,11 @@ jobs:
       trigger: true
     - get: google-cloud-build
     - get: gp-release
+      passed:
+      - refresh_integrated_components
     - get: greenplum-database-release
+      passed:
+      - refresh_integrated_components
       trigger: true
   - file: gp-release/gpdb6/concourse/tasks/add_components.yml
     image: google-cloud-build
@@ -996,7 +1051,11 @@ jobs:
       trigger: true
     - get: google-cloud-build
     - get: gp-release
+      passed:
+      - refresh_integrated_components
     - get: greenplum-database-release
+      passed:
+      - refresh_integrated_components
       trigger: true
   - file: gp-release/gpdb6/concourse/tasks/add_components.yml
     image: google-cloud-build
@@ -1020,7 +1079,11 @@ jobs:
       trigger: true
     - get: google-cloud-build
     - get: gp-release
+      passed:
+      - refresh_integrated_components
     - get: greenplum-database-release
+      passed:
+      - refresh_integrated_components
       trigger: true
   - file: gp-release/gpdb6/concourse/tasks/add_components.yml
     image: google-cloud-build
@@ -2244,6 +2307,7 @@ groups:
   - gpdb_component_packaging_rhel8
   - gpdb_component_packaging_ubuntu18.04
   - gpdb_component_packaging_photon3
+  - refresh_integrated_components
   name: All
 - jobs:
   - create_gpdb5_rpm_installer_sles11
@@ -2273,6 +2337,7 @@ groups:
   - gpdb_component_packaging_rhel8
   - gpdb_component_packaging_ubuntu18.04
   - gpdb_component_packaging_photon3
+  - refresh_integrated_components
   name: gpdb 6 server
 - jobs:
   - create_gpdb6_clients_rpm_installer_sles12
