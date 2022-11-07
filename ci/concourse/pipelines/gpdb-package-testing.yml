@@ -173,6 +173,13 @@ resources:
     json_key: ((concourse-gcs-resources-service-account-key))
     regexp: clients/published/master/clients-rc-(.*)-rhel8_x86_64.tar.gz
 
+- name: bin_gpdb7_clients_rocky8
+  type: gcs
+  source:
+    bucket: pivotal-gpdb-concourse-resources-prod
+    json_key: ((concourse-gcs-resources-service-account-key))
+    regexp: clients/published/main/clients-rc-(.*)-rocky8_x86_64.tar.gz
+
 - name: rpm_gpdb5_centos7
   type: gcs
   source:
@@ -230,6 +237,13 @@ resources:
     bucket: ((gcs-bucket-intermediates))
     json_key: ((concourse-gcs-resources-service-account-key))
     versioned_file: ((pipeline-name))/rpm_gpdb_clients_rhel8/master/greenplum-db-clients-0.0.0-rhel8-x86_64.rpm
+
+- name: rpm_gpdb7_clients_rocky8
+  type: gcs
+  source:
+    bucket: ((gcs-bucket-intermediates))
+    json_key: ((concourse-gcs-resources-service-account-key))
+    versioned_file: ((pipeline-name))/rpm_gpdb_clients_rocky8/main/greenplum-db-clients-0.0.0-rocky8-x86_64.rpm
 
 - name: rpm_gpdb6_clients_sles12
   type: gcs
@@ -317,6 +331,13 @@ resources:
     json_key: ((concourse-gcs-resources-service-account-key))
     regexp: server/published/master/server-rc-(.*)-rhel8_x86_64.tar.gz
 
+- name: bin_gpdb7_rocky8
+  type: gcs
+  source:
+    bucket: pivotal-gpdb-concourse-resources-prod
+    json_key: ((concourse-gcs-resources-service-account-key))
+    regexp: server/published/main/server-rc-(.*)-rocky8_x86_64.tar.gz
+
 - name: bin_gpdb6_photon3
   type: gcs
   source:
@@ -394,6 +415,12 @@ resources:
     password: ((data-gpdb-private-images-container-registry-readonly-service-account-key))
     tag: latest
 
+- name: gpdb7-rocky8-build
+  type: registry-image
+  source:
+    repository: gcr.io/data-gpdb-public-images/gpdb7-rocky8-build
+    tag: latest
+
 - name: gpdb6-rhel8-test
   type: registry-image
   source:
@@ -410,6 +437,12 @@ resources:
     password: ((data-gpdb-private-images-container-registry-readonly-service-account-key))
     tag: latest
 
+- name: gpdb7-rocky8-test
+  type: registry-image
+  source:
+    repository: gcr.io/data-gpdb-public-images/gpdb7-rocky8-test
+    tag: latest
+
 - name: rhel-8
   type: registry-image
   source:
@@ -417,6 +450,12 @@ resources:
     username: ((releng/redhat-registry-username))
     password: ((releng/redhat-registry-token))
     tag: latest
+
+- name: rocky-8
+  type: registry-image
+  source:
+    repository: rockylinux
+    tag: 8
 
 - name: gpdb6-ubuntu18.04-build
   type: registry-image
@@ -529,6 +568,13 @@ resources:
     json_key: ((concourse-gcs-resources-service-account-key))
     versioned_file: ((pipeline-name))/rpm_gpdb_rhel8/master/open-source-greenplum-db-7-rhel8-x86_64.rpm
 
+- name: rpm_gpdb7_rocky8_oss
+  type: gcs
+  source:
+    bucket: ((gcs-bucket-intermediates))
+    json_key: ((concourse-gcs-resources-service-account-key))
+    versioned_file: ((pipeline-name))/rpm_gpdb_rocky8/gpdb7/open-source-greenplum-db-7-rocky8-x86_64.rpm
+
 - name: rpm_gpdb6_rhel8
   type: gcs
   source:
@@ -542,6 +588,13 @@ resources:
     bucket: ((gcs-bucket-intermediates))
     json_key: ((concourse-gcs-resources-service-account-key))
     versioned_file: ((pipeline-name))/rpm_gpdb_rhel8/gpdb7/greenplum-db-7-rhel8-x86_64.rpm
+
+- name: rpm_gpdb7_rocky8
+  type: gcs
+  source:
+    bucket: ((gcs-bucket-intermediates))
+    json_key: ((concourse-gcs-resources-service-account-key))
+    versioned_file: ((pipeline-name))/rpm_gpdb_rocky8/gpdb7/greenplum-db-7-rocky8-x86_64.rpm
 
 - name: rpm_gpdb6_photon3
   type: gcs
@@ -1779,6 +1832,34 @@ jobs:
     params:
       file: gpdb_rpm_installer/*.rpm
 
+- name: create_gpdb7_rpm_installer_rocky8_oss
+  plan:
+  - in_parallel:
+    - get: greenplum-database-release
+      trigger: true
+    - get: bin_gpdb7_rocky8
+      trigger: true
+    - get: gpdb7-rocky8-build
+    - get: gpdb6-osl
+  - task: retrieve_gpdb7_src
+    file: greenplum-database-release/ci/concourse/tasks/retrieve-gpdb-src.yml
+    image: gpdb7-rocky8-build
+    input_mapping:
+      bin_gpdb: bin_gpdb7_rocky8
+  - task: build_rpm_gpdb7_rocky8
+    file: greenplum-database-release/ci/concourse/tasks/build-gpdb-rpm.yml
+    image: gpdb7-rocky8-build
+    input_mapping:
+      bin_gpdb: bin_gpdb7_rocky8
+      license_file: gpdb6-osl
+    params:
+      <<: *gpdb7-rpm-params-oss
+      PLATFORM: rocky8
+      GPDB_NAME: greenplum-db-7
+  - put: rpm_gpdb7_rocky8_oss
+    params:
+      file: gpdb_rpm_installer/*.rpm
+
 - name: create_gpdb7_rpm_installer_rhel8
   plan:
   - in_parallel:
@@ -1806,6 +1887,33 @@ jobs:
     params:
       file: gpdb_rpm_installer/*.rpm
 
+- name: create_gpdb7_rpm_installer_rocky8
+  plan:
+  - in_parallel:
+    - get: bin_gpdb7_rocky8
+      trigger: true
+    - get: greenplum-database-release
+      trigger: true
+    - get: gpdb7-rocky8-build
+    - get: gpdb6-osl
+  - task: retrieve_gpdb7_src
+    file: greenplum-database-release/ci/concourse/tasks/retrieve-gpdb-src.yml
+    image: gpdb7-rocky8-build
+    input_mapping:
+      bin_gpdb: bin_gpdb7_rocky8
+  - task: build_rpm_gpdb7_rocky8
+    file: greenplum-database-release/ci/concourse/tasks/build-gpdb-rpm.yml
+    image: gpdb7-rocky8-build
+    input_mapping:
+      bin_gpdb: bin_gpdb7_rocky8
+      license_file: gpdb6-osl
+    params:
+      <<: *gpdb7-rpm-params
+      PLATFORM: rocky8
+  - put: rpm_gpdb7_rocky8
+    params:
+      file: gpdb_rpm_installer/*.rpm
+
 - name: create_gpdb7_clients_rpm_installer_rhel8
   plan:
   - in_parallel:
@@ -1828,6 +1936,29 @@ jobs:
     - params:
         file: gpdb_clients_rpm_installer/greenplum-db-clients-*-rhel8-x86_64.rpm
       put: rpm_gpdb7_clients_rhel8
+
+- name: create_gpdb7_clients_rpm_installer_rocky8
+  plan:
+  - in_parallel:
+    - get: bin_gpdb7_clients_rocky8
+      trigger: true
+    - get: gpdb7-rocky8-build
+    - get: greenplum-database-release
+      trigger: true
+  - in_parallel:
+    - file: greenplum-database-release/ci/concourse/tasks/build-gpdb-clients-rpm.yml
+      image: gpdb7-rocky8-build
+      input_mapping:
+        bin_gpdb_clients: bin_gpdb7_clients_rocky8
+      params:
+        GPDB_VERSION: 0.0.0
+        PLATFORM: rocky8
+        GPDB_MAJOR_VERSION: "7"
+      task: build_rpm_gpdb_rocky8
+  - in_parallel:
+    - params:
+        file: gpdb_clients_rpm_installer/greenplum-db-clients-*-rocky8-x86_64.rpm
+      put: rpm_gpdb7_clients_rocky8
 
 - name: test_functionality_gpdb7_rpm_rhel8
   plan:
@@ -1874,6 +2005,41 @@ jobs:
         REDHAT_SUBSCRIPTION_ORG_ID: ((releng/redhat_subscription_org_id))
         REDHAT_SUBSCRIPTION_KEY_ID: ((releng/redhat_subscription_key_id))
 
+- name: test_functionality_gpdb7_rpm_rocky8
+  plan:
+  - in_parallel:
+    - get: rpm_gpdb7_rocky8
+      passed:
+      - create_gpdb7_rpm_installer_rocky8
+      trigger: true
+    - get: greenplum-database-release
+      passed:
+      - create_gpdb7_rpm_installer_rocky8
+    - get: gpdb7-rocky8-test
+    - get: rocky-8
+    - get: rpm_gpdb7_rocky8_oss
+      passed:
+      - create_gpdb7_rpm_installer_rocky8_oss
+      trigger: true
+  - in_parallel:
+    - task: test_gpdb7_rpm_functionality
+      file: greenplum-database-release/ci/concourse/tasks/test-functionality-rpm.yml
+      image: gpdb7-rocky8-test
+      input_mapping:
+        gpdb_rpm_installer: rpm_gpdb7_rocky8
+        gpdb_rpm_oss_installer: rpm_gpdb7_rocky8_oss
+      params:
+        PLATFORM: rocky8
+        GPDB_MAJOR_VERSION: "7"
+    - task: test_package_dependencies
+      file: greenplum-database-release/ci/concourse/tasks/test-package-dependencies.yml
+      image: rocky-8
+      input_mapping:
+        gpdb_pkg_installer: rpm_gpdb7_rocky8
+      params:
+        PLATFORM: rocky8
+        GPDB_MAJOR_VERSION: "7"
+
 - name: test_functionality_clients_gpdb7_rpm_rhel8
   plan:
   - in_parallel:
@@ -1910,6 +2076,39 @@ jobs:
         REDHAT_SUBSCRIPTION_ORG_ID: ((releng/redhat_subscription_org_id))
         REDHAT_SUBSCRIPTION_KEY_ID: ((releng/redhat_subscription_key_id))
 
+- name: test_functionality_clients_gpdb7_rpm_rocky8
+  plan:
+  - in_parallel:
+    - get: rpm_gpdb7_clients_rocky8
+      passed:
+      - create_gpdb7_clients_rpm_installer_rocky8
+      trigger: true
+    - get: gpdb7-rocky8-build
+    - get: greenplum-database-release
+      passed:
+      - create_gpdb7_clients_rpm_installer_rocky8
+    - get: rocky-8
+    - get: rpm_gpdb7_rocky8_oss
+      passed:
+      - create_gpdb7_rpm_installer_rocky8_oss
+  - in_parallel:
+    - task: test_rpm_functionality
+      file: greenplum-database-release/ci/concourse/tasks/test-clients-functionality.yml
+      image: gpdb7-rocky8-build
+      input_mapping:
+        gpdb_clients_package_installer: rpm_gpdb7_clients_rocky8
+      params:
+        PLATFORM: rocky8
+        GPDB_MAJOR_VERSION: "7"
+    - task: test_package_dependencies
+      file: greenplum-database-release/ci/concourse/tasks/test-package-dependencies.yml
+      image: rocky-8
+      input_mapping:
+        gpdb_pkg_installer: rpm_gpdb7_clients_rocky8
+      params:
+        PLATFORM: rocky8
+        GPDB_MAJOR_VERSION: "7"
+        CLIENTS: "clients"
 
 groups:
 - jobs:
@@ -1943,11 +2142,16 @@ groups:
   - create_gpdb6_rpm_installer_centos6_oss
   - create_gpdb6_rpm_installer_centos7_oss
   - create_gpdb7_clients_rpm_installer_rhel8
+  - create_gpdb7_clients_rpm_installer_rocky8
   - test_functionality_clients_gpdb7_rpm_rhel8
+  - test_functionality_clients_gpdb7_rpm_rocky8
   - create_gpdb7_rpm_installer_rhel8
+  - create_gpdb7_rpm_installer_rocky8
   - test_functionality_gpdb7_rpm_rhel8
+  - test_functionality_gpdb7_rpm_rocky8
   - create_gpdb6_rpm_installer_rhel8_oss
   - create_gpdb7_rpm_installer_rhel8_oss
+  - create_gpdb7_rpm_installer_rocky8_oss
   - gpdb_component_packaging_centos6
   - gpdb_component_packaging_centos7
   - gpdb_component_packaging_rhel8
@@ -2001,8 +2205,13 @@ groups:
   - create_gpdb7_rpm_installer_rhel8
   - test_functionality_gpdb7_rpm_rhel8
   - create_gpdb7_rpm_installer_rhel8_oss
+  - create_gpdb7_rpm_installer_rocky8
+  - test_functionality_gpdb7_rpm_rocky8
+  - create_gpdb7_rpm_installer_rocky8_oss
   name: gpdb 7 server
 - jobs:
   - create_gpdb7_clients_rpm_installer_rhel8
   - test_functionality_clients_gpdb7_rpm_rhel8
+  - create_gpdb7_clients_rpm_installer_rocky8
+  - test_functionality_clients_gpdb7_rpm_rocky8
   name: gpdb 7 client

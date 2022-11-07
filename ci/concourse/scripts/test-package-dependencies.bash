@@ -4,7 +4,7 @@ set -exo pipefail
 
 export GPDB_PKG_PATH="gpdb_pkg_installer"
 
-if [[ $PLATFORM == "rhel"* ]]; then
+if [[ $PLATFORM == "rhel"* || $PLATFORM == "rocky"* ]]; then
 
 	if [[ $PLATFORM == "rhel6" ]]; then
 		# add repo configuration for vault.epel.cloud
@@ -19,6 +19,14 @@ if [[ $PLATFORM == "rhel"* ]]; then
 		subscription-manager attach --auto
 		# Required to install *-devel pacakges.
 		subscription-manager repos --enable codeready-builder-for-rhel-8-x86_64-rpms
+	fi
+	if [[ $PLATFORM == "rocky8" ]]; then
+		yum install -y findutils
+		# to install xerces-c
+		yum install epel-release
+		# to install libuv-devel
+		yum install -y yum-utils
+		yum-config-manager --enable powertools
 	fi
 
 	# Install file command
@@ -42,7 +50,7 @@ if [[ $PLATFORM == "rhel"* ]]; then
 	fi
 
 	if [[ $CLIENTS == "clients" ]]; then
-		if [[ $PLATFORM == "rhel8" && "${GPDB_MAJOR_VERSION}" == "7" ]]; then
+		if [[ ($PLATFORM == "rhel8" || $PLATFORM == "rocky8") && "${GPDB_MAJOR_VERSION}" == "7" ]]; then
 			ln -s /usr/bin/python3 /usr/bin/python
 		fi
 		source /usr/local/greenplum-db-clients/greenplum_clients_path.sh

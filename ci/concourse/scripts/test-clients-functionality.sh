@@ -6,7 +6,7 @@ export GPDB_CLIENTS_PATH="gpdb_clients_package_installer"
 export GPDB_CLIENTS_ARCH="$PLATFORM"
 export GPDB_CLIENTS_VERSION="0.0.0"
 
-if [[ $PLATFORM == "rhel"* || $PLATFORM == "sles"* ]]; then
+if [[ $PLATFORM == "rhel"* || $PLATFORM == "sles"* || $PLATFORM == "rocky"* ]]; then
 
 	# TODO: inspec should be available on the base container
 	# Install inspec v3 because v4 requires license for commercial use
