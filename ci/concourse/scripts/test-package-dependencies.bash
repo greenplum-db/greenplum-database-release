@@ -19,6 +19,7 @@ if [[ $PLATFORM == "rhel"* ]]; then
 		subscription-manager attach --auto
 		# Required to install *-devel pacakges.
 		subscription-manager repos --enable codeready-builder-for-rhel-8-x86_64-rpms
+		dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
 	fi
 
 	# Install file command

@@ -55,6 +55,7 @@ Requires: tar
 Requires: which
 Requires: zip
 Requires: zlib
+Requires: xerces-c
 %endif
 
 %if "%{platform}" == "rhel8"
