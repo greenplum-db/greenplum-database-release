@@ -22,8 +22,6 @@ if [[ $PLATFORM == "rhel"* || $PLATFORM == "rocky"* ]]; then
 	fi
 	if [[ $PLATFORM == "rocky8" ]]; then
 		yum install -y findutils
-		# to install xerces-c
-		yum install -y epel-release
 		# to install libuv-devel
 		yum install -y yum-utils
 		yum-config-manager --enable powertools
