@@ -15,6 +15,7 @@ if [[ $PLATFORM == "rhel"* || $PLATFORM == "rocky"* ]]; then
 
 	if [[ $PLATFORM == "rhel8" ]]; then
 		dnf update -y && dnf install -y subscription-manager
+		rm /etc/rhsm-host
 		subscription-manager register --org=${REDHAT_SUBSCRIPTION_ORG_ID} --activationkey=${REDHAT_SUBSCRIPTION_KEY_ID}
 		subscription-manager attach --auto
 		# Required to install *-devel pacakges.
