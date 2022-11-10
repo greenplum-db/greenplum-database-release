@@ -152,7 +152,7 @@ set-gpdb-package-testing-prod: generate-variables
 
 .PHONY: set-gpdb-package-testing-dev
 set-gpdb-package-testing-dev: generate-variables
-	sed -e 's|/env|/dev|g' ci/concourse/pipelines/gpdb-package-testing.yml > ci/concourse/pipelines/gpdb-package-testing-dev.yml
+	sed -e 's|/env|/dev|g' ci/concourse/pipelines/gpdb-package-testing-devel.yml > ci/concourse/pipelines/gpdb-package-testing-dev.yml
 
 	$(FLY_CMD) --target=$(CONCOURSE) \
 	set-pipeline \
