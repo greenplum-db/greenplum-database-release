@@ -887,6 +887,7 @@ jobs:
       - name: greenplum-database-release
       params:
         BASIC_AUTH_PASSWORD: ((releng/basic_auth_password_releng))
+        RUN_MODE: ((run_mode))
       run:
         path: /bin/sh
         args:
@@ -894,7 +895,13 @@ jobs:
         - |
           fly -t releng login -c https://releng.ci.gpdb.pivotal.io -u pivotal -p ${BASIC_AUTH_PASSWORD}
           export WORKSPACE=`pwd`
-          FLY_OPTION_NON_INTERACTIVE="-n" make -C greenplum-database-release set-gpdb-package-testing-prod
+          # RUN_MODE: prod|dev
+          if [ "${RUN_MODE}" != "prod" ]; then
+            FLY_OPTION_NON_INTERACTIVE="-n" make -C greenplum-database-release set-gpdb-package-testing-dev
+            exit 0
+          else
+            FLY_OPTION_NON_INTERACTIVE="-n" make -C greenplum-database-release set-gpdb-package-testing-prod
+          fi
 
 - name: gpdb_component_packaging_centos6
   plan:

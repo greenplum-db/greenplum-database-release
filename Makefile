@@ -148,6 +148,7 @@ set-gpdb-package-testing-prod: generate-variables
 	--load-vars-from=ci/concourse/vars/gpdb-package-testing.prod.yml \
 	--load-vars-from=ci/concourse/vars/greenplum-database-release.prod.yml \
 	--var=pipeline-name=gpdb-package-testing \
+	--var=run_mode=prod \
 	$(FLY_OPTION_NON_INTERACTIVE)
 
 .PHONY: set-gpdb-package-testing-dev
@@ -164,6 +165,7 @@ set-gpdb-package-testing-dev: generate-variables
 	--load-vars-from=ci/concourse/vars/greenplum-database-release.dev.yml \
 	--var=greenplum-database-release-git-branch=${BRANCH} \
 	--var=pipeline-name=${DEV_GPDB-PACKAGE-TESTING_PIPELINE_NAME} \
+	--var=run_mode=dev \
 	$(FLY_OPTION_NON_INTERACTIVE)
 
 	$(FLY_CMD) --target=releng unpause-pipeline --pipeline=gpdb-package-testing-$(BRANCH)-${USER}
