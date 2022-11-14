@@ -44,7 +44,8 @@ function determine_rpm_build_dir() {
 	rhel*) __rpm_build_dir=/root/rpmbuild ;;
 	photon*) __rpm_build_dir=/usr/src/photon ;;
 	rocky*) __rpm_build_dir=/root/rpmbuild ;;
-	*) die "Unsupported platform: '${__platform}'. sles*, rhel*, photon*, rocky*are supported" ;;
+	oel*) __rpm_build_dir=/root/rpmbuild ;;
+	*) die "Unsupported platform: '${__platform}'. sles*, rhel*, photon*, rocky*, oel* are supported" ;;
 	esac
 
 	echo "${__rpm_build_dir}"

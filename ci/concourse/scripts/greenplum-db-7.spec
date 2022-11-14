@@ -57,7 +57,7 @@ Requires: zip
 Requires: zlib
 %endif
 
-%if "%{platform}" == "rhel8" || "%{platform}" == "rocky8"
+%if "%{platform}" == "rhel8" || "%{platform}" == "rocky8" || "%{platform}" == "oel8"
 Requires: libevent
 Requires: libuv-devel
 Requires: libzstd-devel
