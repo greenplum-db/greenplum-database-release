@@ -23,19 +23,11 @@ if [[ $PLATFORM == "rhel"* || $PLATFORM == "rocky"* ]]; then
 	fi
 	if [[ $PLATFORM == "rocky8" ]]; then
 		yum install -y findutils
-		# to install libuv-devel
-		yum install -y yum-utils
-		yum-config-manager --enable powertools
 	fi
 
 	# Install file command
 	yum install -y file
-	if [[ $CLIENTS == "clients" ]]; then
-		if [[ $PLATFORM == "rhel7" && "${GPDB_MAJOR_VERSION}" == "7" ]]; then
-			# Required for installing libzstd-devel
-			yum install -y epel-release
-		fi
-	fi
+
 	# Install greenplum rpm
 	yum install -y ${GPDB_PKG_PATH}/*.rpm
 

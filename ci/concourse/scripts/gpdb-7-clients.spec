@@ -41,7 +41,7 @@ Requires: libedit
 Requires: python3-devel
 %if 0%{?rhel}
 Requires: libyaml
-Requires: libzstd-devel
+Requires: libzstd
 %else
 Requires: libyaml-0-2
 %endif

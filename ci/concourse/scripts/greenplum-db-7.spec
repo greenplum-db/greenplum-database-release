@@ -60,8 +60,8 @@ Requires: llvm-libs == 13.0.1
 
 %if "%{platform}" == "rhel8" || "%{platform}" == "rocky8" || "%{platform}" == "oel8"
 Requires: libevent
-Requires: libuv-devel
-Requires: libzstd-devel
+Requires: libuv
+Requires: libzstd
 Requires: libcgroup-tools
 %endif
 %if "%{platform}" == "rhel7"
