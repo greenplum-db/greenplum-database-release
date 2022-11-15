@@ -1,0 +1,8 @@
+---
+gpdb-git-branch: main
+gpdb-git-remote: https://github.com/greenplum-db/gpdb.git
+gpdb-git-tag-filter: 7.*
+gpdb-release-repository: gpdb
+gpdb-release-owner: gp-releng
+gcs-bucket-for-oss: greenplum-database-concourse-resources-dev
+tanzunet-product-slug: toolsmiths-gpdb-test

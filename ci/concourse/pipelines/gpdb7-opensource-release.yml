@@ -1,0 +1,304 @@
+# Copyright (C) 2019-Present VMware, and affiliates Inc. All rights reserved.
+# This program and the accompanying materials are made available under the
+# terms of the under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain a
+# copy of the License at
+# http://www.apache.org/licenses/LICENSE-2.0
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations under
+# the License.
+---
+resource_types:
+- name: gcs
+  type: registry-image
+  source:
+    repository: frodenas/gcs-resource
+
+- name: slack-notification
+  type: registry-image
+  source:
+    repository: cfcommunity/slack-notification-resource
+    tag: latest
+
+- name: tanzunet
+  source:
+    repository: gcr.io/data-gpdb-public-images/tanzunet-concourse-resource
+  type: registry-image
+
+resources:
+- name: slack-alert
+  type: slack-notification
+  icon: slack
+  source:
+    url: ((resources/slack/prod/slack-alert-gp-releng-webhook))
+
+- name: slack-start-greenplum-oss
+  type: slack-notification
+  source:
+    url: ((resources/slack/prod/slack-alert-gp-releng-webhook))
+
+## Image Resources
+- name: gpdb7-rhel8-build
+  type: registry-image
+  icon: docker
+  source:
+    repository: gcr.io/data-gpdb-private-images/gpdb7-rhel8-build
+    tag: latest
+    username: _json_key
+    password: ((resources/gcp/service_accounts/container-registry-readonly-service-account-key))
+
+- name: gpdb_src
+  type: git
+  icon: git
+  source:
+    uri: https://github.com/greenplum-db/gpdb.git
+    fetch_tags: true
+    tag_filter: ((gpdb-git-tag-filter))
+
+- name: gp-release-train
+  type: git
+  source:
+    branch: main
+    private_key: ((resources/github/deploy_keys/gp-release-train-deploy-key))
+    uri: git@github.com:pivotal/gp-release-train.git
+
+- name: greenplum-database-release
+  type: git
+  icon: git
+  source:
+    branch: ((greenplum-database-release-git-branch))
+    uri: ((greenplum-database-release-git-remote))
+
+- name: gpdb_release
+  type: github-release
+  icon: github-circle
+  source:
+    owner: ((gpdb-release-owner))
+    repository: ((gpdb-release-repository))
+    access_token: ((resources/github/access_tokens/github-token-gp-releng))
+
+- name: license_file
+  type: gcs
+  icon: google
+  source:
+    bucket: ((gcs-bucket-for-oss))
+    json_key: ((resources/gcp/service_accounts/concourse-gcs-resources-service-account-key))
+    regexp: osl/released/gpdb7/open_source_license_greenplum-database-7.0.0-97773a0-(.*).txt
+
+## RHEL8 Resources
+- name: bin_gpdb_rhel8
+  type: gcs
+  icon: google
+  source:
+    bucket: pivotal-gpdb-concourse-resources-prod
+    json_key: ((resources/gcp/service_accounts/concourse-gcs-resources-service-account-key))
+    regexp: oss/release-candidates/gpdb7/greenplum-db-oss-(((release-version)))-(((commit-sha)).*)-rhel8.tar.gz
+
+- name: bin_gpdb_rhel8_release
+  type: gcs
+  icon: google
+  source:
+    bucket: ((gcs-bucket-for-oss))
+    json_key: ((resources/gcp/service_accounts/concourse-gcs-resources-service-account-key))
+    regexp: greenplum-oss-server/released/gpdb7/server-(.*)-rhel8_x86_64.tar.gz
+
+- name: gpdb_rpm_installer_rhel8
+  type: gcs
+  icon: google
+  source:
+    bucket: ((gcs-bucket-for-oss))
+    json_key: ((resources/gcp/service_accounts/concourse-gcs-resources-service-account-key))
+    regexp: greenplum-oss-server/released/gpdb7/open-source-greenplum-db-(.*)-rhel8-x86_64.rpm
+
+- name: pivotal-gpdb
+  type: tanzunet
+  source:
+    api_token: ((resources/tanzunet/public-tanzunet-refresh-token))
+    endpoint: https://network.tanzu.vmware.com
+    product_slug: ((tanzunet-product-slug))
+    version: ^7\..*
+    availability: "All Users"
+
+jobs:
+- name: pipeline_start_gate
+  plan:
+  - in_parallel:
+      steps:
+      - get: greenplum-database-release
+      - get: pivotal-gpdb
+        params:
+          globs: []
+        trigger: true
+  - task: generate-start-message-oss
+    file: greenplum-database-release/ci/concourse/tasks/generate-start-messages-oss.yml
+  - put: slack-start-greenplum-oss
+    params:
+      text_file: start-messages-oss/message
+
+- name: compilation-gate
+  on_failure: &slack-alert
+    put: slack-alert
+    params:
+      # yamllint disable-line rule:line-length
+      text: Hey team, <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|greenplum-database-release/$BUILD_JOB_NAME> failed.
+  plan:
+  - in_parallel:
+      steps:
+      - get: greenplum-database-release
+        passed:
+        - pipeline_start_gate
+      - get: pivotal-gpdb
+        params:
+          globs: []
+        trigger: true
+        passed:
+        - pipeline_start_gate
+      - get: bin_gpdb_rhel8
+        params:
+          skip_download: 'true'
+
+- name: rhel8_packaging
+  on_failure:
+    <<: *slack-alert
+  plan:
+  - in_parallel:
+    - get: pivotal-gpdb
+      params:
+        globs: []
+      trigger: true
+      passed: [compilation-gate]
+    - get: gpdb_src
+    - get: greenplum-database-release
+      passed: [compilation-gate]
+    - get: bin_gpdb_rhel8
+      passed: [compilation-gate]
+    - get: gpdb7-rhel8-build
+    - get: license_file
+  - task: create_gpdb_rpm_package
+    file: greenplum-database-release/ci/concourse/tasks/build-gpdb-rpm.yml
+    image: gpdb7-rhel8-build
+    input_mapping:
+      bin_gpdb: bin_gpdb_rhel8
+    params:
+      PLATFORM: "rhel8"
+      GPDB_NAME: greenplum-db-7
+      GPDB_RELEASE: 1
+      GPDB_LICENSE: VMware Software EULA
+      GPDB_URL: https://github.com/greenplum-db/gpdb
+      GPDB_OSS: true
+  - put: gpdb_rpm_installer_rhel8
+    params:
+      file: gpdb_rpm_installer/*.rpm
+
+- name: release
+  on_failure:
+    <<: *slack-alert
+  plan:
+  - in_parallel:
+    - get: greenplum-database-release
+      passed:
+      - rhel8_packaging
+    - get: pivotal-gpdb
+      params:
+        globs: []
+      trigger: true
+      passed:
+      - rhel8_packaging
+    - get: bin_gpdb_rhel8
+      passed: [rhel8_packaging]
+      trigger: true
+    - get: gpdb_rpm_installer_rhel8
+      passed: [rhel8_packaging]
+    - get: gp-release-train
+    - get: license_file
+      passed:
+      - rhel8_packaging
+  - task: rename_gpdb_tarball
+    config:
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: centos
+          tag: 7
+      inputs:
+      - name: pivotal-gpdb
+      - name: bin_gpdb_rhel8
+      outputs:
+      - name: releases
+      run:
+        path: bash
+        args:
+        - -ec
+        - |
+          gpdb_semver=$(cat pivotal-gpdb/version |cut -d "#" -f 1)
+          cp -v bin_gpdb_rhel8/greenplum-db-oss-*.tar.gz releases/server-${gpdb_semver}-rhel8_x86_64.tar.gz
+  - task: verify_gpdb_versions
+    config:
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: centos
+          tag: 7
+      inputs:
+      - name: gp-release-train
+      - name: pivotal-gpdb
+      - name: greenplum-database-release
+      - name: bin_gpdb_rhel8
+      params:
+        RUN_MODE: ((run_mode))
+      run:
+        path: bash
+        args:
+        - -ec
+        - |
+          # only check the versions on production environment
+          # RUN_MODE: prod|dev
+          if [ "${RUN_MODE}" != "prod" ]; then
+            echo "CURRENT RUN_MODE: ${RUN_MODE}, NOT the 'prod' run mode and skip the verify_gpdb_versions step"
+            exit 0
+          fi
+          mv bin_gpdb_rhel8/greenplum-db-oss-*.tar.gz bin_gpdb_rhel8/bin_gpdb.tar.gz
+          gpdb_semver=$(cat pivotal-gpdb/version |cut -d "#" -f 1)
+          RELEASE_CONSIST=gp-release-train/consist/${gpdb_semver}.toml
+          export GPDB_SRC_SHA=$(grep commit ${RELEASE_CONSIST} | uniq | sed 's/.*"\(.*\)"/\1/' | uniq)
+          greenplum-database-release/ci/concourse/scripts/verify_gpdb_versions.bash
+  - in_parallel:
+    - put: bin_gpdb_rhel8_release
+      params:
+        file: "releases/server-*rhel8*.tar.gz"
+
+- name: publish_gpdb_github_release
+  on_failure:
+    <<: *slack-alert
+  plan:
+  - in_parallel:
+    - get: pivotal-gpdb
+      params:
+        globs: []
+      trigger: true
+      passed: [release]
+    - get: gpdb_src
+    - get: license_file
+      passed: [release]
+    - get: gpdb_rpm_installer_rhel8
+      passed: [release]
+      trigger: true
+    - get: greenplum-database-release
+      passed: [release]
+  - task: gpdb_github_release
+    file: greenplum-database-release/ci/concourse/tasks/gpdb-github-release.yml
+  - put: gpdb_release
+    params:
+      name: release_artifacts/name
+      tag: release_artifacts/tag
+      body: release_artifacts/body
+      commitish: release_artifacts/commitish
+      globs:
+      - release_artifacts/*.tar.gz
+      - release_artifacts/*.zip
+      - license_file/*.txt
+      - gpdb_rpm_installer_rhel8/*.rpm

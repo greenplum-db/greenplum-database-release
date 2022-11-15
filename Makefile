@@ -23,6 +23,7 @@ BRANCH ?= $(shell git rev-parse --abbrev-ref HEAD)
 WORKSPACE ?= ${HOME}/workspace
 
 DEV_PIPELINE_NAME              = dev-greenplum-database-release-${BRANCH}-${USER}
+DEV_PIPELINE_7_NAME              = dev-greenplum-database-release-7-${BRANCH}-${USER}
 FLY_CMD                    = fly
 FLY_OPTION_NON_INTERACTIVE ?=
 
@@ -43,6 +44,9 @@ list:
 	grep -v '__\$$' | \
 	sort"
 
+## ----------------------------------------------------------------------
+## Set GPDB6 Variables
+## ----------------------------------------------------------------------
 RELEASE_CONSIST ?= ${WORKSPACE}/gp-release-train/consist/6.99.99.toml
 RELEASE_CONFIG ?= ci/concourse/vars/gp6-release.yml
 FILE_NAME ?= $(shell basename ${RELEASE_CONSIST})
@@ -52,15 +56,24 @@ COMMIT_SHA ?= $(shell grep commit ${RELEASE_CONSIST} | uniq | sed 's/.*"\(.*\)"/
 MINOR_VERSION ?= $(shell echo "${RELEASE_VERSION}" | sed 's/\(\.[0-9]*\)/\.0/2' | cut -d '+' -f1 )
 
 ## ----------------------------------------------------------------------
+## Set GPDB7 Variables
+## ----------------------------------------------------------------------
+RELEASE_CONSIST_GPDB7 ?= ${WORKSPACE}/gp-release-train/consist/7.99.99.toml
+RELEASE_CONFIG_GPDB7 ?= ci/concourse/vars/gp7-release.yml
+FILE_NAME_GPDB7 ?= $(shell basename ${RELEASE_CONSIST_GPDB7})
+RELEASE_VERSION_GPDB7 ?= $(shell v='$(FILE_NAME_GPDB7)'; echo "$${v%.*}")
+RELEASE_VERSION_REGEX_GPDB7 ?= $(shell echo "${RELEASE_VERSION_GPDB7}" | sed 's/[][()\.^?+*${}|]/\\&/g')
+COMMIT_SHA_GPDB7 ?= $(shell grep commit ${RELEASE_CONSIST_GPDB7} | uniq | sed 's/.*"\(.*\)"/\1/' | uniq | cut -c 1-7 )
+MINOR_VERSION_GPDB7 ?= $(shell echo "${RELEASE_VERSION_GPDB7}" | sed 's/\(\.[0-9]*\)/\.0/2' | cut -d '+' -f1 )
+
+## ----------------------------------------------------------------------
 ## Set Development Pipeline
 ## ----------------------------------------------------------------------
-
 .PHONY: set-dev
 set-dev: set-pipeline-dev
 
 .PHONY: set-pipeline-dev
 set-pipeline-dev:
-
 	sed -e 's|/prod/|/dev/|g' -e 's|((resources/tanzunet/tanzunet-refresh-token))|((resources/tanzunet/public-tanzunet-refresh-token))|g' ci/concourse/pipelines/gpdb-opensource-release.yml > ci/concourse/pipelines/${DEV_PIPELINE_NAME}.yml
 
 	fly_7.6 --target=release \
@@ -80,6 +93,28 @@ set-pipeline-dev:
     $(FLY_OPTION_NON_INTERACTIVE)
 
 	fly_7.6 --target=release unpause-pipeline --pipeline=${DEV_PIPELINE_NAME}
+
+.PHONY: set-gpdb7-pipeline-dev
+set-gpdb7-pipeline-dev:
+	sed -e 's|/prod/|/dev/|g' -e 's|((resources/tanzunet/tanzunet-refresh-token))|((resources/tanzunet/public-tanzunet-refresh-token))|g' ci/concourse/pipelines/gpdb7-opensource-release.yml > ci/concourse/pipelines/${DEV_PIPELINE_7_NAME}.yml
+
+	fly_7.6 --target=release \
+    set-pipeline \
+    --check-creds \
+    --pipeline=${DEV_PIPELINE_7_NAME} \
+    --config=ci/concourse/pipelines/${DEV_PIPELINE_7_NAME}.yml \
+    --load-vars-from=ci/concourse/vars/greenplum-database-release-7.dev.yml \
+    --var=greenplum-database-release-git-branch=${BRANCH} \
+    --var=greenplum-database-release-git-remote=https://github.com/greenplum-db/greenplum-database-release.git \
+    --var=pipeline-name=${DEV_PIPELINE_7_NAME} \
+	--var=release-version="${RELEASE_VERSION_REGEX_GPDB7}" \
+	--var=commit-sha=.* \
+    --var=run_mode=dev \
+    --var=golang_version=$(GOLANG_VERSION) \
+	--var=minor-version=.* \
+    $(FLY_OPTION_NON_INTERACTIVE)
+
+	fly_7.6 --target=release unpause-pipeline --pipeline=${DEV_PIPELINE_7_NAME}
 
 ## ----------------------------------------------------------------------
 ## Destroy Development Pipeline
@@ -124,6 +159,29 @@ set-pipeline-prod:
 
 	@echo using the following command to unpause the pipeline:
 	@echo "\tfly_7.6 -t release unpause-pipeline --pipeline greenplum-database-release"
+
+.PHONY: set-gpdb7-pipeline-prod
+set-gpdb7-pipeline-prod:
+	sed -e 's|commitish: release_artifacts/commitish|## commitish: release_artifacts/commitish|g' ci/concourse/pipelines/gpdb7-opensource-release.yml > ci/concourse/pipelines/gpdb7-opensource-release-prod.yml
+
+	fly_7.6 --target=release \
+    set-pipeline \
+    --check-creds \
+    --pipeline=greenplum-database-release-7 \
+    --config=ci/concourse/pipelines/gpdb7-opensource-release-prod.yml \
+    --load-vars-from=ci/concourse/vars/greenplum-database-release-7.prod.yml \
+    --var=pipeline-name=greenplum-database-release-7 \
+    --var=greenplum-database-release-git-branch=main \
+    --var=greenplum-database-release-git-remote=https://github.com/greenplum-db/greenplum-database-release.git \
+	--var=release-version="${RELEASE_VERSION_REGEX_GPDB7}" \
+	--var=commit-sha=${COMMIT_SHA_GPDB7} \
+    --var=run_mode=prod \
+    --var=golang_version=$(GOLANG_VERSION) \
+	--var=minor-version=$(MINOR_VERSION_GPDB7) \
+    $(FLY_OPTION_NON_INTERACTIVE)
+
+	@echo using the following command to unpause the pipeline:
+	@echo "\tfly_7.6 -t release unpause-pipeline --pipeline greenplum-database-release-7"
 
 ## ----------------------------------------------------------------------
 ## Package Testing Pipelines
