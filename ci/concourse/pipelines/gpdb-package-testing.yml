@@ -331,13 +331,6 @@ resources:
     json_key: ((concourse-gcs-resources-service-account-key))
     regexp: server/published/master/server-rc-(.*)-rhel8_x86_64.tar.gz
 
-- name: bin_gpdb7_rocky8
-  type: gcs
-  source:
-    bucket: pivotal-gpdb-concourse-resources-prod
-    json_key: ((concourse-gcs-resources-service-account-key))
-    regexp: server/published/main/server-rc-(.*)-rocky8_x86_64.tar.gz
-
 - name: bin_gpdb6_photon3
   type: gcs
   source:
@@ -1844,7 +1837,7 @@ jobs:
   - in_parallel:
     - get: greenplum-database-release
       trigger: true
-    - get: bin_gpdb7_rocky8
+    - get: bin_gpdb7_rhel8
       trigger: true
     - get: gpdb7-rocky8-build
     - get: gpdb6-osl
@@ -1852,12 +1845,12 @@ jobs:
     file: greenplum-database-release/ci/concourse/tasks/retrieve-gpdb-src.yml
     image: gpdb7-rocky8-build
     input_mapping:
-      bin_gpdb: bin_gpdb7_rocky8
+      bin_gpdb: bin_gpdb7_rhel8
   - task: build_rpm_gpdb7_rocky8
     file: greenplum-database-release/ci/concourse/tasks/build-gpdb-rpm.yml
     image: gpdb7-rocky8-build
     input_mapping:
-      bin_gpdb: bin_gpdb7_rocky8
+      bin_gpdb: bin_gpdb7_rhel8
       license_file: gpdb6-osl
     params:
       <<: *gpdb7-rpm-params-oss
@@ -1897,7 +1890,7 @@ jobs:
 - name: create_gpdb7_rpm_installer_rocky8
   plan:
   - in_parallel:
-    - get: bin_gpdb7_rocky8
+    - get: bin_gpdb7_rhel8
       trigger: true
     - get: greenplum-database-release
       trigger: true
@@ -1907,12 +1900,12 @@ jobs:
     file: greenplum-database-release/ci/concourse/tasks/retrieve-gpdb-src.yml
     image: gpdb7-rocky8-build
     input_mapping:
-      bin_gpdb: bin_gpdb7_rocky8
+      bin_gpdb: bin_gpdb7_rhel8
   - task: build_rpm_gpdb7_rocky8
     file: greenplum-database-release/ci/concourse/tasks/build-gpdb-rpm.yml
     image: gpdb7-rocky8-build
     input_mapping:
-      bin_gpdb: bin_gpdb7_rocky8
+      bin_gpdb: bin_gpdb7_rhel8
       license_file: gpdb6-osl
     params:
       <<: *gpdb7-rpm-params
