@@ -31,7 +31,9 @@ install_python() {
 	echo "${PYTHONHOME}/lib" >>/etc/ld.so.conf.d/gpdb.conf
 	ldconfig
 	export PYTHONHOME39=$(find /opt -maxdepth 1 -type d -name "python-3.9.*")
-	export PATH="${PYTHONHOME39}/bin:${PATH}"
+	if [ -n "${PYTHONHOME39}" ]; then
+		export PATH="${PYTHONHOME39}/bin:${PATH}"
+	fi
 }
 
 build_gpdb() {
