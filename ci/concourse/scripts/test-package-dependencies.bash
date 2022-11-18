@@ -4,7 +4,7 @@ set -exo pipefail
 
 export GPDB_PKG_PATH="gpdb_pkg_installer"
 
-if [[ $PLATFORM == "rhel"* || $PLATFORM == "rocky"* ]]; then
+if [[ $PLATFORM == "rhel"* || $PLATFORM == "rocky"* || $PLATFORM == "oel"* ]]; then
 
 	if [[ $PLATFORM == "rhel6" ]]; then
 		# add repo configuration for vault.epel.cloud
@@ -41,7 +41,7 @@ if [[ $PLATFORM == "rhel"* || $PLATFORM == "rocky"* ]]; then
 	fi
 
 	if [[ $CLIENTS == "clients" ]]; then
-		if [[ ($PLATFORM == "rhel8" || $PLATFORM == "rocky8") && "${GPDB_MAJOR_VERSION}" == "7" ]]; then
+		if [[ ($PLATFORM == "rhel8" || $PLATFORM == "rocky8" || $PLATFORM == "oel8") && "${GPDB_MAJOR_VERSION}" == "7" ]]; then
 			ln -s /usr/bin/python3 /usr/bin/python
 		fi
 		source /usr/local/greenplum-db-clients/greenplum_clients_path.sh

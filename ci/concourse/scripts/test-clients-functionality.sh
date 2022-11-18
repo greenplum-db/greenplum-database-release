@@ -6,7 +6,7 @@ export GPDB_CLIENTS_PATH="gpdb_clients_package_installer"
 export GPDB_CLIENTS_ARCH="$PLATFORM"
 export GPDB_CLIENTS_VERSION="0.0.0"
 
-if [[ $PLATFORM == "rhel"* || $PLATFORM == "sles"* || $PLATFORM == "rocky"* ]]; then
+if [[ $PLATFORM == "rhel"* || $PLATFORM == "sles"* || $PLATFORM == "rocky"* || $PLATFORM == "oel"* ]]; then
 
 	# TODO: inspec should be available on the base container
 	# Install inspec v3 because v4 requires license for commercial use
@@ -26,6 +26,6 @@ elif [[ $PLATFORM == "ubuntu"* ]]; then
 	cd greenplum-database-release/gpdb-deb-test
 	godog features/gpdb-client-deb.feature
 else
-	echo "${PLATFORM} is not yet supported for Greenplum Clients 6.X"
+	echo "${PLATFORM} is not yet supported for Greenplum Clients"
 	exit 1
 fi
