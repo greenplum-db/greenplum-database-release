@@ -141,10 +141,9 @@ pushd %{buildroot}/%{prefix}/greenplum-db-%{gpdb_version}
 ext/python/bin/python -m compileall -q -x "(test|python3\.9)" .
 if [ -f ext/python3.9/bin/python3 ];then
     pushd ext/python3.9/
-    bin/python3 -m compileall -q -o 0 -o 1 -o 2 -x "(lib/python3.9/lib2to3/tests/data|lib/python3.9/site-packages/|lib/python3.9/test/)" .
-    pushd lib/python3.9/site-packages/
-    ../../../bin/python3.9 -m compileall -q -o 0 .
-    popd
+    # skip generate pyc file for lib/python3.9/lib2to3/tests/data, lib/python3.9/test
+    # compile with the given optimization level 0, 1, 2
+    bin/python3 -m compileall -q -o 0 -o 1 -o 2 -x "(test)" .
     popd
 fi
 popd

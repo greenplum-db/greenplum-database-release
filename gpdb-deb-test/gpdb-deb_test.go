@@ -133,10 +133,10 @@ func CheckHasExpectedPythonBytecodeFileNumber() error {
 	if err != nil {
 		return err
 	}
-	if strings.TrimSpace(string(FileNumber)) == "3481" {
+	if strings.TrimSpace(string(FileNumber)) == "4047" {
 		return nil
 	} else {
-		return fmt.Errorf("expect has 3481 pyc for python3.9, actual is %s", strings.TrimSpace(string(FileNumber)))
+		return fmt.Errorf("expect has 4047 pyc for python3.9, actual is %s", strings.TrimSpace(string(FileNumber)))
 	}
 }
 

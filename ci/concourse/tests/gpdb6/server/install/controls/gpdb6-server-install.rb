@@ -118,7 +118,7 @@ control 'Category:server-installs' do
         its('stdout') { should eq "0\n" }
       # rhel7 and rhel8 vendor python3.9
       else
-        its('stdout') { should eq "3481\n" }
+        its('stdout') { should eq "4047\n" }
       end
     end
   # photon3 does not has python3 integrated
