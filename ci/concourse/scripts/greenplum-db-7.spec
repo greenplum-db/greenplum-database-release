@@ -56,6 +56,7 @@ Requires: which
 Requires: zip
 Requires: zlib
 Requires: llvm-libs == 13.0.1
+Requires: libuuid
 %endif
 
 %if "%{platform}" == "rhel8" || "%{platform}" == "rocky8" || "%{platform}" == "oel8"

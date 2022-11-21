@@ -58,6 +58,7 @@ Requires: tar
 Requires: which
 Requires: zip
 Requires: zlib
+Requires: libuuid
 %endif
 
 %if "%{platform}" == "rhel8"

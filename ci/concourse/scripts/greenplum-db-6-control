@@ -30,4 +30,5 @@ Depends: libapr1,
     less,
     iproute2,
     iputils-ping,
-    locales
+    locales,
+    libuuid1
