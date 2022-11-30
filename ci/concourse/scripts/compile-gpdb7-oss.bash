@@ -40,6 +40,7 @@ build_gpdb() {
 		--with-openssl \
 		--with-pam \
 		--with-ldap \
+		--with-llvm \
 		--with-pythonsrc-ext \
 		--with-uuid=e2fs \
 		--with-extra-version=" Open Source" \
