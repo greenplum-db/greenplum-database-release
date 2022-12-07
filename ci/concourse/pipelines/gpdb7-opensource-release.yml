@@ -85,7 +85,7 @@ resources:
   source:
     bucket: ((gcs-bucket-for-oss))
     json_key: ((resources/gcp/service_accounts/concourse-gcs-resources-service-account-key))
-    regexp: osl/released/gpdb7/open_source_license_greenplum-database-7.0.0-97773a0-(.*).txt
+    regexp: osl/released/gpdb7/open_source_license_Greenplum_Database_by_VMware_Tanzu_(.*)_beta.txt
 
 ## RHEL8 Resources
 - name: bin_gpdb_rhel8
