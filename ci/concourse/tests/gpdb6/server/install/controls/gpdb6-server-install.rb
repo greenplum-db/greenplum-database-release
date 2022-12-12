@@ -94,9 +94,9 @@ control 'Category:server-installs' do
   version = os.release
   if os.redhat?
     describe command("find /usr/local/greenplum-db/ -name *.pyc | grep -v python3.9|  wc -l") do
-      # rhel8 has a different python2 version: 2.7.17
+      # rhel8 has a different python2 version: 2.7.18
       if version =~ /^8/
-        its('stdout') { should eq "793\n" }
+        its('stdout') { should eq "794\n" }
       # rhel6 and rhel7 has python2 version: 2.7.12
       else
         its('stdout') { should eq "795\n" }
