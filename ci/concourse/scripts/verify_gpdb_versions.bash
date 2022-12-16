@@ -23,8 +23,10 @@ assert_postgres_version_matches() {
 GREENPLUM_INSTALL_DIR=/usr/local/greenplum-db-devel
 
 for bin_gpdb in bin_gpdb_{centos{6,7},ubuntu18.04,rhel8}; do
-	install_greenplum "$bin_gpdb" "${GREENPLUM_INSTALL_DIR}"
-	assert_postgres_version_matches "$GPDB_SRC_SHA" "${GREENPLUM_INSTALL_DIR}"
+	if [ -d "$bin_gpdb" ]; then
+		install_greenplum "$bin_gpdb" "${GREENPLUM_INSTALL_DIR}"
+		assert_postgres_version_matches "$GPDB_SRC_SHA" "${GREENPLUM_INSTALL_DIR}"
+	fi
 done
 
 echo "Release Candidate SHA: ${GPDB_SRC_SHA}"
