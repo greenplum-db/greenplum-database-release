@@ -61,7 +61,7 @@ Requires: zlib
 Requires: libuuid
 %endif
 
-%if "%{platform}" == "rhel8"
+%if "%{platform}" == "rhel8" || "%{platform}" == "rocky8"
 Requires: openssl-libs
 Requires: libevent
 %endif
