@@ -81,7 +81,7 @@ control 'Category:server-installs' do
       end
   end
 
-  describe file("/usr/local/greenplum-db/lib/python/__pycache__/pg.cpython-36.pyc") do
+  describe file("/usr/local/greenplum-db/lib/python/__pycache__/pg.cpython-39.pyc") do
     it { should exist}
   end
 
