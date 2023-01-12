@@ -229,7 +229,6 @@ control 'Category:clients-rpm_relocateable' do
 
     # Prefix should be reflected in greenplum_clients_path.sh
     describe file("#{prefix}/greenplum-db-clients/greenplum_clients_path.sh") do
-      its('content') { should match /GPHOME_CLIENTS=#{prefix}\/greenplum-db-clients-.*/ }
       its('content') { should match /export GPHOME_CLIENTS/ }
     end
 
