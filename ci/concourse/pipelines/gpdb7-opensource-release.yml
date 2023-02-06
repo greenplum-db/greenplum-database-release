@@ -39,6 +39,11 @@ resources:
   source:
     url: ((resources/slack/prod/slack-alert-gp-releng-webhook))
 
+- name: slack-alert-oss-general
+  type: slack-notification
+  source:
+    url: ((resources/slack/prod/slack-alert-general-webhook))
+
 ## Image Resources
 - name: gpdb7-rhel8-build
   type: registry-image
@@ -291,6 +296,10 @@ jobs:
       passed: [release]
   - task: gpdb_github_release
     file: greenplum-database-release/ci/concourse/tasks/gpdb-github-release.yml
+  - task: generate-start-message-oss
+    file: greenplum-database-release/ci/concourse/tasks/generate-start-messages-oss.yml
+  - task: send_notification
+    file: greenplum-database-release/ci/concourse/tasks/send_notification.yml
   - put: gpdb_release
     params:
       name: release_artifacts/name
@@ -302,3 +311,9 @@ jobs:
       - release_artifacts/*.zip
       - license_file/*.txt
       - gpdb_rpm_installer_rhel8/*.rpm
+  - put: slack-start-greenplum-oss
+    params:
+      text_file: end-messages-oss/message
+  - put: slack-alert-oss-general
+    params:
+      text_file: oss-general/message

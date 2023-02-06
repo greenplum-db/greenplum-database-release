@@ -1,0 +1,26 @@
+---
+platform: linux
+
+image_resource:
+  type: registry-image
+  source:
+    repository: bash
+    tag: latest
+
+inputs:
+- name: greenplum-database-release
+- name: pivotal-gpdb
+outputs:
+- name: oss-general
+
+run:
+  path: bash
+  args:
+  - -ec
+  - |
+    RELEASE_VERSION=$(cat pivotal-gpdb/version | cut -d "#" -f 1)
+    cat <<EOF >oss-general/message
+    :greenplum: Greenplum Database ${RELEASE_VERSION} is available on Github
+    Github: https://github.com/greenplum-db/gpdb/releases/tag/${RELEASE_VERSION}
+    Documentation: https://docs.greenplum.org
+    EOF

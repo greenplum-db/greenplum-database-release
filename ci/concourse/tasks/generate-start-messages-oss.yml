@@ -12,6 +12,7 @@ inputs:
 - name: pivotal-gpdb
 outputs:
 - name: start-messages-oss
+- name: end-messages-oss
 
 run:
   path: bash
@@ -21,4 +22,7 @@ run:
     RELEASE_VERSION=$(cat pivotal-gpdb/version | cut -d "#" -f 1)
     cat <<EOF >start-messages-oss/message
     :tanzu-greenplum: *Greenplum Database release pipeline is running for ${RELEASE_VERSION} release*
+    EOF
+    cat <<EOF >end-messages-oss/message
+    :tanzu-greenplum: *Greenplum Database release pipeline finished for ${RELEASE_VERSION} release*
     EOF
