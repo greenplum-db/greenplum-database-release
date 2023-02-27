@@ -4,6 +4,9 @@ gpdb_rpm_path = ENV['GPDB_RPM_PATH']
 gpdb_rpm_arch = ENV['GPDB_RPM_ARCH']
 # want to get the el6 from rhel6
 gpdb_rpm_arch_string = gpdb_rpm_arch[2,4]
+if gpdb_rpm_arch == 'oel7'
+  gpdb_rpm_arch_string = 'el7'
+end
 
 def rpm_query(field_name, rpm_full_path)
   "rpm --query --queryformat '%{#{field_name}}' --package #{rpm_full_path}"

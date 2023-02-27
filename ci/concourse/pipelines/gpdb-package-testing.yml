@@ -91,6 +91,12 @@ resources:
     repository: centos
     tag: '7'
 
+- name: oraclelinux-7
+  type: registry-image
+  source:
+    repository: oraclelinux
+    tag: '7'
+
 - name: ubuntu-18.04
   type: registry-image
   source:
@@ -143,6 +149,14 @@ resources:
     bucket: pivotal-gpdb-concourse-resources-prod
     json_key: ((concourse-gcs-resources-service-account-key))
     regexp: clients/published/gpdb6/clients-rc-(.*)-rhel7_x86_64.tar.gz
+
+# 6X_STABLE_oel7 only has non debug pipeline
+- name: bin_gpdb6_clients_oel7
+  type: gcs
+  source:
+    bucket: pivotal-gpdb-concourse-resources-prod
+    json_key: ((concourse-gcs-resources-service-account-key))
+    regexp: clients/published/gpdb6/clients-rc-(.*)-oel7_x86_64.debug.tar.gz
 
 - name: bin_gpdb6_clients_rhel8
   type: gcs
@@ -215,6 +229,13 @@ resources:
     bucket: ((gcs-bucket-intermediates))
     json_key: ((concourse-gcs-resources-service-account-key))
     versioned_file: ((pipeline-name))/rpm_gpdb_clients_centos7/gpdb6/greenplum-db-clients-0.0.0-rhel7-x86_64.rpm
+
+- name: rpm_gpdb6_clients_oel7
+  type: gcs
+  source:
+    bucket: ((gcs-bucket-intermediates))
+    json_key: ((concourse-gcs-resources-service-account-key))
+    versioned_file: ((pipeline-name))/rpm_gpdb_clients_oel7/gpdb6/greenplum-db-clients-0.0.0-oel7-x86_64.rpm
 
 - name: rpm_gpdb6_clients_rhel8
   type: gcs
@@ -410,6 +431,12 @@ resources:
   type: registry-image
   source:
     repository: gcr.io/data-gpdb-public-images/gpdb6-centos7-build
+    tag: latest
+
+- name: gpdb6-oel7-build
+  type: registry-image
+  source:
+    repository: gcr.io/data-gpdb-public-images/gpdb6-oel7-build
     tag: latest
 
 - name: gpdb6-rhel8-build
@@ -611,6 +638,20 @@ resources:
     json_key: ((concourse-gcs-resources-service-account-key))
     versioned_file: ((pipeline-name))/rpm_gpdb_centos7/gpdb6/open-source-greenplum-db-6-rhel7-x86_64.rpm
 
+- name: rpm_gpdb6_oel7
+  type: gcs
+  source:
+    bucket: ((gcs-bucket-intermediates))
+    json_key: ((concourse-gcs-resources-service-account-key))
+    versioned_file: ((pipeline-name))/rpm_gpdb_oel7/gpdb6/greenplum-db-6-oel7-x86_64.rpm
+
+- name: rpm_gpdb6_oel7_oss
+  type: gcs
+  source:
+    bucket: ((gcs-bucket-intermediates))
+    json_key: ((concourse-gcs-resources-service-account-key))
+    versioned_file: ((pipeline-name))/rpm_gpdb_oel7/gpdb6/open-source-greenplum-db-6-oel7-x86_64.rpm
+
 - name: rpm_gpdb7_rhel8_oss
   type: gcs
   source:
@@ -713,10 +754,22 @@ resources:
     repository: gcr.io/data-gpdb-public-images/gpdb6-centos7-test
     tag: latest
 
+- name: gpdb6-oel7-test
+  type: registry-image
+  source:
+    repository: gcr.io/data-gpdb-public-images/gpdb6-oel7-test
+    tag: latest
+
 - name: gpdb6-centos7-test-packaging
   type: registry-image
   source:
     repository: gcr.io/data-gpdb-public-images/gpdb6-centos7-test-packaging
+    tag: latest
+
+- name: gpdb6-oel7-test-packaging
+  type: registry-image
+  source:
+    repository: gcr.io/data-gpdb-public-images/gpdb6-oel7-test-packaging
     tag: latest
 
 - name: gpdb6-ubuntu18.04-test-packaging
@@ -1266,6 +1319,67 @@ jobs:
     params:
       file: gpdb_rpm_installer/*.rpm
 
+- name: create_gpdb6_rpm_installer_oel7
+  plan:
+  - in_parallel:
+    - get: bin_gpdb6_centos7_with_components
+      trigger: true
+      passed:
+      - gpdb_component_packaging_centos7
+    - get: greenplum-database-release
+      passed:
+      - gpdb_component_packaging_centos7
+    - get: gpdb6-oel7-build
+    - get: gpdb6-osl
+  - task: retrieve_gpdb6_src
+    file: greenplum-database-release/ci/concourse/tasks/retrieve-gpdb-src.yml
+    image: gpdb6-oel7-build
+    input_mapping:
+      bin_gpdb: bin_gpdb6_centos7_with_components
+  - task: build_rpm_gpdb6_oel7
+    file: greenplum-database-release/ci/concourse/tasks/build-gpdb-rpm.yml
+    image: gpdb6-oel7-build
+    input_mapping:
+      bin_gpdb: bin_gpdb6_centos7_with_components
+      license_file: gpdb6-osl
+    params:
+      <<: *gpdb6-rpm-params
+      PLATFORM: oel7
+  - put: rpm_gpdb6_oel7
+    params:
+      file: gpdb_rpm_installer/*.rpm
+
+- name: create_gpdb6_rpm_installer_oel7_oss
+  plan:
+  - in_parallel:
+    - get: greenplum-database-release
+      passed:
+      - gpdb_component_packaging_centos7
+    - get: bin_gpdb6_centos7_with_components
+      trigger: true
+      passed:
+      - gpdb_component_packaging_centos7
+    - get: gpdb6-oel7-build
+    - get: gpdb6-osl
+  - task: retrieve_gpdb6_src
+    file: greenplum-database-release/ci/concourse/tasks/retrieve-gpdb-src.yml
+    image: gpdb6-oel7-build
+    input_mapping:
+      bin_gpdb: bin_gpdb6_centos7_with_components
+  - task: build_rpm_gpdb6_oel7
+    file: greenplum-database-release/ci/concourse/tasks/build-gpdb-rpm.yml
+    image: gpdb6-oel7-build
+    input_mapping:
+      bin_gpdb: bin_gpdb6_centos7_with_components
+      license_file: gpdb6-osl
+    params:
+      <<: *gpdb6-rpm-params-oss
+      PLATFORM: oel7
+      GPDB_NAME: greenplum-db-6
+  - put: rpm_gpdb6_oel7_oss
+    params:
+      file: gpdb_rpm_installer/*.rpm
+
 - name: create_gpdb6_rpm_installer_rhel8
   plan:
   - in_parallel:
@@ -1541,6 +1655,28 @@ jobs:
         file: gpdb_clients_rpm_installer/greenplum-db-clients-*-rhel7-x86_64.rpm
       put: rpm_gpdb6_clients_centos7
 
+- name: create_gpdb6_clients_rpm_installer_oel7
+  plan:
+  - in_parallel:
+    - get: bin_gpdb6_clients_oel7
+      trigger: true
+    - get: gpdb6-oel7-build
+    - get: greenplum-database-release
+      trigger: true
+  - in_parallel:
+    - file: greenplum-database-release/ci/concourse/tasks/build-gpdb-clients-rpm.yml
+      image: gpdb6-oel7-build
+      input_mapping:
+        bin_gpdb_clients: bin_gpdb6_clients_oel7
+      params:
+        GPDB_VERSION: 0.0.0
+        PLATFORM: oel7
+      task: build_rpm_gpdb_oel7
+  - in_parallel:
+    - params:
+        file: gpdb_clients_rpm_installer/greenplum-db-clients-*-oel7-x86_64.rpm
+      put: rpm_gpdb6_clients_oel7
+
 - name: create_gpdb6_clients_rpm_installer_rhel8
   plan:
   - in_parallel:
@@ -1747,6 +1883,61 @@ jobs:
         PLATFORM: rhel7
         GPDB_MAJOR_VERSION: "6"
 
+- name: test_functionality_gpdb6_rpm_oel7
+  plan:
+  - in_parallel:
+    - get: previous-6-release
+      params:
+        globs:
+        - greenplum-db-*-rhel7-x86_64.rpm
+    - get: previous-6.20.0-release
+      params:
+        globs:
+        - greenplum-db-*-rhel7-x86_64.rpm
+    - get: previous-5-release
+      params:
+        globs:
+        - greenplum-db-*-rhel7-x86_64.rpm
+    - get: previous-5.28.4-release
+      params:
+        globs:
+        - greenplum-db-*-rhel7-x86_64.rpm
+    - get: rpm_gpdb6_oel7
+      passed:
+      - create_gpdb6_rpm_installer_oel7
+      trigger: true
+    - get: rpm_gpdb6_oel7_oss
+      passed:
+      - create_gpdb6_rpm_installer_oel7_oss
+      trigger: true
+    - get: previous-6-oss-release
+      params:
+        globs:
+        - open-source-greenplum-db-*-rhel7-x86_64.rpm
+    - get: greenplum-database-release
+      passed:
+      - create_gpdb6_rpm_installer_oel7
+    - get: gpdb6-oel7-test
+    - get: oraclelinux-7
+  - in_parallel:
+    - task: test_gpdb6_rpm_functionality
+      file: greenplum-database-release/ci/concourse/tasks/test-functionality-rpm.yml
+      image: gpdb6-oel7-test
+      input_mapping:
+        gpdb_rpm_installer: rpm_gpdb6_oel7
+        gpdb_rpm_oss_installer: rpm_gpdb6_oel7_oss
+      params:
+        PLATFORM: oel7
+        GPDB_MAJOR_VERSION: "6"
+    - task: test_package_dependencies
+      file: greenplum-database-release/ci/concourse/tasks/test-package-dependencies.yml
+      image: oraclelinux-7
+      input_mapping:
+        gpdb_pkg_installer: rpm_gpdb6_oel7
+      params:
+        PLATFORM: oel7
+        GPDB_MAJOR_VERSION: "6"
+
 - name: test_functionality_clients_gpdb6_rpm_centos7
   plan:
   - in_parallel:
@@ -1774,6 +1965,36 @@ jobs:
         gpdb_pkg_installer: rpm_gpdb6_clients_centos7
       params:
         PLATFORM: rhel7
+        GPDB_MAJOR_VERSION: "6"
+        CLIENTS: "clients"
+
+- name: test_functionality_clients_gpdb6_rpm_oel7
+  plan:
+  - in_parallel:
+    - get: rpm_gpdb6_clients_oel7
+      passed:
+      - create_gpdb6_clients_rpm_installer_oel7
+      trigger: true
+    - get: gpdb6-oel7-test-packaging
+    - get: oraclelinux-7
+    - get: greenplum-database-release
+      passed:
+      - create_gpdb6_clients_rpm_installer_oel7
+  - in_parallel:
+    - task: test_clients_rpm_functionality
+      file: greenplum-database-release/ci/concourse/tasks/test-clients-functionality.yml
+      image: gpdb6-oel7-test-packaging
+      input_mapping:
+        gpdb_clients_package_installer: rpm_gpdb6_clients_oel7
+      params:
+        PLATFORM: oel7
+    - task: test_package_dependencies
+      file: greenplum-database-release/ci/concourse/tasks/test-package-dependencies.yml
+      image: oraclelinux-7
+      input_mapping:
+        gpdb_pkg_installer: rpm_gpdb6_clients_oel7
+      params:
+        PLATFORM: oel7
         GPDB_MAJOR_VERSION: "6"
         CLIENTS: "clients"
 
@@ -2497,6 +2718,8 @@ groups:
   - test_functionality_gpdb6_rpm_centos6
   - create_gpdb6_rpm_installer_centos7
   - test_functionality_gpdb6_rpm_centos7
+  - create_gpdb6_rpm_installer_oel7
+  - test_functionality_gpdb6_rpm_oel7
   - create_gpdb6_rpm_installer_rhel8
   - test_functionality_gpdb6_rpm_rhel8
   - create_gpdb6_rpm_installer_rocky8
@@ -2510,7 +2733,9 @@ groups:
   - create_gpdb6_clients_rpm_installer_centos6
   - test_functionality_clients_gpdb6_rpm_centos6
   - create_gpdb6_clients_rpm_installer_centos7
+  - create_gpdb6_clients_rpm_installer_oel7
   - test_functionality_clients_gpdb6_rpm_centos7
+  - test_functionality_clients_gpdb6_rpm_oel7
   - create_gpdb6_clients_rpm_installer_rhel8
   - test_functionality_clients_gpdb6_rpm_rhel8
   - create_gpdb6_clients_rpm_installer_rocky8
@@ -2521,6 +2746,7 @@ groups:
   - create_gpdb6_deb_ppa_installer_ubuntu18.04
   - create_gpdb6_rpm_installer_centos6_oss
   - create_gpdb6_rpm_installer_centos7_oss
+  - create_gpdb6_rpm_installer_oel7_oss
   - create_gpdb7_clients_rpm_installer_rhel8
   - create_gpdb7_clients_rpm_installer_rocky8
   - create_gpdb7_clients_rpm_installer_oel8
@@ -2557,6 +2783,8 @@ groups:
   - test_functionality_gpdb6_rpm_centos6
   - create_gpdb6_rpm_installer_centos7
   - test_functionality_gpdb6_rpm_centos7
+  - create_gpdb6_rpm_installer_oel7
+  - test_functionality_gpdb6_rpm_oel7
   - create_gpdb6_rpm_installer_rhel8
   - create_gpdb6_rpm_installer_rocky8
   - create_gpdb6_rpm_installer_rocky8_oss
@@ -2569,6 +2797,7 @@ groups:
   - test_functionality_gpdb6_deb_ubuntu18.04
   - create_gpdb6_rpm_installer_centos6_oss
   - create_gpdb6_rpm_installer_centos7_oss
+  - create_gpdb6_rpm_installer_oel7_oss
   - create_gpdb6_deb_ppa_installer_ubuntu18.04
   - create_gpdb6_rpm_installer_rhel8_oss
   - gpdb_component_packaging_centos6
@@ -2584,7 +2813,9 @@ groups:
   - create_gpdb6_clients_rpm_installer_centos6
   - test_functionality_clients_gpdb6_rpm_centos6
   - create_gpdb6_clients_rpm_installer_centos7
+  - create_gpdb6_clients_rpm_installer_oel7
   - test_functionality_clients_gpdb6_rpm_centos7
+  - test_functionality_clients_gpdb6_rpm_oel7
   - create_gpdb6_clients_rpm_installer_rhel8
   - test_functionality_clients_gpdb6_rpm_rhel8
   - create_gpdb6_clients_rpm_installer_rocky8

@@ -61,11 +61,11 @@ Requires: zlib
 Requires: libuuid
 %endif
 
-%if "%{platform}" == "rhel8" || "%{platform}" == "rocky8"
+%if "%{platform}" == "rhel8" || "%{platform}" == "rocky8" || "%{platform}" == "oel8"
 Requires: openssl-libs
 Requires: libevent
 %endif
-%if "%{platform}" == "rhel7"
+%if "%{platform}" == "rhel7" || "%{platform}" == "oel7"
 Requires: openssl-libs
 Requires: libevent
 %endif

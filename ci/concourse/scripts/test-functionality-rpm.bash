@@ -12,6 +12,19 @@ set -exo pipefail
 export GPDB_RPM_PATH="gpdb_rpm_installer"
 export GPDB_RPM_OSS_PATH="gpdb_rpm_oss_installer"
 export GPDB_RPM_ARCH=$PLATFORM
+# oel7 does not have previous released rpm, so it use rhel7 as previous release rpm
+if [[ $PLATFORM == "oel7" ]]; then
+	for dir in previous-6*; do
+		old=$(ls "${dir}"/*greenplum-db-6*)
+		new=$(echo "${old}" | sed 's/rhel7/oel7/1')
+		mv "${old}" "${new}"
+	done
+	for dir in previous-5*; do
+		old=$(ls "${dir}"/greenplum-db-5*)
+		new=$(echo "${old}" | sed 's/rhel7/oel7/1')
+		mv "${old}" "${new}"
+	done
+fi
 # shellcheck disable=SC2155
 if [[ $GPDB_MAJOR_VERSION == "5" ]]; then
 	test_prefix='greenplum-database-release/ci/concourse/tests/gpdb5/server'
@@ -47,7 +60,7 @@ if [[ $GPDB_MAJOR_VERSION == "5" ]]; then
 	fi
 elif [[ $GPDB_MAJOR_VERSION == "6" ]]; then
 	export RPM_GPDB_VERSION="$(rpm --query --info --package ${GPDB_RPM_PATH}/greenplum-db-6-"${GPDB_RPM_ARCH}"-x86_64.rpm | awk '/Version/{printf "%s", $3}')"
-	if [[ $PLATFORM == "rhel6" || $PLATFORM == "rhel7" || $PLATFORM == "rhel8" || $PLATFORM == "rocky8" ]]; then
+	if [[ $PLATFORM == "rhel6" || $PLATFORM == "rhel7" || $PLATFORM == "oel7" || $PLATFORM == "rhel8" || $PLATFORM == "rocky8" ]]; then
 		curl https://omnitruck.chef.io/install.sh | bash -s -- -P inspec -v 3
 		test_prefix='greenplum-database-release/ci/concourse/tests/gpdb6/server'
 		inspec exec ${test_prefix}/conflicts --reporter documentation --no-distinct-exit --no-backend-cache
