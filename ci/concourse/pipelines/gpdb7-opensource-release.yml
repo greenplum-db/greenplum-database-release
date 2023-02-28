@@ -45,14 +45,12 @@ resources:
     url: ((resources/slack/prod/slack-alert-general-webhook))
 
 ## Image Resources
-- name: gpdb7-rhel8-build
+- name: gpdb7-rocky8-build
   type: registry-image
   icon: docker
   source:
-    repository: gcr.io/data-gpdb-private-images/gpdb7-rhel8-build
+    repository: gcr.io/data-gpdb-public-images/gpdb7-rocky8-build
     tag: latest
-    username: _json_key
-    password: ((resources/gcp/service_accounts/container-registry-readonly-service-account-key))
 
 - name: gpdb_src
   type: git
@@ -99,7 +97,7 @@ resources:
   source:
     bucket: pivotal-gpdb-concourse-resources-prod
     json_key: ((resources/gcp/service_accounts/concourse-gcs-resources-service-account-key))
-    regexp: oss/release-candidates/gpdb7/greenplum-db-oss-(((release-version)))-(.*)-(((commit-sha)).*)-rhel8.tar.gz
+    regexp: oss/release-candidates/gpdb7/greenplum-db-oss-(((release-version)))-(.*)-(((commit-sha)).*)-el8.tar.gz
 
 - name: bin_gpdb_rhel8_release
   type: gcs
@@ -107,7 +105,7 @@ resources:
   source:
     bucket: ((gcs-bucket-for-oss))
     json_key: ((resources/gcp/service_accounts/concourse-gcs-resources-service-account-key))
-    regexp: greenplum-oss-server/released/gpdb7/server-(.*)-rhel8_x86_64.tar.gz
+    regexp: greenplum-oss-server/released/gpdb7/server-(.*)-el8_x86_64.tar.gz
 
 - name: gpdb_rpm_installer_rhel8
   type: gcs
@@ -115,7 +113,7 @@ resources:
   source:
     bucket: ((gcs-bucket-for-oss))
     json_key: ((resources/gcp/service_accounts/concourse-gcs-resources-service-account-key))
-    regexp: greenplum-oss-server/released/gpdb7/open-source-greenplum-db-(.*)-rhel8-x86_64.rpm
+    regexp: greenplum-oss-server/released/gpdb7/open-source-greenplum-db-(.*)-el8-x86_64.rpm
 
 - name: pivotal-gpdb
   type: tanzunet
@@ -179,11 +177,11 @@ jobs:
       passed: [compilation-gate]
     - get: bin_gpdb_rhel8
       passed: [compilation-gate]
-    - get: gpdb7-rhel8-build
+    - get: gpdb7-rocky8-build
     - get: license_file
   - task: create_gpdb_rpm_package
     file: greenplum-database-release/ci/concourse/tasks/build-gpdb-rpm.yml
-    image: gpdb7-rhel8-build
+    image: gpdb7-rocky8-build
     input_mapping:
       bin_gpdb: bin_gpdb_rhel8
     params:
@@ -239,7 +237,7 @@ jobs:
         - -ec
         - |
           gpdb_semver=$(cat pivotal-gpdb/version |cut -d "#" -f 1)
-          cp -v bin_gpdb_rhel8/greenplum-db-oss-*.tar.gz releases/server-${gpdb_semver}-rhel8_x86_64.tar.gz
+          cp -v bin_gpdb_rhel8/greenplum-db-oss-*.tar.gz releases/server-${gpdb_semver}-el8_x86_64.tar.gz
   - task: verify_gpdb_versions
     config:
       platform: linux
@@ -274,7 +272,7 @@ jobs:
   - in_parallel:
     - put: bin_gpdb_rhel8_release
       params:
-        file: "releases/server-*rhel8*.tar.gz"
+        file: "releases/server-*el8*.tar.gz"
 
 - name: publish_gpdb_github_release
   on_failure:

@@ -108,6 +108,7 @@ function _main() {
 	local __rpm_gpdb_clients_version
 	local __final_rpm_name
 	local __rpm_build_flags
+	local __platform
 
 	if [[ -z "${GPDB_VERSION}" ]]; then
 		set_gpdb_clients_version
@@ -122,7 +123,13 @@ function _main() {
 	echo "[INFO] GPDB version modified for rpm requirements: ${__rpm_gpdb_clients_version}"
 
 	# Build the expected rpm name based on the gpdb version of the artifacts
-	__final_rpm_name="greenplum-db-clients-${__gpdb_clients_version}-${PLATFORM}-x86_64.rpm"
+	__platform="${PLATFORM}"
+	case "${__platform}" in
+	rhel8*) __final_rpm_name="greenplum-db-clients-${__gpdb_clients_version}-el8-x86_64.rpm" ;;
+	rocky8*) __final_rpm_name="greenplum-db-clients-${__gpdb_clients_version}-el8-x86_64.rpm" ;;
+	oel8*) __final_rpm_name="greenplum-db-clients-${__gpdb_clients_version}-el8-x86_64.rpm" ;;
+	*) __final_rpm_name="greenplum-db-clients-${__gpdb_clients_version}-${PLATFORM}-x86_64.rpm" ;;
+	esac
 	echo "[INFO] Final RPM name: ${__final_rpm_name}"
 
 	# Conventional location to build RPMs is platform specific
