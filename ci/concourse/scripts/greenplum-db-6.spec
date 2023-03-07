@@ -64,13 +64,16 @@ Requires: libuuid
 %if "%{platform}" == "rhel8" || "%{platform}" == "rocky8" || "%{platform}" == "oel8"
 Requires: openssl-libs
 Requires: libevent
+Requires: libcgroup-tools
 %endif
 %if "%{platform}" == "rhel7" || "%{platform}" == "oel7"
 Requires: openssl-libs
 Requires: libevent
+Requires: libcgroup-tools
 %endif
 %if "%{platform}" == "rhel6"
 Requires: libevent2
+Requires: libcgroup
 %endif
 
 %if "%{platform}" == "photon3"
