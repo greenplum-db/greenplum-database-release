@@ -7,6 +7,9 @@ gpdb_rpm_arch_string = gpdb_rpm_arch[2,4]
 if gpdb_rpm_arch == 'oel7'
   gpdb_rpm_arch_string = 'el7'
 end
+if gpdb_rpm_arch == 'el8'
+  gpdb_rpm_arch_string = 'el8'
+end
 
 def rpm_query(field_name, rpm_full_path)
   "rpm --query --queryformat '%{#{field_name}}' --package #{rpm_full_path}"
@@ -26,7 +29,7 @@ previous_5_version = File.read('previous-5-release/version').split('#').first if
 control 'Category:server-rpm_is_upgradable' do
   # Previous 6 release not yet available for Photon and Rocky
   if os.redhat? && os.name != 'rocky'
-    describe command("rpm --install previous-6.20.0-release/greenplum-db-6.20.0-#{gpdb_rpm_arch}-x86_64.rpm") do
+    describe command("rpm --install previous-6.20.0-release/greenplum-db-6.20.0-*-x86_64.rpm") do
       its('exit_status') { should eq 0 }
     end
 

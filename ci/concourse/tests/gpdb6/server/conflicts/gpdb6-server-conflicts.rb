@@ -52,7 +52,7 @@ control 'Category:server-conflict_enterprise_to_oss_same_version' do
     if os.redhat? && os.name == 'rocky'
     # TODO rocky8 does not have previous release
     else
-      describe command("yum install -y previous-6.20.0-release/greenplum-db-#{previous_version}-#{gpdb_rpm_arch}-x86_64.rpm") do
+      describe command("yum install -y previous-6.20.0-release/greenplum-db-#{previous_version}-*-x86_64.rpm") do
       its('exit_status') {should eq 0}
       its('stdout') { should match /greenplum-db-6*/ }
       end
@@ -98,7 +98,7 @@ control 'Category:server-conflict_enterprise_to_oss_same_version' do
     if os.redhat? && os.name == 'rocky'
     # TODO rocky8 does not have previous release
     else
-      describe command("yum install -y previous-6-oss-release/open-source-greenplum-db-#{previous_oss_version}-#{gpdb_rpm_arch}-x86_64.rpm") do
+      describe command("yum install -y previous-6-oss-release/open-source-greenplum-db-#{previous_oss_version}-*-x86_64.rpm") do
       its('exit_status') {should eq 0}
       its('stdout') { should match /open-source-greenplum-db-6*/ }
       end
