@@ -20,7 +20,7 @@ file_groups:
     upload_as: Greenplum Database Installer for Redhat 7
     file_type: Software
     file_version: ${VERSION_REGEX}
-  - file: file://gpdb_rpm_installer_rhel8/greenplum-db-(6\..*)-rhel8-x86_64.rpm
+  - file: file://gpdb_rpm_installer_rhel8/greenplum-db-(6\..*)-el8-x86_64.rpm
     upload_as: Greenplum Database Installer for Redhat 8
     file_type: Software
     file_version: ${VERSION_REGEX}
