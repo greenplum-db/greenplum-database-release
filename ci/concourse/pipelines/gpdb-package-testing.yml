@@ -1017,14 +1017,14 @@ jobs:
         args:
         - -exc
         - |
-          fly -t releng login -c https://releng.ci.gpdb.pivotal.io -u pivotal -p ${BASIC_AUTH_PASSWORD}
+          fly_7.8.3 -t releng login -c https://ci.releng.gpdb.pivotal.io/ -u pivotal -p ${BASIC_AUTH_PASSWORD}
           export WORKSPACE=`pwd`
           # RUN_MODE: prod|dev
           if [ "${RUN_MODE}" != "prod" ]; then
-            FLY_OPTION_NON_INTERACTIVE="-n" make -C greenplum-database-release set-gpdb-package-testing-dev
+            FLY_CMD="fly_7.8.3" FLY_OPTION_NON_INTERACTIVE="-n" make -C greenplum-database-release set-gpdb-package-testing-dev
             exit 0
           else
-            FLY_OPTION_NON_INTERACTIVE="-n" make -C greenplum-database-release set-gpdb-package-testing-prod
+            FLY_CMD="fly_7.8.3" FLY_OPTION_NON_INTERACTIVE="-n" make -C greenplum-database-release set-gpdb-package-testing-prod
           fi
 
 - name: gpdb_component_packaging_centos6
