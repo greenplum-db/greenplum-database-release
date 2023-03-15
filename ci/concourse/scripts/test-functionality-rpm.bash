@@ -92,10 +92,7 @@ elif [[ $GPDB_MAJOR_VERSION == "7" ]]; then
 		inspec exec ${test_prefix}/conflicts --reporter documentation --no-distinct-exit --no-backend-cache
 		inspec exec ${test_prefix}/install --reporter documentation --no-distinct-exit --no-backend-cache
 		inspec exec ${test_prefix}/remove --reporter documentation --no-backend-cache
-		# OEL8 has no previous RPM to test upgrade yet
-		if [[ $PLATFORM != "oel8" ]]; then
-			inspec exec ${test_prefix}/upgrade --reporter documentation --no-distinct-exit --no-backend-cache
-		fi
+		inspec exec ${test_prefix}/upgrade --reporter documentation --no-distinct-exit --no-backend-cache
 	else
 		echo "${PLATFORM} is not yet supported for Greenplum 7.X"
 		exit 1

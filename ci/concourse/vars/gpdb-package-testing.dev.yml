@@ -7,4 +7,5 @@ gpdb-stable-builds-bucket-name: gpdb-stable-concourse-builds-dev
 gcs-bucket-intermediates: pivotal-gpdb-concourse-resources-intermediates-dev
 tanzunet-endpoint: https://network.tanzu.vmware.com
 gpdb6-osl-version-regex: '6\.10\.0'
+gpdb7-osl-version-regex: '7\.0\.0-beta'
 gpdb5-osl-version-regex: '5\.18\.0\.0'

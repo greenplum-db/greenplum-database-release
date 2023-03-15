@@ -19,7 +19,6 @@ rpm_gpdb_version = `#{rpm_query("Version", rpm_full_path)}`
 
 control 'Category:server-conflict_enterprise_to_oss_same_version' do
   version = os.release
-  if os.redhat?
 
     title "Install VTGP (Enterprise) first and GPDBVT (OSS) second for same version."
 
@@ -65,7 +64,35 @@ control 'Category:server-conflict_enterprise_to_oss_same_version' do
     describe command("yum remove -y #{rpm_gpdb_oss_name}") do
     its('exit_status') {should eq 0}
     end
-    # TODO: Need to add tests for Install VTGP (Enterprise) and GPDBVT (OSS) for different versions.
 
-  end
+    title "Install VTGP (Enterprise) first and GPDBVT (OSS) second for different version."
+
+    describe command("yum install -y previous-7.0.0-beta.0-release/greenplum-db-7.0.0-beta.0-*-x86_64.rpm") do
+      its('exit_status') {should eq 0}
+      its('stdout') { should match /greenplum-db-7*/ }
+    end
+    describe command("yum install -y -q #{rpm_oss_full_path}") do
+      its('exit_status') {should eq 1}
+      its('stderr') { should match /open-source-greenplum-db-7-.* conflicts with greenplum-db-7*/ }
+    end
+    describe command("yum remove -y #{rpm_gpdb_name}") do
+      its('exit_status') {should eq 0}
+    end
+
+    title "Install GPDBVT (OSS) first and VTGP (Enterprise) second for different version."
+
+    describe command("yum install -y previous-7.0.0-beta.0-oss-release/open-source-greenplum-db-7.0.0-beta.0-rhel8-x86_64.rpm") do
+    its('exit_status') {should eq 0}
+    its('stdout') { should match /open-source-greenplum-db-7*/ }
+    end
+
+    describe command("yum install -y -q #{rpm_full_path}") do
+    its('exit_status') {should eq 1}
+    its('stderr') { should match /greenplum-db-7-.* conflicts with open-source-greenplum-db-7*/ }
+    its('stderr') { should match /open-source-greenplum-db-7-.* conflicts with greenplum-db-7*/ }
+    end
+
+    describe command("yum remove -y #{rpm_gpdb_oss_name}") do
+    its('exit_status') {should eq 0}
+    end
 end

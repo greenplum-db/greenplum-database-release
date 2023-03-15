@@ -19,11 +19,42 @@ rpm_gpdb_version = `#{rpm_query("Version", rpm_full_path)}`
 gpdb_version = rpm_gpdb_version.sub("_", "-") if rpm_gpdb_version != nil
 previous_6_version = File.read('previous-6.20.0-release/version').split('#').first if File.exist?('previous-6.20.0-release/version')
 
-control 'RPM with GPDB 6' do
+control 'Category:server-rpm_is_upgradable' do
+  # previous-7.0.0-beta.0-release can upgrade to current gpdb7 version rpm
+    describe command("yum install -y previous-7.0.0-beta.0-release/greenplum-db-7.0.0-beta.0-rhel8-x86_64.rpm") do
+      its('exit_status') { should eq 0 }
+    end
 
-  title 'when both greenplum-db version 6.20.0 and greenplum-db-7 are installed.'
-  # Previous 6 release not yet available for Photon and rocky
-  if os.redhat? && os.name != 'rocky'
+    describe command("rpm --query greenplum-db-7") do
+      its('stdout') { should match /greenplum-db-7-7.0.0_beta.0*/ }
+      its('exit_status') { should eq 0 }
+    end
+
+    describe file("/usr/local/greenplum-db") do
+      it { should be_symlink }
+      its('link_path') { should eq "/usr/local/greenplum-db-7.0.0-beta.0" }
+    end
+
+    describe command("rpm --upgrade #{rpm_full_path}") do
+      its('exit_status') { should eq 0 }
+    end
+
+    describe command("rpm --query greenplum-db-7") do
+      its('stdout') { should eq "greenplum-db-7-#{rpm_gpdb_version}-1.el8.x86_64\n"}
+      its('exit_status') { should eq 0 }
+    end
+
+    describe file("/usr/local/greenplum-db") do
+      it { should be_symlink }
+      its('link_path') { should eq "/usr/local/greenplum-db-#{gpdb_version}" }
+    end
+
+    describe command('rpm --erase greenplum-db-7') do
+      its('exit_status') { should eq 0 }
+    end
+end
+
+control 'RPM with GPDB 6' do
     describe command("yum install -y previous-6.20.0-release/greenplum-db-#{previous_6_version}-*-x86_64.rpm") do
       its('exit_status') { should eq 0 }
     end
@@ -58,6 +89,4 @@ control 'RPM with GPDB 6' do
     describe command("yum remove -y greenplum-db") do
       its('exit_status') { should eq 0 }
     end
-  end
 end
-#TODO: Need to add 'Category:server-rpm_is_upgradable' and 'RPM obsoletes GPDB 7' tests
