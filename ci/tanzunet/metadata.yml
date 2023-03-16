@@ -31,7 +31,7 @@ file_groups:
 
 product_files:
 - file: file://gpdb-osl/open_source_license_Greenplum_Database_by_VMware_Tanzu_(.*)_GA.txt
-  upload_as: Open Source Licenses for Greenplum Database by VMware Tanzu 6
+  upload_as: Open Source Licenses for Greenplum Database by VMware 6
   description:
   file_type: Open Source License
   docs_url:
@@ -40,7 +40,7 @@ product_files:
   included_files:
   file_version: ${VERSION_REGEX}
 - file: file://gpdb-odp/Greenplum-Database-by-VMware-Tanzu-(.*)-ODP.tar.gz
-  upload_as: Open Source Disclosure Package for Greenplum Database by VMware Tanzu 6
+  upload_as: Open Source Disclosure Package for Greenplum Database by VMware 6
   description:
   file_type: Open Source License
   docs_url:
