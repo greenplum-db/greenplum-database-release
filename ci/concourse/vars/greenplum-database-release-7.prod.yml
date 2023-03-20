@@ -5,4 +5,4 @@ gpdb-git-tag-filter: 7.*
 gpdb-release-owner: greenplum-db
 gpdb-release-repository: gpdb
 gcs-bucket-for-oss: greenplum-database-concourse-resources-prod
-tanzunet-product-slug: vmware-tanzu-greenplum
+tanzunet-product-slug: vmware-greenplum

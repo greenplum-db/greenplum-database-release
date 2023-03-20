@@ -4,7 +4,7 @@ Maintainer: gp-releng@pivotal.io
 Architecture: amd64
 Version: ${GPDB_VERSION}
 Description: Pivotal Greenplum Clients
-Homepage: https://network.tanzu.vmware.com/products/vmware-tanzu-greenplum/
+Homepage: https://network.tanzu.vmware.com/products/vmware-greenplum/
 Depends: libapr1,
     libaprutil1,
     libreadline7,

@@ -6,7 +6,7 @@
 %{!?gpdb_clients_release: %define gpdb_clients_release 1}
 %{!?gpdb_clients_summary: %define gpdb_clients_summary Greenplum-DB-Clients}
 %{!?gpdb_clients_license: %define gpdb_clients_license Pivotal Beta EULA}
-%{!?gpdb_clients_url: %define gpdb_clients_url https://network.tanzu.vmware.com/products/vmware-tanzu-greenplum/}
+%{!?gpdb_clients_url: %define gpdb_clients_url https://network.tanzu.vmware.com/products/vmware-greenplum/}
 %{!?gpdb_clients_buildarch: %define gpdb_clients_buildarch x86_64}
 %{!?gpdb_clients_description: %define gpdb_clients_description Greenplum Database Clients}
 %{!?gpdb_clients_prefix: %define gpdb_clients_prefix /usr/local}

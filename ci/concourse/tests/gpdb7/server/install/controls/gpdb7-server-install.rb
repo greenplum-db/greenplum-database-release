@@ -33,7 +33,7 @@ control 'RPM metadata' do
   end
 
   describe command(rpm_query("URL", rpm_full_path)) do
-    its('stdout') { should cmp "https://network.tanzu.vmware.com/products/vmware-tanzu-greenplum/" }
+    its('stdout') { should cmp "https://network.tanzu.vmware.com/products/vmware-greenplum/" }
   end
 
 end
