@@ -6,17 +6,17 @@ inputs:
 - name: gpdb_rpm_installer
 - name: gpdb_rpm_oss_installer
   optional: true
-- name: previous-5-release
+- name: previous-5.25.0-release
   optional: true
 - name: previous-5.28.4-release
   optional: true
-- name: previous-6-release
+- name: previous-6.2.1-release
   optional: true
 - name: previous-6.20.0-release
   optional: true
 - name: previous-7.0.0-beta.0-release
   optional: true
-- name: previous-6-oss-release
+- name: previous-6.20.0-oss-release
   optional: true
 - name: previous-7.0.0-beta.0-oss-release
   optional: true

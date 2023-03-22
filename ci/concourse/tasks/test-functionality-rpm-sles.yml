@@ -4,7 +4,7 @@ platform: linux
 inputs:
 - name: greenplum-database-release
 - name: gpdb_rpm_installer
-- name: previous-5-release
+- name: previous-5.25.0-release
 - name: previous-5.28.4-release
 
 run:

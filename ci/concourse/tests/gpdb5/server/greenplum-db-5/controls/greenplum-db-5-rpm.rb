@@ -15,8 +15,8 @@ rpm_gpdb_name = 'greenplum-db-5'
 # for RPMs `-` is an invalid character for the version string
 # when the RPM was built, any `-` was converted to `_`
 gpdb_version = rpm_gpdb_version.sub("_", "-") if rpm_gpdb_version != nil
-previous_6_version = File.read('previous-6-release/version').split('#').first if File.exist?('previous-6-release/version')
-previous_5_version = File.read('previous-5-release/version').split('#').first if File.exist?('previous-5-release/version')
+previous_6_version = File.read('previous-6.2.1-release/version').split('#').first if File.exist?('previous-6.2.1-release/version')
+previous_5_version = File.read('previous-5.25.0-release/version').split('#').first if File.exist?('previous-5.25.0-release/version')
 
 pkg_mgr = gpdb_rpm_arch.start_with?("rhel") ? "yum" : "zypper"
 
@@ -116,7 +116,7 @@ control 'RPM obsoletes GPDB 5' do
     end
   end
 
-  describe command("#{pkg_mgr} install -y previous-5-release/greenplum-db-#{previous_5_version}-#{gpdb_rpm_arch}-x86_64.rpm") do
+  describe command("#{pkg_mgr} install -y previous-5.25.0-release/greenplum-db-#{previous_5_version}-#{gpdb_rpm_arch}-x86_64.rpm") do
     its('exit_status') { should eq 0 }
   end
 
@@ -166,7 +166,7 @@ control 'RPM with GPDB 6' do
     gpdb_rpm_arch.start_with?("rhel")
   end
 
-  describe command("yum install -y previous-6-release/greenplum-db-#{previous_6_version}-#{gpdb_rpm_arch}-x86_64.rpm") do
+  describe command("yum install -y previous-6.2.1-release/greenplum-db-#{previous_6_version}-#{gpdb_rpm_arch}-x86_64.rpm") do
     its('exit_status') { should eq 0 }
   end
 

@@ -23,12 +23,10 @@ rpm_gpdb_version = `#{rpm_query("Version", rpm_full_path)}`
 # for RPMs `-` is an invalid character for the version string
 # when the RPM was built, any `-` was converted to `_`
 gpdb_version = rpm_gpdb_version.sub("_", "-") if rpm_gpdb_version != nil
-previous_6_version = File.read('previous-6-release/version').split('#').first if File.exist?('previous-6-release/version')
-previous_5_version = File.read('previous-5-release/version').split('#').first if File.exist?('previous-5-release/version')
+previous_6_version = File.read('previous-6.2.1-release/version').split('#').first if File.exist?('previous-6.2.1-release/version')
+previous_5_version = File.read('previous-5.25.0-release/version').split('#').first if File.exist?('previous-5.25.0-release/version')
 
 control 'Category:server-rpm_is_upgradable' do
-  # Previous 6 release not yet available for Photon and Rocky
-  if os.redhat? && os.name != 'rocky'
     describe command("rpm --install previous-6.20.0-release/greenplum-db-6.20.0-*-x86_64.rpm") do
       its('exit_status') { should eq 0 }
     end
@@ -60,18 +58,17 @@ control 'Category:server-rpm_is_upgradable' do
     describe command('rpm --erase greenplum-db-6') do
       its('exit_status') { should eq 0 }
     end
-  end
 end
 
 control 'RPM obsoletes GPDB 6' do
 
   title 'when both greenplum-db version 6.2.1 and greenplum-db-6 are installed.'
-  # Previous 6 release not yet available for Photon and rocky8
-  if os.redhat? and os.name != 'rocky' || os.redhat? and os.release !~ /8/
-    describe command("yum install -y previous-6-release/greenplum-db-#{previous_6_version}-#{gpdb_rpm_arch}-x86_64.rpm") do
+  # There is no release for 6.2.1 for rhel8/oel8/rocky8
+  if os.redhat? and os.release !~ /8/
+    describe command("yum install -y previous-6.2.1-release/greenplum-db-#{previous_6_version}-#{gpdb_rpm_arch}-x86_64.rpm") do
       its('exit_status') { should eq 0 }
     end
-  
+
     describe command("yum install -y #{rpm_full_path}") do
       its('exit_status') { should eq 0 }
     end
@@ -110,10 +107,10 @@ end
 
 control 'RPM with GPDB 5' do
 
-  title 'when both greenplum-db version 5.2.1 and greenplum-db-6 are installed.'
-  # Previous 6 release not yet available for Photon and rocky8
-  if os.redhat? and os.name != 'rocky' || os.redhat? and os.release !~ /8/
-    describe command("yum install -y previous-5-release/greenplum-db-#{previous_5_version}-#{gpdb_rpm_arch}-x86_64.rpm") do
+  title 'when both greenplum-db version 5.25.0 and greenplum-db-6 are installed.'
+  # There is no release for 5.25.0 for rhel8/oel8/rocky8
+  if os.redhat? and os.release !~ /8/
+    describe command("yum install -y previous-5.25.0-release/greenplum-db-#{previous_5_version}-#{gpdb_rpm_arch}-x86_64.rpm") do
       its('exit_status') { should eq 0 }
     end
 

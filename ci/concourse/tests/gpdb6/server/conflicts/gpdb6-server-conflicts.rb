@@ -11,7 +11,7 @@ gpdb_rpm_arch = ENV['GPDB_RPM_ARCH']
 
 
 previous_version = File.read('previous-6.20.0-release/version').split('#').first if File.exist?('previous-6.20.0-release/version')
-previous_oss_version = File.read('previous-6-oss-release/version').split('#').first if File.exist?('previous-6-oss-release/version')
+previous_oss_version = File.read('previous-6.20.0-oss-release/version').split('#').first if File.exist?('previous-6.20.0-oss-release/version')
 
 
 rpm_gpdb_oss_name = 'open-source-greenplum-db-6'
@@ -49,9 +49,6 @@ control 'Category:server-conflict_enterprise_to_oss_same_version' do
     end
 
     title "Install VTGP (Enterprise) first and GPDBVT (OSS) second for different version."
-    if os.redhat? && os.name == 'rocky'
-    # TODO rocky8 does not have previous release
-    else
       describe command("yum install -y previous-6.20.0-release/greenplum-db-#{previous_version}-*-x86_64.rpm") do
       its('exit_status') {should eq 0}
       its('stdout') { should match /greenplum-db-6*/ }
@@ -68,7 +65,6 @@ control 'Category:server-conflict_enterprise_to_oss_same_version' do
       describe command("yum remove -y #{rpm_gpdb_name}") do
       its('exit_status') {should eq 0}
       end
-    end
 
 
     title "Install GPDBVT (OSS) first and VTGP (Enterprise) second for same version."
@@ -95,10 +91,7 @@ control 'Category:server-conflict_enterprise_to_oss_same_version' do
     end
 
     title "Install GPDBVT (OSS) first and VTGP (Enterprise) second for different version."
-    if os.redhat? && os.name == 'rocky'
-    # TODO rocky8 does not have previous release
-    else
-      describe command("yum install -y previous-6-oss-release/open-source-greenplum-db-#{previous_oss_version}-*-x86_64.rpm") do
+      describe command("yum install -y previous-6.20.0-oss-release/open-source-greenplum-db-#{previous_oss_version}-*-x86_64.rpm") do
       its('exit_status') {should eq 0}
       its('stdout') { should match /open-source-greenplum-db-6*/ }
       end
@@ -116,6 +109,5 @@ control 'Category:server-conflict_enterprise_to_oss_same_version' do
       describe command("yum remove -y #{rpm_gpdb_oss_name}") do
       its('exit_status') {should eq 0}
       end
-    end
   end
 end

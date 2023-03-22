@@ -258,14 +258,6 @@ resources:
     json_key: ((concourse-gcs-resources-service-account-key))
     versioned_file: ((pipeline-name))/rpm_gpdb_clients_sles12/gpdb6/greenplum-db-clients-0.0.0-sles12-x86_64.rpm
 
-- name: previous-6-release
-  type: tanzunet
-  source:
-    api_token: ((releng/public-tanzunet-refresh-token))
-    endpoint: ((tanzunet-endpoint))
-    product_slug: vmware-greenplum
-    product_version: 6\.2\.1
-
 - name: previous-6.20.0-release
   type: tanzunet
   source:
@@ -293,7 +285,15 @@ resources:
     json_key: ((concourse-gcs-resources-service-account-key))
     regexp: deb_gpdb6_ppa_ubuntu18.04/released/gpdb6/greenplum-db-(6.21.*)-ubuntu18.04-amd64.deb
 
-- name: previous-6-oss-release
+- name: previous-6.2.1-release
+  type: tanzunet
+  source:
+    api_token: ((releng/public-tanzunet-refresh-token))
+    endpoint: ((tanzunet-endpoint))
+    product_slug: vmware-greenplum
+    product_version: 6\.2\.1
+
+- name: previous-6.20.0-oss-release
   type: tanzunet
   source:
     api_token: ((releng/public-tanzunet-refresh-token))
@@ -308,7 +308,7 @@ resources:
     repository: gpdb
     tag_filter: 7.0.0-beta.0
 
-- name: previous-5-release
+- name: previous-5.25.0-release
   type: tanzunet
   source:
     api_token: ((releng/public-tanzunet-refresh-token))
@@ -463,6 +463,12 @@ resources:
   type: registry-image
   source:
     repository: gcr.io/data-gpdb-public-images/gpdb7-oel8-test
+    tag: latest
+
+- name: gpdb6-oel8-test
+  type: registry-image
+  source:
+    repository: gcr.io/data-gpdb-public-images/gpdb6-oel8-test
     tag: latest
 
 - name: rhel-8
@@ -820,13 +826,13 @@ jobs:
     - get: rpm_gpdb5_centos6
       passed: [create_gpdb5_rpm_installer_centos6]
       trigger: true
-    - get: previous-6-release
+    - get: previous-6.2.1-release
       params:
         globs: [greenplum-db-*-rhel6-x86_64.rpm]
     - get: previous-6.20.0-release
       params:
         globs: [greenplum-db-*-rhel6-x86_64.rpm]
-    - get: previous-5-release
+    - get: previous-5.25.0-release
       params:
         globs: [greenplum-db-*-rhel6-x86_64.rpm]
     - get: previous-5.28.4-release
@@ -860,13 +866,13 @@ jobs:
     - get: rpm_gpdb5_centos7
       passed: [create_gpdb5_rpm_installer_centos7]
       trigger: true
-    - get: previous-6-release
+    - get: previous-6.2.1-release
       params:
         globs: [greenplum-db-*-rhel7-x86_64.rpm]
     - get: previous-6.20.0-release
       params:
         globs: [greenplum-db-*-rhel7-x86_64.rpm]
-    - get: previous-5-release
+    - get: previous-5.25.0-release
       params:
         globs: [greenplum-db-*-rhel7-x86_64.rpm]
     - get: previous-5.28.4-release
@@ -900,10 +906,10 @@ jobs:
     - get: rpm_gpdb5_sles11
       passed: [create_gpdb5_rpm_installer_sles11]
       trigger: true
-    - get: previous-5-release
+    - get: previous-5.28.4-release
       params:
         globs: [greenplum-db-*-sles11-x86_64.rpm]
-    - get: previous-5.28.4-release
+    - get: previous-5.25.0-release
       params:
         globs: [greenplum-db-*-sles11-x86_64.rpm]
     - get: gpdb5-sles11-build-test
@@ -1587,7 +1593,7 @@ jobs:
 - name: test_functionality_gpdb6_rpm_centos6
   plan:
   - in_parallel:
-    - get: previous-6-release
+    - get: previous-6.2.1-release
       params:
         globs:
         - greenplum-db-*-rhel6-x86_64.rpm
@@ -1595,7 +1601,7 @@ jobs:
       params:
         globs:
         - greenplum-db-*-rhel6-x86_64.rpm
-    - get: previous-5-release
+    - get: previous-5.25.0-release
       params:
         globs:
         - greenplum-db-*-rhel6-x86_64.rpm
@@ -1611,7 +1617,7 @@ jobs:
       passed:
       - create_gpdb6_rpm_installer_centos6_oss
       trigger: true
-    - get: previous-6-oss-release
+    - get: previous-6.20.0-oss-release
       params:
         globs:
         - open-source-greenplum-db-*-rhel6-x86_64.rpm
@@ -1672,7 +1678,7 @@ jobs:
 - name: test_functionality_gpdb6_rpm_centos7
   plan:
   - in_parallel:
-    - get: previous-6-release
+    - get: previous-6.2.1-release
       params:
         globs:
         - greenplum-db-*-rhel7-x86_64.rpm
@@ -1680,7 +1686,7 @@ jobs:
       params:
         globs:
         - greenplum-db-*-rhel7-x86_64.rpm
-    - get: previous-5-release
+    - get: previous-5.25.0-release
       params:
         globs:
         - greenplum-db-*-rhel7-x86_64.rpm
@@ -1696,7 +1702,7 @@ jobs:
       passed:
       - create_gpdb6_rpm_installer_centos7_oss
       trigger: true
-    - get: previous-6-oss-release
+    - get: previous-6.20.0-oss-release
       params:
         globs:
         - open-source-greenplum-db-*-rhel7-x86_64.rpm
@@ -1727,7 +1733,7 @@ jobs:
 - name: test_functionality_gpdb6_rpm_oel7
   plan:
   - in_parallel:
-    - get: previous-6-release
+    - get: previous-6.2.1-release
       params:
         globs:
         - greenplum-db-*-rhel7-x86_64.rpm
@@ -1735,7 +1741,7 @@ jobs:
       params:
         globs:
         - greenplum-db-*-rhel7-x86_64.rpm
-    - get: previous-5-release
+    - get: previous-5.25.0-release
       params:
         globs:
         - greenplum-db-*-rhel7-x86_64.rpm
@@ -1751,7 +1757,7 @@ jobs:
       passed:
       - create_gpdb6_rpm_installer_oel7_oss
       trigger: true
-    - get: previous-6-oss-release
+    - get: previous-6.20.0-oss-release
       params:
         globs:
         - open-source-greenplum-db-*-rhel7-x86_64.rpm
@@ -1855,7 +1861,7 @@ jobs:
       params:
         globs:
         - greenplum-db-*-rhel8-x86_64.rpm
-    - get: previous-6-oss-release
+    - get: previous-6.20.0-oss-release
       params:
         globs:
         - open-source-greenplum-db-*-rhel8-x86_64.rpm
@@ -1884,6 +1890,51 @@ jobs:
         REDHAT_SUBSCRIPTION_ORG_ID: ((releng/redhat_subscription_org_id))
         REDHAT_SUBSCRIPTION_KEY_ID: ((releng/redhat_subscription_key_id))
 
+- name: test_functionality_gpdb6_rpm_oel8
+  plan:
+  - in_parallel:
+    - get: rpm_gpdb6_rocky8
+      passed:
+      - create_gpdb6_rpm_installer_rocky8
+      trigger: true
+    - get: greenplum-database-release
+      passed:
+      - create_gpdb6_rpm_installer_rocky8
+    - get: gpdb6-oel8-test
+    - get: oracle-8
+    - get: previous-6.20.0-release
+      params:
+        globs:
+        - greenplum-db-*-rhel8-x86_64.rpm
+    - get: previous-6.20.0-oss-release
+      params:
+        globs:
+        - open-source-greenplum-db-*-rhel8-x86_64.rpm
+    - get: rpm_gpdb6_rocky8_oss
+      passed:
+      - create_gpdb6_rpm_installer_rocky8_oss
+      trigger: true
+  - in_parallel:
+    - task: test_gpdb6_rpm_functionality
+      file: greenplum-database-release/ci/concourse/tasks/test-functionality-rpm.yml
+      image: gpdb6-oel8-test
+      input_mapping:
+        gpdb_rpm_installer: rpm_gpdb6_rocky8
+        gpdb_rpm_oss_installer: rpm_gpdb6_rocky8_oss
+      params:
+        PLATFORM: oel8
+        GPDB_MAJOR_VERSION: "6"
+    - task: test_package_dependencies
+      file: greenplum-database-release/ci/concourse/tasks/test-package-dependencies.yml
+      image: oracle-8
+      input_mapping:
+        gpdb_pkg_installer: rpm_gpdb6_rocky8
+      params:
+        PLATFORM: oel8
+        GPDB_MAJOR_VERSION: "6"
+        REDHAT_SUBSCRIPTION_ORG_ID: ((releng/redhat_subscription_org_id))
+        REDHAT_SUBSCRIPTION_KEY_ID: ((releng/redhat_subscription_key_id))
+
 - name: test_functionality_gpdb6_rpm_rocky8
   plan:
   - in_parallel:
@@ -1896,6 +1947,14 @@ jobs:
       - create_gpdb6_rpm_installer_rocky8
     - get: gpdb6-rocky8-test
     - get: rocky-8
+    - get: previous-6.20.0-release
+      params:
+        globs:
+        - greenplum-db-*-rhel8-x86_64.rpm
+    - get: previous-6.20.0-oss-release
+      params:
+        globs:
+        - open-source-greenplum-db-*-rhel8-x86_64.rpm
     - get: rpm_gpdb6_rocky8_oss
       passed:
       - create_gpdb6_rpm_installer_rocky8_oss
@@ -2452,6 +2511,7 @@ groups:
   - create_gpdb6_clients_rpm_installer_rocky8
   - test_functionality_clients_gpdb6_rpm_rocky8
   - create_gpdb6_rpm_installer_rocky8_oss
+  - test_functionality_gpdb6_rpm_oel8
   - create_gpdb6_clients_deb_installer_ubuntu18.04
   - test_functionality_clients_gpdb6_deb_ubuntu18.04
   - create_gpdb6_deb_ppa_installer_ubuntu18.04
@@ -2502,6 +2562,7 @@ groups:
   - create_gpdb6_rpm_installer_centos7_oss
   - create_gpdb6_rpm_installer_oel7_oss
   - create_gpdb6_deb_ppa_installer_ubuntu18.04
+  - test_functionality_gpdb6_rpm_oel8
   - gpdb_component_packaging_centos6
   - gpdb_component_packaging_centos7
   - gpdb_component_packaging_rocky8
