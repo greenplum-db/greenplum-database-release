@@ -299,14 +299,14 @@ resources:
   source:
     bucket: pivotal-gpdb-concourse-resources-prod
     json_key: ((resources/gcp/service_accounts/concourse-gcs-resources-service-account-key))
-    regexp: osl/released/gpdb6/open_source_license_Greenplum_Database_by_VMware_Tanzu_(((minor-version)))_GA.txt
+    regexp: osl/released/gpdb6/open_source_license_Greenplum_Database_by_VMware_(((minor-version)))_GA.txt
   type: gcs
 
 - name: gpdb-odp
   source:
     bucket: pivotal-gpdb-concourse-resources-prod
     json_key: ((resources/gcp/service_accounts/concourse-gcs-resources-service-account-key))
-    regexp: osl/released/gpdb6/Greenplum-Database-by-VMware-Tanzu-(((minor-version)))-ODP.tar.gz
+    regexp: osl/released/gpdb6/Greenplum-Database-by-VMware-(((minor-version)))-ODP.tar.gz
   type: gcs
 
 - name: pivotal-gpdb
