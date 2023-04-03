@@ -27,7 +27,7 @@ DEV_PIPELINE_7_NAME              = dev-greenplum-database-release-7-${BRANCH}-${
 FLY_CMD                    ?= fly
 FLY_OPTION_NON_INTERACTIVE ?=
 
-DEV_GPDB-PACKAGE-TESTING_PIPELINE_NAME = dev-gpdb-package-testing-${BRANCH}-${USER}
+DEV_GPDB_PACKAGE_TESTING_PIPELINE_NAME ?= dev-gpdb-package-testing-${BRANCH}-${USER}
 
 GOLANG_VERSION = 1.17.6
 
@@ -216,17 +216,17 @@ set-gpdb-package-testing-dev: generate-variables
 	$(FLY_CMD) --target=$(CONCOURSE) \
 	set-pipeline \
 	--check-creds \
-	--pipeline=gpdb-package-testing-$(BRANCH)-${USER} \
+	--pipeline=${DEV_GPDB_PACKAGE_TESTING_PIPELINE_NAME} \
 	--config=ci/concourse/pipelines/gpdb-package-testing-dev.yml \
 	--load-vars-from=${RELEASE_CONFIG} \
 	--load-vars-from=ci/concourse/vars/gpdb-package-testing.dev.yml \
 	--load-vars-from=ci/concourse/vars/greenplum-database-release.dev.yml \
 	--var=greenplum-database-release-git-branch=${BRANCH} \
-	--var=pipeline-name=${DEV_GPDB-PACKAGE-TESTING_PIPELINE_NAME} \
+	--var=pipeline-name=${DEV_GPDB_PACKAGE_TESTING_PIPELINE_NAME} \
 	--var=run_mode=dev \
 	$(FLY_OPTION_NON_INTERACTIVE)
 
-	$(FLY_CMD) --target=releng unpause-pipeline --pipeline=gpdb-package-testing-$(BRANCH)-${USER}
+	$(FLY_CMD) --target=releng unpause-pipeline --pipeline=${DEV_GPDB_PACKAGE_TESTING_PIPELINE_NAME}
 
 
 ## ----------------------------------------------------------------------
