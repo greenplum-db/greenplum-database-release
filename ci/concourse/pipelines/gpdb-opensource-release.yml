@@ -37,12 +37,12 @@ resources:
   type: slack-notification
   icon: slack
   source:
-    url: ((resources/slack/prod/slack-alert-gp-releng-webhook))
+    url: ((releng/slack-alert-releng-webhook))
 
 - name: slack-start-greenplum-oss
   type: slack-notification
   source:
-    url: ((resources/slack/prod/slack-alert-gp-releng-webhook))
+    url: ((releng/slack-alert-releng-webhook))
 
 - name: golang
   source:
@@ -98,7 +98,7 @@ resources:
   type: git
   source:
     branch: main
-    private_key: ((resources/github/deploy_keys/gp-release-train-deploy-key))
+    private_key: ((releng/gp-release-train-deploy-key))
     uri: git@github.com:pivotal/gp-release-train.git
 
 - name: greenplum-database-release
@@ -114,14 +114,14 @@ resources:
   source:
     owner: ((gpdb-release-owner))
     repository: ((gpdb-release-repository))
-    access_token: ((resources/github/access_tokens/github-token-gp-releng))
+    access_token: ((releng/github-token-gp-releng))
 
 - name: license_file
   type: gcs
   icon: google
   source:
     bucket: ((gcs-bucket-for-oss))
-    json_key: ((resources/gcp/service_accounts/concourse-gcs-resources-service-account-key))
+    json_key: ((concourse-gcs-resources-service-account-key))
     regexp: osl/released/gpdb6/open_source_license_greenplum-database-6.0.0-97773a0-(.*).txt
 
 - name: tanzunet_client
@@ -129,7 +129,7 @@ resources:
   source:
     owner: pivotal
     repository: gp-tanzunet-client
-    access_token: ((resources/github/access_tokens/github-token-gp-releng))
+    access_token: ((releng/github-token-gp-releng))
     tag_filter: ((tanzunet-client-version))
 
 - name: pivotal-cf-tanzunet-cli
@@ -137,7 +137,7 @@ resources:
   source:
     owner: pivotal-cf
     repository: pivnet-cli
-    access_token: ((resources/github/access_tokens/github-token-gp-releng))
+    access_token: ((releng/github-token-gp-releng))
 
 ## RHEL6 Resources
 - name: bin_gpdb_centos6
@@ -145,7 +145,7 @@ resources:
   icon: google
   source:
     bucket: pivotal-gpdb-concourse-resources-prod
-    json_key: ((resources/gcp/service_accounts/concourse-gcs-resources-service-account-key))
+    json_key: ((concourse-gcs-resources-service-account-key))
     regexp: oss/release-candidates/gpdb6/greenplum-db-oss-(((release-version)))-(.*)-(((commit-sha)).*)-centos6.tar.gz
 
 - name: bin_gpdb_centos6_release
@@ -153,7 +153,7 @@ resources:
   icon: google
   source:
     bucket: ((gcs-bucket-for-oss))
-    json_key: ((resources/gcp/service_accounts/concourse-gcs-resources-service-account-key))
+    json_key: ((concourse-gcs-resources-service-account-key))
     regexp: greenplum-oss-server/released/gpdb6/server-(.*)-rhel6_x86_64.tar.gz
 
 - name: gpdb_rpm_installer_centos6
@@ -161,7 +161,7 @@ resources:
   icon: google
   source:
     bucket: ((gcs-bucket-for-oss))
-    json_key: ((resources/gcp/service_accounts/concourse-gcs-resources-service-account-key))
+    json_key: ((concourse-gcs-resources-service-account-key))
     regexp: greenplum-oss-server/released/gpdb6/open-source-greenplum-db-(.*)-rhel6-x86_64.rpm
 
 ## RHEL7 Resources
@@ -170,7 +170,7 @@ resources:
   icon: google
   source:
     bucket: pivotal-gpdb-concourse-resources-prod
-    json_key: ((resources/gcp/service_accounts/concourse-gcs-resources-service-account-key))
+    json_key: ((concourse-gcs-resources-service-account-key))
     regexp: oss/release-candidates/gpdb6/greenplum-db-oss-(((release-version)))-(.*)-(((commit-sha)).*)-centos7.tar.gz
 
 - name: bin_gpdb_centos7_release
@@ -178,7 +178,7 @@ resources:
   icon: google
   source:
     bucket: ((gcs-bucket-for-oss))
-    json_key: ((resources/gcp/service_accounts/concourse-gcs-resources-service-account-key))
+    json_key: ((concourse-gcs-resources-service-account-key))
     regexp: greenplum-oss-server/released/gpdb6/server-(.*)-rhel7_x86_64.tar.gz
 
 - name: gpdb_rpm_installer_centos7
@@ -186,7 +186,7 @@ resources:
   icon: google
   source:
     bucket: ((gcs-bucket-for-oss))
-    json_key: ((resources/gcp/service_accounts/concourse-gcs-resources-service-account-key))
+    json_key: ((concourse-gcs-resources-service-account-key))
     regexp: greenplum-oss-server/released/gpdb6/open-source-greenplum-db-(.*)-rhel7-x86_64.rpm
 
 ## RHEL8 Resources
@@ -195,7 +195,7 @@ resources:
   icon: google
   source:
     bucket: pivotal-gpdb-concourse-resources-prod
-    json_key: ((resources/gcp/service_accounts/concourse-gcs-resources-service-account-key))
+    json_key: ((concourse-gcs-resources-service-account-key))
     regexp: oss/release-candidates/gpdb6/greenplum-db-oss-(((release-version)))-(.*)-(((commit-sha)).*)-el8.tar.gz
 
 - name: bin_gpdb_rhel8_release
@@ -203,7 +203,7 @@ resources:
   icon: google
   source:
     bucket: ((gcs-bucket-for-oss))
-    json_key: ((resources/gcp/service_accounts/concourse-gcs-resources-service-account-key))
+    json_key: ((concourse-gcs-resources-service-account-key))
     regexp: greenplum-oss-server/released/gpdb6/server-(.*)-el8_x86_64.tar.gz
 
 - name: gpdb_rpm_installer_rhel8
@@ -211,7 +211,7 @@ resources:
   icon: google
   source:
     bucket: ((gcs-bucket-for-oss))
-    json_key: ((resources/gcp/service_accounts/concourse-gcs-resources-service-account-key))
+    json_key: ((concourse-gcs-resources-service-account-key))
     regexp: greenplum-oss-server/released/gpdb6/open-source-greenplum-db-(.*)-el8-x86_64.rpm
 
 ## Photon3 Resources
@@ -220,7 +220,7 @@ resources:
   icon: google
   source:
     bucket: pivotal-gpdb-concourse-resources-prod
-    json_key: ((resources/gcp/service_accounts/concourse-gcs-resources-service-account-key))
+    json_key: ((concourse-gcs-resources-service-account-key))
     regexp: oss/release-candidates/gpdb6/greenplum-db-oss-(((release-version)))-(.*)-(((commit-sha)).*)-photon3.tar.gz
 
 - name: bin_gpdb_photon3_release
@@ -228,7 +228,7 @@ resources:
   icon: google
   source:
     bucket: ((gcs-bucket-for-oss))
-    json_key: ((resources/gcp/service_accounts/concourse-gcs-resources-service-account-key))
+    json_key: ((concourse-gcs-resources-service-account-key))
     regexp: greenplum-oss-server/released/gpdb6/server-(.*)-photon3_x86_64.tar.gz
 
 - name: gpdb_rpm_installer_photon3
@@ -236,7 +236,7 @@ resources:
   icon: google
   source:
     bucket: ((gcs-bucket-for-oss))
-    json_key: ((resources/gcp/service_accounts/concourse-gcs-resources-service-account-key))
+    json_key: ((concourse-gcs-resources-service-account-key))
     regexp: greenplum-oss-server/released/gpdb6/greenplum-db-(.*)-photon3-x86_64.rpm
 
 ## Ubuntu18.04 Resources
@@ -245,7 +245,7 @@ resources:
   icon: google
   source:
     bucket: pivotal-gpdb-concourse-resources-prod
-    json_key: ((resources/gcp/service_accounts/concourse-gcs-resources-service-account-key))
+    json_key: ((concourse-gcs-resources-service-account-key))
     regexp: oss/release-candidates/gpdb6/greenplum-db-oss-(((release-version)))-(.*)-(((commit-sha)).*)-ubuntu18.04.tar.gz
 
 - name: bin_gpdb_ubuntu18.04_for_ppa
@@ -253,7 +253,7 @@ resources:
   icon: google
   source:
     bucket: pivotal-gpdb-concourse-resources-prod
-    json_key: ((resources/gcp/service_accounts/concourse-gcs-resources-service-account-key))
+    json_key: ((concourse-gcs-resources-service-account-key))
     regexp: oss/release-candidates/gpdb6/greenplum-db-ppa-(((release-version)))-(.*)-(((commit-sha)).*)-ubuntu18.04.tar.gz
 
 - name: bin_gpdb_ubuntu18.04_release
@@ -261,7 +261,7 @@ resources:
   icon: google
   source:
     bucket: ((gcs-bucket-for-oss))
-    json_key: ((resources/gcp/service_accounts/concourse-gcs-resources-service-account-key))
+    json_key: ((concourse-gcs-resources-service-account-key))
     regexp: greenplum-oss-server/released/gpdb6/server-(.*)-ubuntu18.04_x86_64.tar.gz
 
 - name: gpdb_deb_package
@@ -269,14 +269,14 @@ resources:
   icon: google
   source:
     bucket: ((gcs-bucket-for-oss))
-    json_key: ((resources/gcp/service_accounts/concourse-gcs-resources-service-account-key))
+    json_key: ((concourse-gcs-resources-service-account-key))
     regexp: greenplum-oss-server/released/gpdb6/greenplum-db-(.*)-ubuntu18.04-amd64.deb
 
 - name: ppa_release_version
   type: gcs
   icon: google
   source:
-    json_key: ((resources/gcp/service_accounts/concourse-gcs-resources-service-account-key))
+    json_key: ((concourse-gcs-resources-service-account-key))
     bucket: ((gcs-bucket-intermediates-for-oss))
     versioned_file: ((pipeline-name))/ppa_release_version/version.txt
 
@@ -284,7 +284,7 @@ resources:
   type: gcs
   source:
     bucket: ((gcs-bucket-intermediates-for-oss))
-    json_key: ((resources/gcp/service_accounts/concourse-gcs-resources-service-account-key))
+    json_key: ((concourse-gcs-resources-service-account-key))
     versioned_file: ((pipeline-name))/deb_gpdb6_ppa_ubuntu18.04/greenplum-db-6-ubuntu18.04-amd64.deb
 
 - name: greenplum_db_ppa
@@ -292,27 +292,27 @@ resources:
   source:
     ppa: ((ppa-login))
     package: ((ppa-package-name))
-    api_token: ((resources/ppa/prod/ppa-api-token))
+    api_token: ((releng/ppa/prod/ppa-api-token))
 
 ## OSL
 - name: gpdb-osl
   source:
     bucket: pivotal-gpdb-concourse-resources-prod
-    json_key: ((resources/gcp/service_accounts/concourse-gcs-resources-service-account-key))
+    json_key: ((concourse-gcs-resources-service-account-key))
     regexp: osl/released/gpdb6/open_source_license_Greenplum_Database_by_VMware_(((minor-version)))_GA.txt
   type: gcs
 
 - name: gpdb-odp
   source:
     bucket: pivotal-gpdb-concourse-resources-prod
-    json_key: ((resources/gcp/service_accounts/concourse-gcs-resources-service-account-key))
+    json_key: ((concourse-gcs-resources-service-account-key))
     regexp: osl/released/gpdb6/Greenplum-Database-by-VMware-(((minor-version)))-ODP.tar.gz
   type: gcs
 
 - name: pivotal-gpdb
   type: tanzunet
   source:
-    api_token: ((resources/tanzunet/public-tanzunet-refresh-token))
+    api_token: ((releng/public-tanzunet-refresh-token))
     endpoint: https://network.tanzu.vmware.com
     product_slug: ((tanzunet-product-slug))
     version: ^6\..*
@@ -555,7 +555,7 @@ jobs:
       bin_gpdb: bin_gpdb_ubuntu18.04_for_ppa
     params:
       PPA_REPO: ((ppa-repository))
-      GPG_PRIVATE_KEY: ((resources/ppa/prod/gpg-private-key))
+      GPG_PRIVATE_KEY: ((releng/ppa/prod/gpg-private-key))
       RELEASE_MESSAGE: ((release-message))
       DEBFULLNAME: ((debian-package-maintainer-fullname))
       DEBEMAIL: ((debian-package-maintainer-email))
@@ -803,7 +803,7 @@ jobs:
       RUN_MODE: ((run_mode))
       TANZUNET_ENDPOINT: ((tanzunet-endpoint))
       TANZUNET_METADATA_FILE: ((tanzunet-metadata-file-path))
-      TANZUNET_REFRESH_TOKEN: ((resources/tanzunet/tanzunet-refresh-token))
+      TANZUNET_REFRESH_TOKEN: ((releng/tanzunet-refresh-token))
       TANZUNET_PRODUCT_SLUG: ((tanzunet-product-slug-oss))
   - task: make_release_to_all_users
     config:
@@ -818,7 +818,7 @@ jobs:
       - name: pivotal-gpdb
       params:
         TANZUNET_ENDPOINT: ((tanzunet-endpoint))
-        TANZUNET_REFRESH_TOKEN: ((resources/tanzunet/tanzunet-refresh-token))
+        TANZUNET_REFRESH_TOKEN: ((releng/tanzunet-refresh-token))
         TANZUNET_PRODUCT_SLUG: ((tanzunet-product-slug-oss))
       run:
         path: bash

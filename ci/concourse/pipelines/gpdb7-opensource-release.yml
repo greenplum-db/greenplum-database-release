@@ -32,17 +32,17 @@ resources:
   type: slack-notification
   icon: slack
   source:
-    url: ((resources/slack/prod/slack-alert-gp-releng-webhook))
+    url: ((releng/slack-alert-releng-webhook))
 
 - name: slack-start-greenplum-oss
   type: slack-notification
   source:
-    url: ((resources/slack/prod/slack-alert-gp-releng-webhook))
+    url: ((releng/slack-alert-releng-webhook))
 
 - name: slack-alert-oss-general
   type: slack-notification
   source:
-    url: ((resources/slack/prod/slack-alert-general-webhook))
+    url: ((releng/slack-alert-general-webhook))
 
 ## Image Resources
 - name: gpdb7-rocky8-build
@@ -64,7 +64,7 @@ resources:
   type: git
   source:
     branch: main
-    private_key: ((resources/github/deploy_keys/gp-release-train-deploy-key))
+    private_key: ((releng/gp-release-train-deploy-key))
     uri: git@github.com:pivotal/gp-release-train.git
 
 - name: greenplum-database-release
@@ -80,14 +80,14 @@ resources:
   source:
     owner: ((gpdb-release-owner))
     repository: ((gpdb-release-repository))
-    access_token: ((resources/github/access_tokens/github-token-gp-releng))
+    access_token: ((releng/github-token-gp-releng))
 
 - name: license_file
   type: gcs
   icon: google
   source:
     bucket: ((gcs-bucket-for-oss))
-    json_key: ((resources/gcp/service_accounts/concourse-gcs-resources-service-account-key))
+    json_key: ((concourse-gcs-resources-service-account-key))
     regexp: osl/released/gpdb7/open_source_license_Greenplum_Database_by_VMware_Tanzu_(.*)_beta.txt
 
 ## RHEL8 Resources
@@ -96,7 +96,7 @@ resources:
   icon: google
   source:
     bucket: pivotal-gpdb-concourse-resources-prod
-    json_key: ((resources/gcp/service_accounts/concourse-gcs-resources-service-account-key))
+    json_key: ((concourse-gcs-resources-service-account-key))
     regexp: oss/release-candidates/gpdb7/greenplum-db-oss-(((release-version)))-(.*)-(((commit-sha)).*)-el8.tar.gz
 
 - name: bin_gpdb_rhel8_release
@@ -104,7 +104,7 @@ resources:
   icon: google
   source:
     bucket: ((gcs-bucket-for-oss))
-    json_key: ((resources/gcp/service_accounts/concourse-gcs-resources-service-account-key))
+    json_key: ((concourse-gcs-resources-service-account-key))
     regexp: greenplum-oss-server/released/gpdb7/server-(.*)-el8_x86_64.tar.gz
 
 - name: gpdb_rpm_installer_rhel8
@@ -112,13 +112,13 @@ resources:
   icon: google
   source:
     bucket: ((gcs-bucket-for-oss))
-    json_key: ((resources/gcp/service_accounts/concourse-gcs-resources-service-account-key))
+    json_key: ((concourse-gcs-resources-service-account-key))
     regexp: greenplum-oss-server/released/gpdb7/open-source-greenplum-db-(.*)-el8-x86_64.rpm
 
 - name: pivotal-gpdb
   type: tanzunet
   source:
-    api_token: ((resources/tanzunet/public-tanzunet-refresh-token))
+    api_token: ((releng/public-tanzunet-refresh-token))
     endpoint: https://network.tanzu.vmware.com
     product_slug: ((tanzunet-product-slug))
     version: ^7\..*

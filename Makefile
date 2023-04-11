@@ -24,7 +24,7 @@ WORKSPACE ?= ${HOME}/workspace
 
 DEV_PIPELINE_NAME              = dev-greenplum-database-release-${BRANCH}-${USER}
 DEV_PIPELINE_7_NAME              = dev-greenplum-database-release-7-${BRANCH}-${USER}
-FLY_CMD                    ?= fly
+FLY_CMD                    ?= fly_7.8.3
 FLY_OPTION_NON_INTERACTIVE ?=
 
 DEV_GPDB_PACKAGE_TESTING_PIPELINE_NAME ?= dev-gpdb-package-testing-${BRANCH}-${USER}
@@ -74,9 +74,9 @@ set-dev: set-pipeline-dev
 
 .PHONY: set-pipeline-dev
 set-pipeline-dev:
-	sed -e 's|/prod/|/dev/|g' -e 's|((resources/tanzunet/tanzunet-refresh-token))|((resources/tanzunet/public-tanzunet-refresh-token))|g' ci/concourse/pipelines/gpdb-opensource-release.yml > ci/concourse/pipelines/${DEV_PIPELINE_NAME}.yml
+	sed -e 's|slack-alert-releng-webhook|slack-alert-releng-test-webhook|g' -e 's|/prod/|/dev/|g' -e 's|((releng/tanzunet-refresh-token))|((releng/public-tanzunet-refresh-token))|g' ci/concourse/pipelines/gpdb-opensource-release.yml > ci/concourse/pipelines/${DEV_PIPELINE_NAME}.yml
 
-	fly_7.6 --target=release \
+	$(FLY_CMD) --target=$(CONCOURSE) \
     set-pipeline \
     --check-creds \
     --pipeline=${DEV_PIPELINE_NAME} \
@@ -92,13 +92,13 @@ set-pipeline-dev:
 	--var=minor-version=.* \
     $(FLY_OPTION_NON_INTERACTIVE)
 
-	fly_7.6 --target=release unpause-pipeline --pipeline=${DEV_PIPELINE_NAME}
+	$(FLY_CMD) --target=$(CONCOURSE) unpause-pipeline --pipeline=${DEV_PIPELINE_NAME}
 
 .PHONY: set-gpdb7-pipeline-dev
 set-gpdb7-pipeline-dev:
-	sed -e 's|/prod/|/dev/|g' -e 's|((resources/tanzunet/tanzunet-refresh-token))|((resources/tanzunet/public-tanzunet-refresh-token))|g' ci/concourse/pipelines/gpdb7-opensource-release.yml > ci/concourse/pipelines/${DEV_PIPELINE_7_NAME}.yml
+	sed -e 's|slack-alert-releng-webhook|slack-alert-releng-test-webhook|g' -e 's|slack-alert-general-webhook|slack-alert-releng-test-webhook|g' -e 's|/prod/|/dev/|g' -e 's|((releng/tanzunet-refresh-token))|((releng/public-tanzunet-refresh-token))|g' ci/concourse/pipelines/gpdb7-opensource-release.yml > ci/concourse/pipelines/${DEV_PIPELINE_7_NAME}.yml
 
-	fly_7.6 --target=release \
+	$(FLY_CMD) --target=$(CONCOURSE) \
     set-pipeline \
     --check-creds \
     --pipeline=${DEV_PIPELINE_7_NAME} \
@@ -114,7 +114,7 @@ set-gpdb7-pipeline-dev:
 	--var=minor-version=.* \
     $(FLY_OPTION_NON_INTERACTIVE)
 
-	fly_7.6 --target=release unpause-pipeline --pipeline=${DEV_PIPELINE_7_NAME}
+	$(FLY_CMD) --target=$(CONCOURSE) unpause-pipeline --pipeline=${DEV_PIPELINE_7_NAME}
 
 ## ----------------------------------------------------------------------
 ## Destroy Development Pipeline
@@ -141,7 +141,7 @@ set-prod: set-pipeline-prod
 set-pipeline-prod:
 	sed -e 's|commitish: release_artifacts/commitish|## commitish: release_artifacts/commitish|g' ci/concourse/pipelines/gpdb-opensource-release.yml > ci/concourse/pipelines/gpdb-opensource-release-prod.yml
 
-	fly_7.6 --target=release \
+	$(FLY_CMD) --target=$(CONCOURSE) \
     set-pipeline \
     --check-creds \
     --pipeline=greenplum-database-release \
@@ -158,13 +158,13 @@ set-pipeline-prod:
     $(FLY_OPTION_NON_INTERACTIVE)
 
 	@echo using the following command to unpause the pipeline:
-	@echo "\tfly_7.6 -t release unpause-pipeline --pipeline greenplum-database-release"
+	@echo "\t$(FLY_CMD) --target=$(CONCOURSE) unpause-pipeline --pipeline greenplum-database-release"
 
 .PHONY: set-gpdb7-pipeline-prod
 set-gpdb7-pipeline-prod:
 	sed -e 's|commitish: release_artifacts/commitish|## commitish: release_artifacts/commitish|g' ci/concourse/pipelines/gpdb7-opensource-release.yml > ci/concourse/pipelines/gpdb7-opensource-release-prod.yml
 
-	fly_7.6 --target=release \
+	$(FLY_CMD) --target=$(CONCOURSE) \
     set-pipeline \
     --check-creds \
     --pipeline=greenplum-database-release-7 \
@@ -181,7 +181,7 @@ set-gpdb7-pipeline-prod:
     $(FLY_OPTION_NON_INTERACTIVE)
 
 	@echo using the following command to unpause the pipeline:
-	@echo "\tfly_7.6 -t release unpause-pipeline --pipeline greenplum-database-release-7"
+	@echo "\t$(FLY_CMD) --target=$(CONCOURSE) unpause-pipeline --pipeline greenplum-database-release-7"
 
 ## ----------------------------------------------------------------------
 ## Package Testing Pipelines
@@ -226,7 +226,7 @@ set-gpdb-package-testing-dev: generate-variables
 	--var=run_mode=dev \
 	$(FLY_OPTION_NON_INTERACTIVE)
 
-	$(FLY_CMD) --target=releng unpause-pipeline --pipeline=${DEV_GPDB_PACKAGE_TESTING_PIPELINE_NAME}
+	$(FLY_CMD) --target=$(CONCOURSE) unpause-pipeline --pipeline=${DEV_GPDB_PACKAGE_TESTING_PIPELINE_NAME}
 
 
 ## ----------------------------------------------------------------------
