@@ -11,11 +11,15 @@ set -exo pipefail
 
 export GPDB_RPM_PATH="gpdb_rpm_installer"
 export GPDB_RPM_OSS_PATH="gpdb_rpm_oss_installer"
-if [[ $PLATFORM == "rhel8"* || $PLATFORM == "rocky8"* || $PLATFORM == "oel8"* ]]; then
+
+if [[ $PLATFORM == "rhel8"* || $PLATFORM == "rocky8"* || $PLATFORM == "oel8"* ]] && [[ $GPDB_MAJOR_VERSION == "7" ]]; then
 	export GPDB_RPM_ARCH="el8"
+elif [[ $PLATFORM == "rhel8"* || $PLATFORM == "rocky8"* || $PLATFORM == "oel8"* ]] && [[ $GPDB_MAJOR_VERSION == "6" ]]; then
+	export GPDB_RPM_ARCH="rhel8"
 else
 	export GPDB_RPM_ARCH="$PLATFORM"
 fi
+
 # oel7 does not have previous released rpm, so it use rhel7 as previous release rpm
 if [[ $PLATFORM == "oel7" ]]; then
 	for dir in previous-6*; do

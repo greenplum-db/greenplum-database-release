@@ -60,5 +60,4 @@ if __name__ == '__main__':
     # Copy the RPM package to output resource
     print("Copy the RPM package to the output resource")
     shutil.copy(rpm_file_path, os.path.join("gpdb_rpm_installer", rpm_builder.rpm_package_name))
-
     print("Build RPM package finished!")

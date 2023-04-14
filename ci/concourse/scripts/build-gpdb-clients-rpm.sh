@@ -121,15 +121,25 @@ function _main() {
 	# RPM Versions cannot have a '-'. The '-' is reserved by SPEC to denote %{version}-%{release}
 	__rpm_gpdb_clients_version=$(echo "${__gpdb_clients_version}" | tr '-' '_')
 	echo "[INFO] GPDB version modified for rpm requirements: ${__rpm_gpdb_clients_version}"
-
-	# Build the expected rpm name based on the gpdb version of the artifacts
 	__platform="${PLATFORM}"
-	case "${__platform}" in
-	rhel8*) __final_rpm_name="greenplum-db-clients-${__gpdb_clients_version}-el8-x86_64.rpm" ;;
-	rocky8*) __final_rpm_name="greenplum-db-clients-${__gpdb_clients_version}-el8-x86_64.rpm" ;;
-	oel8*) __final_rpm_name="greenplum-db-clients-${__gpdb_clients_version}-el8-x86_64.rpm" ;;
-	*) __final_rpm_name="greenplum-db-clients-${__gpdb_clients_version}-${PLATFORM}-x86_64.rpm" ;;
-	esac
+	#Build the expected rpm name based on the gpdb version of the artifacts
+
+	if [[ "${GPDB_MAJOR_VERSION}" == 7 ]]; then
+		case "${__platform}" in
+		rhel8*) __final_rpm_name="greenplum-db-clients-${__gpdb_clients_version}-el8-x86_64.rpm" ;;
+		rocky8*) __final_rpm_name="greenplum-db-clients-${__gpdb_clients_version}-el8-x86_64.rpm" ;;
+		oel8*) __final_rpm_name="greenplum-db-clients-${__gpdb_clients_version}-el8-x86_64.rpm" ;;
+		*) __final_rpm_name="greenplum-db-clients-${__gpdb_clients_version}-${PLATFORM}-x86_64.rpm" ;;
+		esac
+	else
+		case "${__platform}" in
+		rhel8*) __final_rpm_name="greenplum-db-clients-${__gpdb_clients_version}-rhel8-x86_64.rpm" ;;
+		rocky8*) __final_rpm_name="greenplum-db-clients-${__gpdb_clients_version}-rhel8-x86_64.rpm" ;;
+		oel8*) __final_rpm_name="greenplum-db-clients-${__gpdb_clients_version}-rhel8-x86_64.rpm" ;;
+		*) __final_rpm_name="greenplum-db-clients-${__gpdb_clients_version}-${PLATFORM}-x86_64.rpm" ;;
+		esac
+	fi
+
 	echo "[INFO] Final RPM name: ${__final_rpm_name}"
 
 	# Conventional location to build RPMs is platform specific

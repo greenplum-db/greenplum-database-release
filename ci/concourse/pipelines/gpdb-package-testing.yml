@@ -163,7 +163,7 @@ resources:
   source:
     bucket: pivotal-gpdb-concourse-resources-prod
     json_key: ((concourse-gcs-resources-service-account-key))
-    regexp: clients/published/gpdb6/clients-rc-(.*)-el8_x86_64.tar.gz
+    regexp: clients/published/gpdb6/clients-rc-(.*)-rhel8_x86_64.tar.gz
 
 - name: bin_gpdb6_clients_ubuntu18.04
   type: gcs
@@ -242,7 +242,7 @@ resources:
   source:
     bucket: ((gcs-bucket-intermediates))
     json_key: ((concourse-gcs-resources-service-account-key))
-    versioned_file: ((pipeline-name))/rpm_gpdb_clients_rocky8/main/greenplum-db-clients-0.0.0-el8-x86_64.rpm
+    versioned_file: ((pipeline-name))/rpm_gpdb_clients_rocky8/main/greenplum-db-clients-0.0.0-rhel8-x86_64.rpm
 
 - name: rpm_gpdb7_clients_rocky8
   type: gcs
@@ -586,7 +586,7 @@ resources:
   source:
     bucket: ((gcs-bucket-intermediates))
     json_key: ((concourse-gcs-resources-service-account-key))
-    versioned_file: ((pipeline-name))/rpm_gpdb_rocky8/gpdb6/open-source-greenplum-db-6-el8-x86_64.rpm
+    versioned_file: ((pipeline-name))/rpm_gpdb_rocky8/gpdb6/open-source-greenplum-db-6-rhel8-x86_64.rpm
 
 - name: rpm_gpdb6_centos7
   type: gcs
@@ -628,7 +628,7 @@ resources:
   source:
     bucket: ((gcs-bucket-intermediates))
     json_key: ((concourse-gcs-resources-service-account-key))
-    versioned_file: ((pipeline-name))/rpm_gpdb_rocky8/gpdb6/greenplum-db-6-el8-x86_64.rpm
+    versioned_file: ((pipeline-name))/rpm_gpdb_rocky8/gpdb6/greenplum-db-6-rhel8-x86_64.rpm
 
 - name: rpm_gpdb7_rocky8
   type: gcs
@@ -1568,7 +1568,7 @@ jobs:
       task: build_rpm_gpdb_rocky8
   - in_parallel:
     - params:
-        file: gpdb_clients_rpm_installer/greenplum-db-clients-*-el8-x86_64.rpm
+        file: gpdb_clients_rpm_installer/greenplum-db-clients-*-rhel8-x86_64.rpm
       put: rpm_gpdb6_clients_rocky8
 
 - name: create_gpdb6_clients_rpm_installer_sles12
