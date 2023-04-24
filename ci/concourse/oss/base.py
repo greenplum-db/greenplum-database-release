@@ -12,11 +12,13 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 from oss.utils import Util
+import semver
 
 
 class BasePackageBuilder(object):
     def __init__(self, bin_gpdb_path):
         self._gpdb_version_short = None
+        self._gpdb_major_version = None
         self.bin_gpdb_path = bin_gpdb_path
 
     @property
@@ -24,6 +26,12 @@ class BasePackageBuilder(object):
         if self._gpdb_version_short is None:
             self._gpdb_version_short = Util.extract_gpdb_version(self.bin_gpdb_path)
         return self._gpdb_version_short
+
+    @property
+    def gpdb_major_version(self):
+        ver = semver.Version.parse(self.gpdb_version_short)
+        self._gpdb_major_version = ver.major
+        return self._gpdb_major_version
 
     def build(self):
         pass
