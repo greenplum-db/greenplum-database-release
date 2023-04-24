@@ -89,7 +89,8 @@ class RPMPackageBuilder(BasePackageBuilder):
 
     @property
     def rpm_package_name(self):
-        if (self.platform == "rhel8" or self.platform == "rocky8" or self.platform == "oel8") and self.gpdb_version_short == "7":
+        gpdb_major_version = self.gpdb_version_short.split(".")[0]
+        if (self.platform == "rhel8" or self.platform == "rocky8" or self.platform == "oel8") and gpdb_major_version == "7":
             platform = "el8"
         else:
             platform = self.platform
