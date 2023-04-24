@@ -33,7 +33,6 @@ run:
   - -ec
   - |
     export PYTHONPATH=greenplum-database-release/ci/concourse/
-    pip3 install semver
     python greenplum-database-release/ci/concourse/scripts/build-gpdb-rpm.py
 
 params:
