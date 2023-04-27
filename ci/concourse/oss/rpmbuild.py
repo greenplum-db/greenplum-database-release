@@ -96,6 +96,8 @@ class RPMPackageBuilder(BasePackageBuilder):
             platform = self.platform
         if self.is_oss:
             return "open-source-greenplum-db-%s-%s-x86_64.rpm" % (self.gpdb_version_short, platform)
+        elif self.gpdb_version_short == "6.99.99" or self.gpdb_version_short == "7.99.99":
+            return "dev-greenplum-db-%s-%s-x86_64.rpm" % (self.gpdb_version_short, platform)
         else:
             return "greenplum-db-%s-%s-x86_64.rpm" % (self.gpdb_version_short, platform)
 
