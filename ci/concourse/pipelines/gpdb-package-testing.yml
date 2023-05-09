@@ -97,6 +97,12 @@ resources:
     repository: oraclelinux
     tag: '7'
 
+- name: ubuntu-20.04
+  type: registry-image
+  source:
+    repository: ubuntu
+    tag: '20.04'
+
 - name: ubuntu-18.04
   type: registry-image
   source:
@@ -172,6 +178,13 @@ resources:
     json_key: ((concourse-gcs-resources-service-account-key))
     regexp: clients/published/gpdb6/clients-rc-(.*)-ubuntu18.04_x86_64.tar.gz
 
+- name: bin_gpdb6_clients_ubuntu20.04
+  type: gcs
+  source:
+    bucket: pivotal-gpdb-concourse-resources-prod
+    json_key: ((concourse-gcs-resources-service-account-key))
+    regexp: clients/published/gpdb6/clients-rc-(.*)-ubuntu20.04_x86_64.debug.tar.gz
+
 - name: bin_gpdb6_clients_sles12
   type: gcs
   source:
@@ -208,6 +221,13 @@ resources:
     bucket: pivotal-gpdb-concourse-resources-prod
     json_key: ((concourse-gcs-resources-service-account-key))
     regexp: oss/release-candidates/gpdb6/greenplum-db-ppa-(.*)-ubuntu18.04.tar.gz
+
+- name: bin_gpdb6_ubuntu20.04_for_ppa
+  type: gcs
+  source:
+    bucket: pivotal-gpdb-concourse-resources-dev
+    json_key: ((concourse-gcs-resources-service-account-key))
+    regexp: oss/release-candidates/gpdb6/greenplum-db-ppa-(.*)-ubuntu20.04.tar.gz
 
 - name: rpm_gpdb5_sles11
   type: gcs
@@ -366,6 +386,13 @@ resources:
     json_key: ((concourse-gcs-resources-service-account-key))
     regexp: server/published/gpdb6/server-rc-(.*)-ubuntu18.04_x86_64.tar.gz
 
+- name: bin_gpdb6_ubuntu20.04
+  type: gcs
+  source:
+    bucket: pivotal-gpdb-concourse-resources-prod
+    json_key: ((concourse-gcs-resources-service-account-key))
+    regexp: server/published/gpdb6/server-rc-(.*)-ubuntu20.04_x86_64.debug.tar.gz
+
 - name: bin_gpdb6_centos6_with_components
   type: gcs
   source:
@@ -400,6 +427,13 @@ resources:
     bucket: ((gcs-bucket-intermediates))
     json_key: ((concourse-gcs-resources-service-account-key))
     versioned_file: ((pipeline-name))/bin_gpdb6_ubuntu18.04_with_components/bin_gpdb.tar.gz
+
+- name: bin_gpdb6_ubuntu20.04_with_components
+  type: gcs
+  source:
+    bucket: ((gcs-bucket-intermediates))
+    json_key: ((concourse-gcs-resources-service-account-key))
+    versioned_file: ((pipeline-name))/bin_gpdb6_ubuntu20.04_with_components/bin_gpdb.tar.gz
 
 - name: gpdb6-centos6-build
   type: registry-image
@@ -495,6 +529,12 @@ resources:
   type: registry-image
   source:
     repository: gcr.io/data-gpdb-public-images/gpdb6-ubuntu18.04-build
+    tag: latest
+
+- name: gpdb6-ubuntu20.04-build
+  type: registry-image
+  source:
+    repository: gcr.io/data-gpdb-public-images/gpdb6-ubuntu20.04-build
     tag: latest
 
 - name: gpdb6-sles12-build
@@ -652,6 +692,13 @@ resources:
     json_key: ((concourse-gcs-resources-service-account-key))
     versioned_file: ((pipeline-name))/deb_gpdb_ubuntu18.04/greenplum-db-6-ubuntu18.04-amd64.deb
 
+- name: deb_gpdb6_ubuntu20.04
+  type: gcs
+  source:
+    bucket: ((gcs-bucket-intermediates))
+    json_key: ((concourse-gcs-resources-service-account-key))
+    versioned_file: ((pipeline-name))/deb_gpdb_ubuntu20.04/greenplum-db-6-ubuntu20.04-amd64.deb
+
 - name: deb_gpdb6_clients_ubuntu18.04
   type: gcs
   source:
@@ -659,12 +706,26 @@ resources:
     json_key: ((concourse-gcs-resources-service-account-key))
     versioned_file: ((pipeline-name))/deb_gpdb_clients_ubuntu18.04/greenplum-db-clients-0.0.0-ubuntu18.04-amd64.deb
 
+- name: deb_gpdb6_clients_ubuntu20.04
+  type: gcs
+  source:
+    bucket: ((gcs-bucket-intermediates))
+    json_key: ((concourse-gcs-resources-service-account-key))
+    versioned_file: ((pipeline-name))/deb_gpdb_clients_ubuntu20.04/greenplum-db-clients-0.0.0-ubuntu20.04-amd64.deb
+
 - name: deb_gpdb6_ppa_ubuntu18.04
   type: gcs
   source:
     bucket: ((gcs-bucket-intermediates))
     json_key: ((concourse-gcs-resources-service-account-key))
     versioned_file: ((pipeline-name))/deb_gpdb6_ppa_ubuntu18.04/greenplum-db-6-ubuntu18.04-amd64.deb
+
+- name: deb_gpdb6_ppa_ubuntu20.04
+  type: gcs
+  source:
+    bucket: ((gcs-bucket-intermediates))
+    json_key: ((concourse-gcs-resources-service-account-key))
+    versioned_file: ((pipeline-name))/deb_gpdb6_ppa_ubuntu20.04/greenplum-db-6-ubuntu20.04-amd64.deb
 
 - name: gpdb6-centos6-test
   type: registry-image
@@ -706,6 +767,12 @@ resources:
   type: registry-image
   source:
     repository: gcr.io/data-gpdb-public-images/gpdb6-ubuntu18.04-test-packaging
+    tag: latest
+
+- name: gpdb6-ubuntu20.04-test-packaging
+  type: registry-image
+  source:
+    repository: gcr.io/data-gpdb-public-images/gpdb6-ubuntu20.04-test-packaging
     tag: latest
 
 ## ======================================================================
@@ -1130,6 +1197,41 @@ jobs:
       file: bin_gpdb_ubuntu18.04_with_components/bin_gpdb.tar.gz
     put: bin_gpdb6_ubuntu18.04_with_components
 
+- name: gpdb_component_packaging_ubuntu20.04
+  plan:
+  - in_parallel:
+    - get: gp-greenplum-morgan-stanley
+    - get: bin_gpdb6_ubuntu20.04
+      trigger: true
+    - get: google-cloud-build
+    - get: gp-release
+      passed:
+      - refresh_integrated_components
+    - get: greenplum-database-release
+      passed:
+      - refresh_integrated_components
+      trigger: true
+  - file: gp-release/gpdb6/concourse/tasks/add_components.yml
+    image: google-cloud-build
+    input_mapping:
+      bin_gpdb: bin_gpdb6_ubuntu20.04
+    output_mapping:
+      bin_gpdb_with_components: bin_gpdb_ubuntu20.04_with_components
+    task: add_components_to_bin_gpdb_ubuntu20.04
+    params:
+      COMPONENT_GPSS_LOCATION: ((gpss-BIONIC-gcs-location))
+      COMPONENT_DISKQUOTA_LOCATION: ((diskquota-BIONIC-gcs-location))
+      COMPONENT_METRICS_COLLECTOR_LOCATION: ((metrics-collector-BIONIC-gcs-location))
+      COMPONENT_ADVANCED_PASSWORD_CHECK_LOCATION: ((advanced-password-check-BIONIC-gcs-location))
+      COMPONENT_GPMT_LOCATION: ((gpmt-BIONIC-gcs-location))
+      COMPONENT_PLPYTHON3_LOCATION: ((plpython3-BIONIC-gcs-location))
+      COMPONENT_IP4R_LOCATION: ((ip4r-BIONIC-gcs-location))
+      COMPONENT_POSTGRESQL_HLL_LOCATION: ((postgresql-hll-BIONIC-gcs-location))
+      GCLOUD_SERVICE_ACCOUNT_KEY: ((concourse-gcs-resources-service-account-key))
+  - params:
+      file: bin_gpdb_ubuntu20.04_with_components/bin_gpdb.tar.gz
+    put: bin_gpdb6_ubuntu20.04_with_components
+
 - name: create_gpdb6_rpm_installer_centos6
   plan:
   - in_parallel:
@@ -1430,6 +1532,31 @@ jobs:
     params:
       file: gpdb_deb_installer/*.deb
 
+- name: create_gpdb6_deb_installer_ubuntu20.04
+  plan:
+  - in_parallel:
+    - get: bin_gpdb6_ubuntu20.04_with_components
+      trigger: true
+      passed:
+      - gpdb_component_packaging_ubuntu20.04
+    - get: greenplum-database-release
+      passed:
+      - gpdb_component_packaging_ubuntu20.04
+    - get: gpdb6-ubuntu20.04-build
+    - get: gpdb6-osl
+  - task: build_deb_gpdb6_ubuntu20.04
+    file: greenplum-database-release/ci/concourse/tasks/build-gpdb-deb.yml
+    image: gpdb6-ubuntu20.04-build
+    input_mapping:
+      bin_gpdb: bin_gpdb6_ubuntu20.04_with_components
+      license_file: gpdb6-osl
+    params:
+      GPDB_OSS: false
+      PLATFORM: ubuntu20.04
+  - put: deb_gpdb6_ubuntu20.04
+    params:
+      file: gpdb_deb_installer/*.deb
+
 - name: create_gpdb6_clients_deb_installer_ubuntu18.04
   plan:
   - in_parallel:
@@ -1445,12 +1572,36 @@ jobs:
         bin_gpdb_clients: bin_gpdb6_clients_ubuntu18.04
       params:
         GPDB_VERSION: 0.0.0
+        GPDB_MAJOR_VERSION: "6"
         PLATFORM: ubuntu18.04
       task: build_deb_gpdb6_clients_ubuntu18.04
   - in_parallel:
     - params:
         file: gpdb_clients_deb_installer/*.deb
       put: deb_gpdb6_clients_ubuntu18.04
+
+- name: create_gpdb6_clients_deb_installer_ubuntu20.04
+  plan:
+  - in_parallel:
+    - get: bin_gpdb6_clients_ubuntu20.04
+      trigger: true
+    - get: gpdb6-ubuntu20.04-build
+    - get: greenplum-database-release
+      trigger: true
+  - in_parallel:
+    - file: greenplum-database-release/ci/concourse/tasks/build-gpdb-clients-deb.yml
+      image: gpdb6-ubuntu20.04-build
+      input_mapping:
+        bin_gpdb_clients: bin_gpdb6_clients_ubuntu20.04
+      params:
+        GPDB_VERSION: 0.0.0
+        GPDB_MAJOR_VERSION: "6"
+        PLATFORM: ubuntu20.04
+      task: build_deb_gpdb6_clients_ubuntu20.04
+  - in_parallel:
+    - params:
+        file: gpdb_clients_deb_installer/*.deb
+      put: deb_gpdb6_clients_ubuntu20.04
 
 - name: create_gpdb6_deb_ppa_installer_ubuntu18.04
   plan:
@@ -1477,6 +1628,37 @@ jobs:
       bin_gpdb: bin_gpdb6_ubuntu18.04_for_ppa
   - in_parallel:
     - put: deb_gpdb6_ppa_ubuntu18.04
+      params:
+        file: gpdb_deb_ppa_installer/*.deb
+    - put: ppa_release_version
+      params:
+        file: ppa_release/version.txt
+
+- name: create_gpdb6_deb_ppa_installer_ubuntu20.04
+  plan:
+  - in_parallel:
+    - get: greenplum-database-release
+      trigger: true
+    - get: bin_gpdb6_ubuntu20.04_for_ppa
+      trigger: true
+    - get: gpdb6-ubuntu20.04-build
+    - get: license_file
+    - get: gpdb_src
+  - task: build ppa
+    file: greenplum-database-release/ci/concourse/tasks/build-ppa.yml
+    image: gpdb6-ubuntu20.04-build
+    params:
+      GPG_PRIVATE_KEY: ((releng/gpg-private-key/env))
+      RELEASE_MESSAGE: ((release-message))
+      DEBFULLNAME: ((debian-package-maintainer-fullname))
+      DEBEMAIL: ((debian-package-maintainer-email))
+      GPDB_OSS: true
+      PLATFORM: "ubuntu20.04"
+      PPA: true
+    input_mapping:
+      bin_gpdb: bin_gpdb6_ubuntu20.04_for_ppa
+  - in_parallel:
+    - put: deb_gpdb6_ppa_ubuntu20.04
       params:
         file: gpdb_deb_ppa_installer/*.deb
     - put: ppa_release_version
@@ -2022,6 +2204,40 @@ jobs:
         PLATFORM: ubuntu18.04
         GPDB_MAJOR_VERSION: "6"
 
+- name: test_functionality_gpdb6_deb_ubuntu20.04
+  plan:
+  - in_parallel:
+    - get: deb_gpdb6_ubuntu20.04
+      passed:
+      - create_gpdb6_deb_installer_ubuntu20.04
+      trigger: true
+    - get: deb_gpdb6_ppa_ubuntu20.04
+      passed:
+      - create_gpdb6_deb_ppa_installer_ubuntu20.04
+      trigger: true
+    - get: greenplum-database-release
+      passed:
+      - create_gpdb6_deb_installer_ubuntu20.04
+    - get: gpdb6-ubuntu20.04-test-packaging
+    - get: ubuntu-20.04
+  - in_parallel:
+    - task: test_gpdb6_deb_functionality
+      file: greenplum-database-release/ci/concourse/tasks/test-functionality-deb.yml
+      image: gpdb6-ubuntu20.04-test-packaging
+      input_mapping:
+        gpdb_deb_installer: deb_gpdb6_ubuntu20.04
+      params:
+        PLATFORM: ubuntu20.04
+        GPDB_MAJOR_VERSION: "6"
+    - task: test_package_dependencies
+      file: greenplum-database-release/ci/concourse/tasks/test-package-dependencies.yml
+      image: ubuntu-20.04
+      input_mapping:
+        gpdb_pkg_installer: deb_gpdb6_ubuntu20.04
+      params:
+        PLATFORM: ubuntu20.04
+        GPDB_MAJOR_VERSION: "6"
+
 - name: test_functionality_gpdb6_rpm_photon3
   plan:
   - in_parallel:
@@ -2070,6 +2286,37 @@ jobs:
         gpdb_pkg_installer: deb_gpdb6_clients_ubuntu18.04
       params:
         PLATFORM: ubuntu18.04
+        GPDB_MAJOR_VERSION: "6"
+        CLIENTS: "clients"
+
+- name: test_functionality_clients_gpdb6_deb_ubuntu20.04
+  plan:
+  - in_parallel:
+    - get: deb_gpdb6_clients_ubuntu20.04
+      passed:
+      - create_gpdb6_clients_deb_installer_ubuntu20.04
+      trigger: true
+    - get: gpdb6-ubuntu20.04-test-packaging
+    - get: greenplum-database-release
+      passed:
+      - create_gpdb6_clients_deb_installer_ubuntu20.04
+    - get: ubuntu-20.04
+  - in_parallel:
+    - task: test_clients_rpm_functionality
+      file: greenplum-database-release/ci/concourse/tasks/test-clients-functionality.yml
+      image: gpdb6-ubuntu20.04-test-packaging
+      input_mapping:
+        gpdb_clients_package_installer: deb_gpdb6_clients_ubuntu20.04
+      params:
+        PLATFORM: ubuntu20.04
+        GPDB_MAJOR_VERSION: "6"
+    - task: test_package_dependencies
+      file: greenplum-database-release/ci/concourse/tasks/test-package-dependencies.yml
+      image: ubuntu-20.04
+      input_mapping:
+        gpdb_pkg_installer: deb_gpdb6_clients_ubuntu20.04
+      params:
+        PLATFORM: ubuntu20.04
         GPDB_MAJOR_VERSION: "6"
         CLIENTS: "clients"
 
@@ -2500,6 +2747,8 @@ groups:
   - test_functionality_gpdb6_rpm_rocky8
   - create_gpdb6_rpm_installer_photon3
   - test_functionality_gpdb6_rpm_photon3
+  - create_gpdb6_deb_installer_ubuntu20.04
+  - test_functionality_gpdb6_deb_ubuntu20.04
   - create_gpdb6_deb_installer_ubuntu18.04
   - test_functionality_gpdb6_deb_ubuntu18.04
   - create_gpdb6_clients_rpm_installer_sles12
@@ -2515,9 +2764,11 @@ groups:
   - test_functionality_clients_gpdb6_rpm_rocky8
   - create_gpdb6_rpm_installer_rocky8_oss
   - test_functionality_gpdb6_rpm_oel8
+  - create_gpdb6_clients_deb_installer_ubuntu20.04
+  - test_functionality_clients_gpdb6_deb_ubuntu20.04
   - create_gpdb6_clients_deb_installer_ubuntu18.04
   - test_functionality_clients_gpdb6_deb_ubuntu18.04
-  - create_gpdb6_deb_ppa_installer_ubuntu18.04
+  - create_gpdb6_deb_ppa_installer_ubuntu20.04
   - create_gpdb6_rpm_installer_centos6_oss
   - create_gpdb6_rpm_installer_centos7_oss
   - create_gpdb6_rpm_installer_oel7_oss
@@ -2534,6 +2785,7 @@ groups:
   - gpdb_component_packaging_centos7
   - gpdb_component_packaging_rocky8
   - gpdb_component_packaging_ubuntu18.04
+  - gpdb_component_packaging_ubuntu20.04
   - gpdb_component_packaging_photon3
   - refresh_integrated_components
   name: All
@@ -2559,16 +2811,20 @@ groups:
   - test_functionality_gpdb6_rpm_rhel8
   - create_gpdb6_rpm_installer_photon3
   - test_functionality_gpdb6_rpm_photon3
+  - create_gpdb6_deb_installer_ubuntu20.04
+  - test_functionality_gpdb6_deb_ubuntu20.04
   - create_gpdb6_deb_installer_ubuntu18.04
   - test_functionality_gpdb6_deb_ubuntu18.04
   - create_gpdb6_rpm_installer_centos6_oss
   - create_gpdb6_rpm_installer_centos7_oss
   - create_gpdb6_rpm_installer_oel7_oss
+  - create_gpdb6_deb_ppa_installer_ubuntu20.04
   - create_gpdb6_deb_ppa_installer_ubuntu18.04
   - test_functionality_gpdb6_rpm_oel8
   - gpdb_component_packaging_centos6
   - gpdb_component_packaging_centos7
   - gpdb_component_packaging_rocky8
+  - gpdb_component_packaging_ubuntu20.04
   - gpdb_component_packaging_ubuntu18.04
   - gpdb_component_packaging_photon3
   - refresh_integrated_components
@@ -2587,6 +2843,8 @@ groups:
   - test_functionality_clients_gpdb6_rpm_rocky8
   - create_gpdb6_clients_deb_installer_ubuntu18.04
   - test_functionality_clients_gpdb6_deb_ubuntu18.04
+  - create_gpdb6_clients_deb_installer_ubuntu20.04
+  - test_functionality_clients_gpdb6_deb_ubuntu20.04
   name: gpdb 6 client
 - jobs:
   - create_gpdb7_rpm_installer_rocky8

@@ -13,7 +13,7 @@ import (
 
 func gpdbDebHasCorrectMetadata() error {
 	// get Homepage from debian package field and check it's reacheable
-	homePage, err := GetDebField("Homepage", "gpdb_deb_installer/greenplum-db-ubuntu18.04-amd64.deb")
+	homePage, err := GetDebField("Homepage", "gpdb_deb_installer/greenplum-db-ubuntu-amd64.deb")
 	if err != nil {
 		return err
 	}
@@ -24,7 +24,7 @@ func gpdbDebHasCorrectMetadata() error {
 }
 
 func gpdbInstalled() error {
-	gpbdVersion, err := GetDebField("Version", "gpdb_deb_installer/greenplum-db-ubuntu18.04-amd64.deb")
+	gpbdVersion, err := GetDebField("Version", "gpdb_deb_installer/greenplum-db-ubuntu-amd64.deb")
 	if err != nil {
 		return err
 	}
@@ -34,7 +34,7 @@ func gpdbInstalled() error {
 
 func ppaInstalledAsExpected() error {
 	// get gpdbVersion
-	gpbdVersion, err := GetDebField("Version", "gpdb_deb_installer/greenplum-db-ubuntu18.04-amd64.deb")
+	gpbdVersion, err := GetDebField("Version", "gpdb_deb_installer/greenplum-db-ubuntu-amd64.deb")
 	if err != nil {
 		return err
 	}
@@ -60,7 +60,7 @@ func ppaInstalledAsExpected() error {
 
 func gpdbInstalledAsExpected() error {
 	// get gpdbVersion
-	gpbdVersion, err := GetDebField("Version", "gpdb_deb_installer/greenplum-db-ubuntu18.04-amd64.deb")
+	gpbdVersion, err := GetDebField("Version", "gpdb_deb_installer/greenplum-db-ubuntu-amd64.deb")
 	if err != nil {
 		return err
 	}
@@ -186,7 +186,7 @@ func gpdbLinkRemovedAsExpected() error {
 
 func ppaRemovedAsExpected() error {
 	// get gpdbVersion
-	gpbdVersion, err := GetDebField("Version", "gpdb_deb_installer/greenplum-db-ubuntu18.04-amd64.deb")
+	gpbdVersion, err := GetDebField("Version", "gpdb_deb_installer/greenplum-db-ubuntu-amd64.deb")
 	if err != nil {
 		return err
 	}
@@ -199,7 +199,7 @@ func ppaRemovedAsExpected() error {
 
 func gpdbRemovedAsExpected() error {
 	// get gpdbVersion
-	gpbdVersion, err := GetDebField("Version", "gpdb_deb_installer/greenplum-db-ubuntu18.04-amd64.deb")
+	gpbdVersion, err := GetDebField("Version", "gpdb_deb_installer/greenplum-db-ubuntu-amd64.deb")
 	if err != nil {
 		return err
 	}
@@ -211,15 +211,15 @@ func gpdbRemovedAsExpected() error {
 }
 
 func installGpdb() error {
-	return InstallPackage("gpdb_deb_installer/greenplum-db-ubuntu18.04-amd64.deb")
+	return InstallPackage("gpdb_deb_installer/greenplum-db-ubuntu-amd64.deb")
 }
 
 func installPreviousVersionGpdb() error {
-	return InstallPackage("gpdb_deb_installer/previous-greenplum-db-ubuntu18.04-amd64.deb")
+	return InstallPackage("gpdb_deb_installer/previous-greenplum-db-ubuntu-amd64.deb")
 }
 
 func removeGpdb() error {
-	gpbdVersion, err := GetDebField("Version", "gpdb_deb_installer/greenplum-db-ubuntu18.04-amd64.deb")
+	gpbdVersion, err := GetDebField("Version", "gpdb_deb_installer/greenplum-db-ubuntu-amd64.deb")
 	if err != nil {
 		return err
 	}
@@ -229,7 +229,7 @@ func removeGpdb() error {
 
 func gpdbClientDebHasCorrectMetadata() error {
 	// get Homepage from debian package field and check it's reacheable
-	homePage, err := GetDebField("Homepage", "gpdb_client_deb_installer/greenplum-db-6-ubuntu18.04-amd64.deb")
+	homePage, err := GetDebField("Homepage", "gpdb_client_deb_installer/greenplum-db-6-ubuntu-amd64.deb")
 	if err != nil {
 		return err
 	}
@@ -237,7 +237,7 @@ func gpdbClientDebHasCorrectMetadata() error {
 		return fmt.Errorf("Homepage: %s is not reachable", homePage)
 	}
 	// get Package from debian package field and it should equal to greenplum-db-clients
-	pacakge, err := GetDebField("Package", "gpdb_client_deb_installer/greenplum-db-6-ubuntu18.04-amd64.deb")
+	pacakge, err := GetDebField("Package", "gpdb_client_deb_installer/greenplum-db-6-ubuntu-amd64.deb")
 	if err != nil {
 		return err
 	}
@@ -253,7 +253,7 @@ func gpdbClientInstalled() error {
 
 func gpdbClientInstalledAsExpected() error {
 	// get gpdb client debian Version
-	gpdbClientVersion, err := GetDebField("Version", "gpdb_client_deb_installer/greenplum-db-6-ubuntu18.04-amd64.deb")
+	gpdbClientVersion, err := GetDebField("Version", "gpdb_client_deb_installer/greenplum-db-6-ubuntu-amd64.deb")
 	if err != nil {
 		return err
 	}
@@ -296,7 +296,7 @@ func gpdbClientLinkRemovedAsExpected() error {
 
 func gpdbClientRemovedAsExpected() error {
 	// get gpdb client debian Version
-	gpdbClientVersion, err := GetDebField("Version", "gpdb_client_deb_installer/greenplum-db-6-ubuntu18.04-amd64.deb")
+	gpdbClientVersion, err := GetDebField("Version", "gpdb_client_deb_installer/greenplum-db-6-ubuntu-amd64.deb")
 	if err != nil {
 		return err
 	}
@@ -308,7 +308,7 @@ func gpdbClientRemovedAsExpected() error {
 }
 
 func installGpdbClient() error {
-	return InstallPackage("gpdb_client_deb_installer/greenplum-db-6-ubuntu18.04-amd64.deb")
+	return InstallPackage("gpdb_client_deb_installer/greenplum-db-6-ubuntu-amd64.deb")
 }
 
 func removeGpdbClient() error {
@@ -389,6 +389,9 @@ func InstallPackage(debPath string) error {
 		return err
 	}
 	cmd = exec.Command("apt-get", "install", "--yes", "./"+filepath.Base(fullDebPath))
+	cmd.Env = append(os.Environ(),
+		"DEBIAN_FRONTEND=noninteractive",
+	)
 	cmd.Dir = filepath.Dir(fullDebPath)
 	_, err = cmd.Output()
 	if err != nil {

@@ -54,7 +54,7 @@ EOF
 
 	if [ "${GPDB_MAJOR_VERSION}" = "7" ]; then
 		cp "../greenplum-database-release/ci/concourse/scripts/greenplum-db-7-clients-control" "${__package_name}/DEBIAN/control"
-	else
+	elif [ "${GPDB_MAJOR_VERSION}" = "6" ]; then
 		cp "../greenplum-database-release/ci/concourse/scripts/greenplum-db-clients-control" "${__package_name}/DEBIAN/control"
 	fi
 

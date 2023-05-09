@@ -57,7 +57,7 @@ elif [[ $PLATFORM == "ubuntu"* ]]; then
 
 	pushd ${GPDB_PKG_PATH}
 	# Install greenplum deb
-	apt-get --quiet=8 --yes install ./*.deb
+	DEBIAN_FRONTEND=noninteractive apt-get --quiet=8 --yes install ./*.deb
 	if [[ $CLIENTS == "clients" ]]; then
 		if [[ "${GPDB_MAJOR_VERSION}" == "7" ]]; then
 			ln -s /usr/bin/python3 /usr/bin/python

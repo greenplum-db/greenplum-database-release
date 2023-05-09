@@ -28,7 +28,7 @@ if [[ $PLATFORM == "rhel"* || $PLATFORM == "sles"* || $PLATFORM == "rocky"* || $
 
 elif [[ $PLATFORM == "ubuntu"* ]]; then
 	mkdir greenplum-database-release/gpdb-deb-test/gpdb_client_deb_installer
-	cp gpdb_clients_package_installer/*.deb greenplum-database-release/gpdb-deb-test/gpdb_client_deb_installer/greenplum-db-6-ubuntu18.04-amd64.deb
+	cp gpdb_clients_package_installer/*.deb greenplum-database-release/gpdb-deb-test/gpdb_client_deb_installer/greenplum-db-6-ubuntu-amd64.deb
 	cd greenplum-database-release/gpdb-deb-test
 	godog features/gpdb-client-deb.feature
 else
