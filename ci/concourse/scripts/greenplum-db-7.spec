@@ -56,7 +56,7 @@ Requires: tar
 Requires: which
 Requires: zip
 Requires: zlib
-Requires: llvm-libs
+Requires: llvm-libs == 15.0.7
 Requires: libuuid
 %endif
 
