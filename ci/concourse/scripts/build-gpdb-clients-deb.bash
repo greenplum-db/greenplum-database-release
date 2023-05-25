@@ -78,6 +78,11 @@ function _main() {
 	if [[ -z "${GPDB_VERSION}" ]]; then
 		set_gpdb_clients_version
 	fi
+
+	if [ -z "${GPDB_MAJOR_VERSION}"]; then
+		export GPDB_MAJOR_VERSION=$(echo "${GPDB_VERSION}" | cut -c 1)
+	fi
+
 	__gpdb_clients_version="${GPDB_VERSION}"
 	echo "[INFO] Building deb installer for GPDB clients version: ${__gpdb_clients_version}"
 
