@@ -129,6 +129,7 @@ function _main() {
 		rhel8*) __final_rpm_name="greenplum-db-clients-${__gpdb_clients_version}-el8-x86_64.rpm" ;;
 		rocky8*) __final_rpm_name="greenplum-db-clients-${__gpdb_clients_version}-el8-x86_64.rpm" ;;
 		oel8*) __final_rpm_name="greenplum-db-clients-${__gpdb_clients_version}-el8-x86_64.rpm" ;;
+		rocky9*) __final_rpm_name="greenplum-db-clients-${__gpdb_clients_version}-el9-x86_64.rpm" ;;
 		*) __final_rpm_name="greenplum-db-clients-${__gpdb_clients_version}-${PLATFORM}-x86_64.rpm" ;;
 		esac
 	else
