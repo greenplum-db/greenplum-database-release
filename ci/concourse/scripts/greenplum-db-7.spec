@@ -48,6 +48,7 @@ Requires: openssh-clients
 Requires: openssh-server
 Requires: openssl
 Requires: perl
+Requires: python3
 Requires: python39
 Requires: readline
 Requires: rsync
