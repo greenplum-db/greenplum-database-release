@@ -38,7 +38,8 @@ Requires: libapr1
 %endif
 Requires: bzip2
 Requires: libedit
-Requires: python39-devel
+Requires: python3
+Requires: python39
 %if 0%{?rhel}
 Requires: libyaml
 Requires: libzstd
