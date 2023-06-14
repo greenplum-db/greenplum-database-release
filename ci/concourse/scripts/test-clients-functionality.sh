@@ -6,6 +6,8 @@ export GPDB_CLIENTS_PATH="gpdb_clients_package_installer"
 export GPDB_CLIENTS_VERSION="0.0.0"
 if [[ $PLATFORM == "rhel8"* || $PLATFORM == "rocky8"* || $PLATFORM == "oel8"* ]] && [[ $GPDB_MAJOR_VERSION == "7" ]]; then
 	export GPDB_CLIENTS_ARCH="el8"
+elif [[ $PLATFORM == "rhel9"* || $PLATFORM == "rocky9"* || $PLATFORM == "oel9"* ]] && [[ $GPDB_MAJOR_VERSION == "7" ]]; then
+	export GPDB_CLIENTS_ARCH="el9"
 elif [[ $PLATFORM == "rhel8"* || $PLATFORM == "rocky8"* || $PLATFORM == "oel8"* ]] && [[ $GPDB_MAJOR_VERSION == "6" ]]; then
 	export GPDB_CLIENTS_ARCH="rhel8"
 else

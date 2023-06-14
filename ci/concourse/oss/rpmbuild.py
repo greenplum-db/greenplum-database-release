@@ -83,8 +83,8 @@ class RPMPackageBuilder(BasePackageBuilder):
 
     @platform.setter
     def platform(self, value):
-        if value not in ['rhel6', 'rhel7', 'rhel8', 'photon3','sles11', 'rocky8', 'oel8', 'oel7']:
-            raise Exception("The platform only support rhel6, rhel7, rhel8, photon3, sles11, rocky8, oel8, oel7")
+        if value not in ['rhel6', 'rhel7', 'rhel8', 'rhel9', 'photon3','sles11', 'rocky8', 'rocky9', 'oel9', 'oel8', 'oel7']:
+            raise Exception("The platform only support rhel6, rhel7, rhel8, rhel9, photon3, sles11, rocky8, rocky9, oel9, oel8, oel7")
         self._platform = value
 
     @property
@@ -92,6 +92,8 @@ class RPMPackageBuilder(BasePackageBuilder):
         gpdb_major_version = self.gpdb_version_short.split(".")[0]
         if (self.platform == "rhel8" or self.platform == "rocky8" or self.platform == "oel8") and gpdb_major_version == "7":
             platform = "el8"
+        if (self.platform == "rhel9" or self.platform == "rocky9" or self.platform == "oel9") and gpdb_major_version == "7":
+            platform = "el9"
         else:
             platform = self.platform
         if self.is_oss:

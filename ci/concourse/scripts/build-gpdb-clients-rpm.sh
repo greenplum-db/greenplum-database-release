@@ -126,16 +126,14 @@ function _main() {
 
 	if [[ "${GPDB_MAJOR_VERSION}" == 7 ]]; then
 		case "${__platform}" in
-		rhel8*) __final_rpm_name="greenplum-db-clients-${__gpdb_clients_version}-el8-x86_64.rpm" ;;
-		rocky8*) __final_rpm_name="greenplum-db-clients-${__gpdb_clients_version}-el8-x86_64.rpm" ;;
-		oel8*) __final_rpm_name="greenplum-db-clients-${__gpdb_clients_version}-el8-x86_64.rpm" ;;
+		rhel8* | rocky8* | oel8*) __final_rpm_name="greenplum-db-clients-${__gpdb_clients_version}-el8-x86_64.rpm" ;;
+		rhel9* | rocky9* | oel9*) __final_rpm_name="greenplum-db-clients-${__gpdb_clients_version}-el9-x86_64.rpm" ;;
 		*) __final_rpm_name="greenplum-db-clients-${__gpdb_clients_version}-${PLATFORM}-x86_64.rpm" ;;
 		esac
 	else
 		case "${__platform}" in
-		rhel8*) __final_rpm_name="greenplum-db-clients-${__gpdb_clients_version}-rhel8-x86_64.rpm" ;;
-		rocky8*) __final_rpm_name="greenplum-db-clients-${__gpdb_clients_version}-rhel8-x86_64.rpm" ;;
-		oel8*) __final_rpm_name="greenplum-db-clients-${__gpdb_clients_version}-rhel8-x86_64.rpm" ;;
+		rhel8* | rocky8* | oel8*) __final_rpm_name="greenplum-db-clients-${__gpdb_clients_version}-rhel8-x86_64.rpm" ;;
+		rhel9* | rocky9* | oel9*) __final_rpm_name="greenplum-db-clients-${__gpdb_clients_version}-rhel9-x86_64.rpm" ;;
 		*) __final_rpm_name="greenplum-db-clients-${__gpdb_clients_version}-${PLATFORM}-x86_64.rpm" ;;
 		esac
 	fi
