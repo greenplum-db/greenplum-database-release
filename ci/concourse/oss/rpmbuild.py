@@ -92,7 +92,7 @@ class RPMPackageBuilder(BasePackageBuilder):
         gpdb_major_version = self.gpdb_version_short.split(".")[0]
         if (self.platform == "rhel8" or self.platform == "rocky8" or self.platform == "oel8") and gpdb_major_version == "7":
             platform = "el8"
-        if (self.platform == "rhel9" or self.platform == "rocky9" or self.platform == "oel9") and gpdb_major_version == "7":
+        elif (self.platform == "rhel9" or self.platform == "rocky9" or self.platform == "oel9") and gpdb_major_version == "7":
             platform = "el9"
         else:
             platform = self.platform
