@@ -2719,9 +2719,6 @@ jobs:
       passed:
       - create_gpdb7_clients_rpm_installer_rocky8
     - get: rhel-8
-    - get: rpm_gpdb7_rocky8_oss
-      passed:
-      - create_gpdb7_rpm_installer_rocky8_oss
   - in_parallel:
     - task: test_rpm_functionality
       file: greenplum-database-release/ci/concourse/tasks/test-clients-functionality.yml
@@ -2750,18 +2747,15 @@ jobs:
       passed:
       - create_gpdb7_clients_rpm_installer_rocky8
       trigger: true
-    - get: gpdb7-rocky8-build
+    - get: gpdb7-rocky8-test
     - get: greenplum-database-release
       passed:
       - create_gpdb7_clients_rpm_installer_rocky8
     - get: rocky-8
-    - get: rpm_gpdb7_rocky8_oss
-      passed:
-      - create_gpdb7_rpm_installer_rocky8_oss
   - in_parallel:
     - task: test_rpm_functionality
       file: greenplum-database-release/ci/concourse/tasks/test-clients-functionality.yml
-      image: gpdb7-rocky8-build
+      image: gpdb7-rocky8-test
       input_mapping:
         gpdb_clients_package_installer: rpm_gpdb7_clients_rocky8
       params:
@@ -2789,9 +2783,6 @@ jobs:
       passed:
       - create_gpdb7_clients_rpm_installer_rocky8
     - get: oracle-8
-    - get: rpm_gpdb7_rocky8_oss
-      passed:
-      - create_gpdb7_rpm_installer_rocky8_oss
   - in_parallel:
     - task: test_rpm_functionality
       file: greenplum-database-release/ci/concourse/tasks/test-clients-functionality.yml
