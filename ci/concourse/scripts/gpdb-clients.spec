@@ -50,6 +50,9 @@ Requires: libevent2
 %else
 Requires: libevent
 %endif
+%if 0%{?rhel} == 9
+Requires: compat-openssl11
+%endif
 
 %define bin_gpdb %{prefix}/%{name}-%{gpdb_clients_version}
 %description
