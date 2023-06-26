@@ -2420,7 +2420,7 @@ jobs:
       passed:
       - create_gpdb6_clients_rpm_installer_rocky8
       trigger: true
-    - get: gpdb6-rocky8-build
+    - get: gpdb6-rocky8-test
     - get: greenplum-database-release
       passed:
       - create_gpdb6_clients_rpm_installer_rocky8
@@ -2428,7 +2428,7 @@ jobs:
   - in_parallel:
     - task: test_rpm_functionality
       file: greenplum-database-release/ci/concourse/tasks/test-clients-functionality.yml
-      image: gpdb6-rocky8-build
+      image: gpdb6-rocky8-test
       input_mapping:
         gpdb_clients_package_installer: rpm_gpdb6_clients_rocky8
       params:
@@ -2441,6 +2441,37 @@ jobs:
         gpdb_pkg_installer: rpm_gpdb6_clients_rocky8
       params:
         PLATFORM: rocky8
+        GPDB_MAJOR_VERSION: "6"
+        CLIENTS: "clients"
+
+- name: test_functionality_clients_gpdb6_rpm_oel8
+  plan:
+  - in_parallel:
+    - get: rpm_gpdb6_clients_rocky8
+      passed:
+      - create_gpdb6_clients_rpm_installer_rocky8
+      trigger: true
+    - get: gpdb6-oel8-test
+    - get: greenplum-database-release
+      passed:
+      - create_gpdb6_clients_rpm_installer_rocky8
+    - get: oracle-8
+  - in_parallel:
+    - task: test_rpm_functionality
+      file: greenplum-database-release/ci/concourse/tasks/test-clients-functionality.yml
+      image: gpdb6-oel8-test
+      input_mapping:
+        gpdb_clients_package_installer: rpm_gpdb6_clients_rocky8
+      params:
+        PLATFORM: oel8
+        GPDB_MAJOR_VERSION: "6"
+    - task: test_package_dependencies
+      file: greenplum-database-release/ci/concourse/tasks/test-package-dependencies.yml
+      image: oracle-8
+      input_mapping:
+        gpdb_pkg_installer: rpm_gpdb6_clients_rocky8
+      params:
+        PLATFORM: oel8
         GPDB_MAJOR_VERSION: "6"
         CLIENTS: "clients"
 
@@ -2931,6 +2962,7 @@ groups:
   - test_functionality_clients_gpdb6_rpm_rhel8
   - create_gpdb6_clients_rpm_installer_rocky8
   - test_functionality_clients_gpdb6_rpm_rocky8
+  - test_functionality_clients_gpdb6_rpm_oel8
   - create_gpdb6_rpm_installer_rocky8_oss
   - test_functionality_gpdb6_rpm_oel8
   - create_gpdb6_clients_deb_installer_ubuntu20.04
@@ -3014,6 +3046,7 @@ groups:
   - test_functionality_clients_gpdb6_rpm_rhel8
   - create_gpdb6_clients_rpm_installer_rocky8
   - test_functionality_clients_gpdb6_rpm_rocky8
+  - test_functionality_clients_gpdb6_rpm_oel8
   - create_gpdb6_clients_deb_installer_ubuntu18.04
   - test_functionality_clients_gpdb6_deb_ubuntu18.04
   - create_gpdb6_clients_deb_installer_ubuntu20.04
