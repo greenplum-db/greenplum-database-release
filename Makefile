@@ -199,7 +199,6 @@ set-gpdb-package-testing-prod: generate-variables
 
 	$(FLY_CMD) --target=$(CONCOURSE) \
 	set-pipeline \
-	--check-creds \
 	--pipeline=gpdb-package-testing \
 	--config=ci/concourse/pipelines/gpdb-package-testing-prod.yml \
 	--load-vars-from=${RELEASE_CONFIG} \
@@ -215,7 +214,6 @@ set-gpdb-package-testing-dev: generate-variables
 
 	$(FLY_CMD) --target=$(CONCOURSE) \
 	set-pipeline \
-	--check-creds \
 	--pipeline=${DEV_GPDB_PACKAGE_TESTING_PIPELINE_NAME} \
 	--config=ci/concourse/pipelines/gpdb-package-testing-dev.yml \
 	--load-vars-from=${RELEASE_CONFIG} \
