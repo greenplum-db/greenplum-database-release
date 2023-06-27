@@ -2603,14 +2603,14 @@ jobs:
       input_mapping:
         gpdb_clients_package_installer: rpm_gpdb6_clients_rhel9
       params:
-        PLATFORM: oel9
+        PLATFORM: rhel9
     - task: test_package_dependencies
       file: greenplum-database-release/ci/concourse/tasks/test-package-dependencies.yml
       image: oracle-9
       input_mapping:
         gpdb_pkg_installer: rpm_gpdb6_clients_rhel9
       params:
-        PLATFORM: oel9
+        PLATFORM: rhel9
         GPDB_MAJOR_VERSION: "6"
         CLIENTS: "clients"
 
