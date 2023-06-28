@@ -33,7 +33,11 @@ run:
   - -ec
   - |
     export PYTHONPATH=greenplum-database-release/ci/concourse/
-    python greenplum-database-release/ci/concourse/scripts/build-gpdb-rpm.py
+    if ! command -v python &> /dev/null; then
+      python3 greenplum-database-release/ci/concourse/scripts/build-gpdb-rpm.py
+    else
+      python greenplum-database-release/ci/concourse/scripts/build-gpdb-rpm.py
+    fi
 
 params:
   # Default values passed to rpm SPEC
