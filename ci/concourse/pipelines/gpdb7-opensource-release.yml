@@ -97,7 +97,7 @@ resources:
   source:
     bucket: pivotal-gpdb-concourse-resources-prod
     json_key: ((concourse-gcs-resources-service-account-key))
-    regexp: oss/release-candidates/gpdb7/greenplum-db-oss-(((release-version)))-(.*)-(((commit-sha)).*)-el8.tar.gz
+    regexp: oss/release-candidates/gpdb7/greenplum-db-oss-(((release-version)))\+(.*)-(((commit-sha)).*)-el8.tar.gz
 
 - name: bin_gpdb_rhel8_release
   type: gcs

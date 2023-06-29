@@ -146,7 +146,7 @@ resources:
   source:
     bucket: pivotal-gpdb-concourse-resources-prod
     json_key: ((concourse-gcs-resources-service-account-key))
-    regexp: oss/release-candidates/gpdb6/greenplum-db-oss-(((release-version)))-(.*)-(((commit-sha)).*)-centos6.tar.gz
+    regexp: oss/release-candidates/gpdb6/greenplum-db-oss-(((release-version)))\+(.*)-(((commit-sha)).*)-centos6.tar.gz
 
 - name: bin_gpdb_centos6_release
   type: gcs
@@ -171,7 +171,7 @@ resources:
   source:
     bucket: pivotal-gpdb-concourse-resources-prod
     json_key: ((concourse-gcs-resources-service-account-key))
-    regexp: oss/release-candidates/gpdb6/greenplum-db-oss-(((release-version)))-(.*)-(((commit-sha)).*)-centos7.tar.gz
+    regexp: oss/release-candidates/gpdb6/greenplum-db-oss-(((release-version)))\+(.*)-(((commit-sha)).*)-centos7.tar.gz
 
 - name: bin_gpdb_centos7_release
   type: gcs
@@ -196,7 +196,7 @@ resources:
   source:
     bucket: pivotal-gpdb-concourse-resources-prod
     json_key: ((concourse-gcs-resources-service-account-key))
-    regexp: oss/release-candidates/gpdb6/greenplum-db-oss-(((release-version)))-(.*)-(((commit-sha)).*)-rhel8.tar.gz
+    regexp: oss/release-candidates/gpdb6/greenplum-db-oss-(((release-version)))\+(.*)-(((commit-sha)).*)-rhel8.tar.gz
 
 - name: bin_gpdb_rhel8_release
   type: gcs
@@ -221,7 +221,7 @@ resources:
   source:
     bucket: pivotal-gpdb-concourse-resources-prod
     json_key: ((concourse-gcs-resources-service-account-key))
-    regexp: oss/release-candidates/gpdb6/greenplum-db-oss-(((release-version)))-(.*)-(((commit-sha)).*)-photon3.tar.gz
+    regexp: oss/release-candidates/gpdb6/greenplum-db-oss-(((release-version)))\+(.*)-(((commit-sha)).*)-photon3.tar.gz
 
 - name: bin_gpdb_photon3_release
   type: gcs
@@ -246,7 +246,7 @@ resources:
   source:
     bucket: pivotal-gpdb-concourse-resources-prod
     json_key: ((concourse-gcs-resources-service-account-key))
-    regexp: oss/release-candidates/gpdb6/greenplum-db-oss-(((release-version)))-(.*)-(((commit-sha)).*)-ubuntu18.04.tar.gz
+    regexp: oss/release-candidates/gpdb6/greenplum-db-oss-(((release-version)))\+(.*)-(((commit-sha)).*)-ubuntu18.04.tar.gz
 
 - name: bin_gpdb_ubuntu18.04_for_ppa
   type: gcs
@@ -254,7 +254,7 @@ resources:
   source:
     bucket: pivotal-gpdb-concourse-resources-prod
     json_key: ((concourse-gcs-resources-service-account-key))
-    regexp: oss/release-candidates/gpdb6/greenplum-db-ppa-(((release-version)))-(.*)-(((commit-sha)).*)-ubuntu18.04.tar.gz
+    regexp: oss/release-candidates/gpdb6/greenplum-db-ppa-(((release-version)))\+(.*)-(((commit-sha)).*)-ubuntu18.04.tar.gz
 
 - name: bin_gpdb_ubuntu18.04_release
   type: gcs
