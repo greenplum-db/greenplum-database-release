@@ -78,7 +78,6 @@ set-pipeline-dev:
 
 	$(FLY_CMD) --target=$(CONCOURSE) \
     set-pipeline \
-    --check-creds \
     --pipeline=${DEV_PIPELINE_NAME} \
     --config=ci/concourse/pipelines/${DEV_PIPELINE_NAME}.yml \
     --load-vars-from=ci/concourse/vars/greenplum-database-release.dev.yml \
@@ -100,7 +99,6 @@ set-gpdb7-pipeline-dev:
 
 	$(FLY_CMD) --target=$(CONCOURSE) \
     set-pipeline \
-    --check-creds \
     --pipeline=${DEV_PIPELINE_7_NAME} \
     --config=ci/concourse/pipelines/${DEV_PIPELINE_7_NAME}.yml \
     --load-vars-from=ci/concourse/vars/greenplum-database-release-7.dev.yml \
@@ -143,7 +141,6 @@ set-pipeline-prod:
 
 	$(FLY_CMD) --target=$(CONCOURSE) \
     set-pipeline \
-    --check-creds \
     --pipeline=greenplum-database-release \
     --config=ci/concourse/pipelines/gpdb-opensource-release-prod.yml \
     --load-vars-from=ci/concourse/vars/greenplum-database-release.prod.yml \
@@ -166,7 +163,6 @@ set-gpdb7-pipeline-prod:
 
 	$(FLY_CMD) --target=$(CONCOURSE) \
     set-pipeline \
-    --check-creds \
     --pipeline=greenplum-database-release-7 \
     --config=ci/concourse/pipelines/gpdb7-opensource-release-prod.yml \
     --load-vars-from=ci/concourse/vars/greenplum-database-release-7.prod.yml \
