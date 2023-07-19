@@ -40,6 +40,7 @@ Requires: bzip2
 Requires: libedit
 Requires: python3
 Requires: python39
+Requires: python3-psycopg2
 %if 0%{?rhel}
 Requires: libyaml
 Requires: libzstd

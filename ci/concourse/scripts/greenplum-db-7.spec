@@ -50,6 +50,7 @@ Requires: openssl
 Requires: perl
 Requires: python3
 Requires: python39
+Requires: python3-psycopg2
 Requires: readline
 Requires: rsync
 Requires: sed
