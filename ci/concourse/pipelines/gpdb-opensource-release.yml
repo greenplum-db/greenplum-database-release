@@ -72,13 +72,6 @@ resources:
     repository: gcr.io/data-gpdb-public-images/gpdb6-rocky8-build
     tag: latest
 
-- name: gpdb6-photon3-build
-  type: registry-image
-  icon: docker
-  source:
-    repository: gcr.io/data-gpdb-public-images/gpdb6-photon3-build
-    tag: 'latest'
-
 - name: gpdb6-ubuntu18.04-build
   type: registry-image
   icon: docker
@@ -214,31 +207,6 @@ resources:
     json_key: ((concourse-gcs-resources-service-account-key))
     regexp: greenplum-oss-server/released/gpdb6/open-source-greenplum-db-(.*)-rhel8-x86_64.rpm
 
-## Photon3 Resources
-- name: bin_gpdb_photon3
-  type: gcs
-  icon: google
-  source:
-    bucket: pivotal-gpdb-concourse-resources-prod
-    json_key: ((concourse-gcs-resources-service-account-key))
-    regexp: oss/release-candidates/gpdb6/greenplum-db-oss-(((release-version)))\+(.*)-(((commit-sha)).*)-photon3.tar.gz
-
-- name: bin_gpdb_photon3_release
-  type: gcs
-  icon: google
-  source:
-    bucket: ((gcs-bucket-for-oss))
-    json_key: ((concourse-gcs-resources-service-account-key))
-    regexp: greenplum-oss-server/released/gpdb6/server-(.*)-photon3_x86_64.tar.gz
-
-- name: gpdb_rpm_installer_photon3
-  type: gcs
-  icon: google
-  source:
-    bucket: ((gcs-bucket-for-oss))
-    json_key: ((concourse-gcs-resources-service-account-key))
-    regexp: greenplum-oss-server/released/gpdb6/greenplum-db-(.*)-photon3-x86_64.rpm
-
 ## Ubuntu18.04 Resources
 - name: bin_gpdb_ubuntu18.04_for_github
   type: gcs
@@ -361,9 +329,6 @@ jobs:
       - get: bin_gpdb_rhel8
         params:
           skip_download: 'true'
-      - get: bin_gpdb_photon3
-        params:
-          skip_download: 'true'
       - get: bin_gpdb_ubuntu18.04_for_github
         params:
           skip_download: 'true'
@@ -471,38 +436,6 @@ jobs:
     params:
       file: gpdb_rpm_installer/*.rpm
 
-- name: photon3_packaging
-  on_failure:
-    <<: *slack-alert
-  plan:
-  - in_parallel:
-    - get: pivotal-gpdb
-      params:
-        globs: []
-      trigger: true
-      passed: [compilation-gate]
-    - get: gpdb_src
-    - get: greenplum-database-release
-    - get: bin_gpdb_photon3
-      passed: [compilation-gate]
-    - get: gpdb6-photon3-build
-    - get: license_file
-  - task: create_gpdb_rpm_package
-    file: greenplum-database-release/ci/concourse/tasks/build-gpdb-rpm.yml
-    image: gpdb6-photon3-build
-    input_mapping:
-      bin_gpdb: bin_gpdb_photon3
-    params:
-      PLATFORM: "photon3"
-      GPDB_NAME: greenplum-db-6
-      GPDB_RELEASE: 1
-      GPDB_LICENSE: VMware Software EULA
-      GPDB_URL: https://github.com/greenplum-db/gpdb
-      GPDB_OSS: false
-  - put: gpdb_rpm_installer_photon3
-    params:
-      file: gpdb_rpm_installer/*.rpm
-
 - name: ubuntu18.04_packaging
   on_failure:
     <<: *slack-alert
@@ -594,7 +527,6 @@ jobs:
       - rhel6_packaging
       - rhel7_packaging
       - rhel8_packaging
-      - photon3_packaging
       - ubuntu18.04_packaging
     - get: pivotal-gpdb
       params:
@@ -604,7 +536,6 @@ jobs:
       - rhel6_packaging
       - rhel7_packaging
       - rhel8_packaging
-      - photon3_packaging
       - ubuntu18.04_packaging
     - get: bin_gpdb_centos6
       passed: [rhel6_packaging]
@@ -615,9 +546,6 @@ jobs:
     - get: bin_gpdb_rhel8
       passed: [rhel8_packaging]
       trigger: true
-    - get: bin_gpdb_photon3
-      passed: [photon3_packaging]
-      trigger: true
     - get: bin_gpdb_ubuntu18.04_for_github
       passed: [ubuntu18.04_packaging]
       trigger: true
@@ -627,8 +555,6 @@ jobs:
       passed: [rhel7_packaging]
     - get: gpdb_rpm_installer_rhel8
       passed: [rhel8_packaging]
-    - get: gpdb_rpm_installer_photon3
-      passed: [photon3_packaging]
     - get: gpdb_deb_package
       passed: [ubuntu18.04_packaging]
     - get: gpdb6-centos6-build
@@ -638,7 +564,6 @@ jobs:
       - rhel6_packaging
       - rhel7_packaging
       - rhel8_packaging
-      - photon3_packaging
       - ubuntu18.04_packaging
   - task: rename_gpdb_tarball
     config:
@@ -652,7 +577,6 @@ jobs:
       - name: bin_gpdb_centos6
       - name: bin_gpdb_centos7
       - name: bin_gpdb_rhel8
-      - name: bin_gpdb_photon3
       - name: bin_gpdb_ubuntu18.04_for_github
       outputs:
       - name: releases
@@ -665,7 +589,6 @@ jobs:
           cp -v bin_gpdb_centos6/greenplum-db-oss-*.tar.gz releases/server-${gpdb_semver}-rhel6_x86_64.tar.gz
           cp -v bin_gpdb_centos7/greenplum-db-oss-*.tar.gz releases/server-${gpdb_semver}-rhel7_x86_64.tar.gz
           cp -v bin_gpdb_rhel8/greenplum-db-oss-*.tar.gz releases/server-${gpdb_semver}-rhel8_x86_64.tar.gz
-          cp -v bin_gpdb_photon3/greenplum-db-oss-*.tar.gz releases/server-${gpdb_semver}-photon3_x86_64.tar.gz
           cp -v bin_gpdb_ubuntu18.04_for_github/greenplum-db-oss-*.tar.gz releases/server-${gpdb_semver}-ubuntu18.04_x86_64.tar.gz
   - task: verify_gpdb_versions
     config:
@@ -715,9 +638,6 @@ jobs:
     - put: bin_gpdb_rhel8_release
       params:
         file: "releases/server-*rhel8*.tar.gz"
-    - put: bin_gpdb_photon3_release
-      params:
-        file: "releases/server-*photon3*.tar.gz"
     - put: bin_gpdb_ubuntu18.04_release
       params:
         file: "releases/server-*ubuntu18.04*.tar.gz"
