@@ -77,50 +77,6 @@ Requires: libevent2
 Requires: libcgroup
 %endif
 
-%if "%{platform}" == "photon3"
-Requires: apr
-Requires: bash
-Requires: bzip2-libs
-Requires: coreutils
-Requires: curl-libs
-Requires: cyrus-sasl
-Requires: e2fsprogs-libs
-Requires: findutils
-Requires: gawk
-Requires: gdbm
-Requires: glibc-iconv
-Requires: grep
-Requires: gzip
-Requires: iproute2
-Requires: iputils
-Requires: krb5
-Requires: less
-Requires: libevent
-Requires: libgcc == 7.3.0
-Requires: libssh2
-Requires: libstdc++ == 7.3.0
-Requires: libxml2
-Requires: libyaml
-Requires: Linux-PAM
-Requires: ncurses-libs
-Requires: net-tools
-Requires: openldap
-Requires: openssh-clients
-Requires: openssl
-Requires: perl
-Requires: procps-ng
-Requires: readline
-Requires: rsync
-Requires: sed
-Requires: sqlite-libs
-Requires: tar
-Requires: util-linux
-Requires: util-linux-libs
-Requires: which
-Requires: zip
-Requires: zlib
-%endif
-
 %description
 Greenplum Database
 

@@ -75,14 +75,6 @@ elif [[ $GPDB_MAJOR_VERSION == "6" ]]; then
 		inspec exec ${test_prefix}/install --reporter documentation --no-distinct-exit --no-backend-cache
 		inspec exec ${test_prefix}/remove --reporter documentation --no-backend-cache
 		inspec exec ${test_prefix}/upgrade --reporter documentation --no-distinct-exit --no-backend-cache
-
-	elif [[ $PLATFORM == "photon"* ]]; then
-		wget https://packages.chef.io/files/stable/inspec/3.9.3/el/7/inspec-3.9.3-1.el7.x86_64.rpm
-		rpm --install inspec-3.9.3-1.el7.x86_64.rpm
-		test_prefix='greenplum-database-release/ci/concourse/tests/gpdb6/server'
-		inspec exec ${test_prefix}/install --reporter documentation --no-distinct-exit --no-backend-cache
-		inspec exec ${test_prefix}/remove --reporter documentation --no-backend-cache
-
 	else
 		echo "${PLATFORM} is not yet supported for Greenplum 6.X"
 		exit 1

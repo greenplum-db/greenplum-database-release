@@ -102,11 +102,6 @@ control 'Category:server-installs' do
         its('stdout') { should eq "795\n" }
       end
     end
-  # photon3 platform
-  else
-    describe command("find /usr/local/greenplum-db/ -name *.pyc | grep -v python3.9|  wc -l") do
-      its('stdout') { should eq "779\n" }
-    end
   end
 
   # python3 sum of .pyc file
@@ -120,11 +115,6 @@ control 'Category:server-installs' do
       else
         its('stdout') { should eq "4047\n" }
       end
-    end
-  # photon3 does not has python3 integrated
-  else
-    describe command("find /usr/local/greenplum-db/ext/python3.9/ -name *.pyc | wc -l") do
-      its('stdout') { should eq "0\n" }
     end
   end
 
