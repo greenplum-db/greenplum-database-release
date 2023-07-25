@@ -92,30 +92,32 @@ control 'Category:server-installs' do
 
   # python2 sum of .pyc file
   version = os.release
-  if os.redhat?
-    describe command("find /usr/local/greenplum-db/ -name *.pyc | grep -v python3.9|  wc -l") do
-      # rhel8 has a different python2 version: 2.7.18
-      if version =~ /^8/
-        its('stdout') { should eq "794\n" }
-      # rhel6 and rhel7 has python2 version: 2.7.12
-      else
-        its('stdout') { should eq "795\n" }
-      end
+  if version =~ /^8/
+    describe command("sort -o expected greenplum-database-release/ci/concourse/tests/gpdb6/server/install/controls/python2-compiled-file-list; find /usr/local/greenplum-db/ -name *.pyc | grep -v python3.9| sort | diff -uw - expected") do
+       its('stdout') { should eq "" }
+    end
+  elsif version =~ /^7/
+    describe command("sort -o expected greenplum-database-release/ci/concourse/tests/gpdb6/server/install/controls/python2-compiled-file-list-centos7; find /usr/local/greenplum-db/ -name *.pyc | grep -v python3.9| sort | diff -uw - expected") do
+      its('stdout') { should eq "" }
+    end
+  else
+    describe command("sort -o expected greenplum-database-release/ci/concourse/tests/gpdb6/server/install/controls/python2-compiled-file-list-centos6; find /usr/local/greenplum-db/ -name *.pyc | grep -v python3.9| sort | diff -uw - expected") do
+      its('stdout') { should eq "" }
     end
   end
 
   # python3 sum of .pyc file
   version = os.release
-  if os.redhat?
-    describe command("find /usr/local/greenplum-db/ext/python3.9/ -name *.pyc | wc -l") do
+
+    describe command("sort -o expected greenplum-database-release/ci/concourse/tests/gpdb6/server/install/controls/python3-compiled-file-list; find /usr/local/greenplum-db/ext/python3.9/ -name *.pyc | sort | diff -uw - expected") do
       # rhel6 does not vendor python3.9
       if version =~ /^6/
-        its('stdout') { should eq "0\n" }
+        skip "its('stdout') { should eq "" }"
       # rhel7 and rhel8 vendor python3.9
       else
-        its('stdout') { should eq "4047\n" }
+        its('stdout') { should eq "" }
       end
-    end
+
   end
 
 end

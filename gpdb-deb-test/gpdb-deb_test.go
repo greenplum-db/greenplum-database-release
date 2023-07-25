@@ -117,27 +117,18 @@ func gpdbInstalledAsExpected() error {
 }
 
 func CheckHasExpectedPythonBytecodeFileNumber() error {
-	cmd := exec.Command("/bin/bash", "-c", "find /usr/local/greenplum-db/ -name *.pyc | grep -v python3.9|  wc -l")
-	FileNumber, err := cmd.Output()
+	cmd := exec.Command("/bin/bash", "-c", "sort -o expected python2-compiled-file-list; find /usr/local/greenplum-db/ -name *.pyc | grep -v python3.9 | sort | diff -uw - expected")
+	output, err := cmd.Output()
 	if err != nil {
-		return err
-	}
-	if strings.TrimSpace(string(FileNumber)) == "780" {
-		return nil
-	} else {
-		return fmt.Errorf("expect has 780 pyc for python2, actual is %s", strings.TrimSpace(string(FileNumber)))
+		return fmt.Errorf("expect has there is no diff for python2 pyc file name list, actual is %s", strings.TrimSpace(string(output)))
 	}
 
-	cmd = exec.Command("/bin/bash", "-c", "find /usr/local/greenplum-db/ext/python3.9/ -name *.pyc | wc -l")
-	FileNumber, err = cmd.Output()
+	cmd = exec.Command("/bin/bash", "-c", "sort -o expected python3-compiled-file-list; find /usr/local/greenplum-db/ext/python3.9/ -name *.pyc | sort | diff -uw - expected")
+	output, err = cmd.Output()
 	if err != nil {
-		return err
+		return fmt.Errorf("expect has there is no diff for python3.9 pyc file name list, actual is %s", strings.TrimSpace(string(output)))
 	}
-	if strings.TrimSpace(string(FileNumber)) == "4047" {
-		return nil
-	} else {
-		return fmt.Errorf("expect has 4047 pyc for python3.9, actual is %s", strings.TrimSpace(string(FileNumber)))
-	}
+	return nil
 }
 
 func gpdb7GeneratedPythonBytecode(fileName string) error {
