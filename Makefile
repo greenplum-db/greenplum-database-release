@@ -43,7 +43,7 @@ list:
 	grep -v '__\$$' | \
 	sort"
 
-RELEASE_CONSIST ?= ${WORKSPACE}/gp-release-train/consist/6.99.99.toml
+RELEASE_CONSIST ?= ${WORKSPACE}/gp-release-train/consist/6.22.3.toml
 RELEASE_CONFIG ?= ci/concourse/vars/gp6-release.yml
 FILE_NAME ?= $(shell basename ${RELEASE_CONSIST})
 RELEASE_VERSION ?= $(shell v='$(FILE_NAME)'; echo "$${v%.*}")
@@ -106,14 +106,14 @@ set-prod: set-pipeline-prod
 set-pipeline-prod:
 	sed -e 's|commitish: release_artifacts/commitish|## commitish: release_artifacts/commitish|g' ci/concourse/pipelines/gpdb-opensource-release.yml > ci/concourse/pipelines/gpdb-opensource-release-prod.yml
 
-	fly_7.6 --target=release \
+	fly_7.8.3 --target=releng \
     set-pipeline \
     --check-creds \
     --pipeline=greenplum-database-release \
     --config=ci/concourse/pipelines/gpdb-opensource-release-prod.yml \
     --load-vars-from=ci/concourse/vars/greenplum-database-release.prod.yml \
     --var=pipeline-name=greenplum-database-release \
-    --var=greenplum-database-release-git-branch=main \
+    --var=greenplum-database-release-git-branch=6.22.3-directed-release \
     --var=greenplum-database-release-git-remote=https://github.com/greenplum-db/greenplum-database-release.git \
 	--var=release-version="${RELEASE_VERSION_REGEX}" \
 	--var=commit-sha=${COMMIT_SHA} \
@@ -123,7 +123,7 @@ set-pipeline-prod:
     $(FLY_OPTION_NON_INTERACTIVE)
 
 	@echo using the following command to unpause the pipeline:
-	@echo "\tfly_7.6 -t release unpause-pipeline --pipeline greenplum-database-release"
+	@echo "\tfly_7.8.3 -t releng unpause-pipeline --pipeline greenplum-database-release"
 
 ## ----------------------------------------------------------------------
 ## Package Testing Pipelines
