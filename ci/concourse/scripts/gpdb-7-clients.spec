@@ -41,6 +41,8 @@ Requires: libedit
 Requires: python3
 Requires: python39
 Requires: python3-psycopg2
+Requires: python3-psutil
+Requires: python3-pyyaml
 %if 0%{?rhel}
 Requires: libyaml
 Requires: libzstd
