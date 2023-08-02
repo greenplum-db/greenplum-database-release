@@ -117,7 +117,7 @@ func gpdbInstalledAsExpected() error {
 }
 
 func CheckHasExpectedPythonBytecodeFileNumber() error {
-	cmd := exec.Command("/bin/bash", "-c", "sort -o expected python2-compiled-file-list; find /usr/local/greenplum-db/ -name *.pyc | grep -v python3.9 | sort | diff -uw - expected")
+	cmd := exec.Command("/bin/bash", "-c", "sort -o expected python2-compiled-file-list-ubuntu; find /usr/local/greenplum-db/ -name *.pyc | grep -v python3.9 | sort | diff -uw - expected")
 	output, err := cmd.Output()
 	if err != nil {
 		return fmt.Errorf("expect has there is no diff for python2 pyc file name list, actual is %s", strings.TrimSpace(string(output)))

@@ -9,11 +9,7 @@ fi
 mkdir greenplum-database-release/gpdb-deb-test/gpdb_deb_installer
 mv gpdb_deb_installer/*.deb greenplum-database-release/gpdb-deb-test/gpdb_deb_installer/greenplum-db-ubuntu-amd64.deb
 cp greenplum-database-release/ci/concourse/tests/gpdb6/server/install/controls/python3-compiled-file-list greenplum-database-release/gpdb-deb-test/
-if [[ ${PLATFORM} = "ubuntu20.04" ]]; then
-	cp greenplum-database-release/ci/concourse/tests/gpdb6/server/install/controls/python2-compiled-file-list-ubuntu20.04 greenplum-database-release/gpdb-deb-test/python2-compiled-file-list
-else
-	cp greenplum-database-release/ci/concourse/tests/gpdb6/server/install/controls/python2-compiled-file-list-ubuntu18.04 greenplum-database-release/gpdb-deb-test/python2-compiled-file-list
-fi
+cp greenplum-database-release/ci/concourse/tests/gpdb6/server/install/controls/python2-compiled-file-list-ubuntu greenplum-database-release/gpdb-deb-test/
 #TODO: there is no previous build release for ubuntu20.04, so we can not run upgrade test for ubuntu20.04, but will remove the condition in the future
 if [[ ${PLATFORM} = "ubuntu20.04" ]]; then
 	pushd greenplum-database-release/gpdb-deb-test

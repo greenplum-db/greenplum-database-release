@@ -96,12 +96,8 @@ control 'Category:server-installs' do
     describe command("sort -o expected greenplum-database-release/ci/concourse/tests/gpdb6/server/install/controls/python2-compiled-file-list; find /usr/local/greenplum-db/ -name *.pyc | grep -v python3.9| sort | diff -uw - expected") do
        its('stdout') { should eq "" }
     end
-  elsif version =~ /^7/
-    describe command("sort -o expected greenplum-database-release/ci/concourse/tests/gpdb6/server/install/controls/python2-compiled-file-list-centos7; find /usr/local/greenplum-db/ -name *.pyc | grep -v python3.9| sort | diff -uw - expected") do
-      its('stdout') { should eq "" }
-    end
   else
-    describe command("sort -o expected greenplum-database-release/ci/concourse/tests/gpdb6/server/install/controls/python2-compiled-file-list-centos6; find /usr/local/greenplum-db/ -name *.pyc | grep -v python3.9| sort | diff -uw - expected") do
+    describe command("sort -o expected greenplum-database-release/ci/concourse/tests/gpdb6/server/install/controls/python2-compiled-file-list-centos7-centos6; find /usr/local/greenplum-db/ -name *.pyc | grep -v python3.9| sort | diff -uw - expected") do
       its('stdout') { should eq "" }
     end
   end
