@@ -61,6 +61,16 @@ Requires: zlib
 Requires: libuuid
 %endif
 
+%if "%{platform}" == "rhel9" || "%{platform}" == "rocky9" || "%{platform}" == "oel9"
+# To support compile python2.7.18 on rhel9/rocky9/oel9 we need compat-openssl11 package, since default openssl-devel
+# version is 3.0.7 and it's too high to compile python 2.7.18 while compat-openssl11 is verion 1.1.1k. so compat-openssl11 is
+# requirement for rocky9/oel9/rhel9
+# Also rocky9 does not have any cgroup package
+Requires: compat-openssl11
+Requires: libevent
+# it is required by libxerces-c-3.1.so
+Requires: libicu-devel
+%endif
 %if "%{platform}" == "rhel8" || "%{platform}" == "rocky8" || "%{platform}" == "oel8"
 Requires: openssl-libs
 Requires: libevent

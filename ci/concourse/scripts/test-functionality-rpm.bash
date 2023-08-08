@@ -16,6 +16,8 @@ if [[ $PLATFORM == "rhel8"* || $PLATFORM == "rocky8"* || $PLATFORM == "oel8"* ]]
 	export GPDB_RPM_ARCH="el8"
 elif [[ $PLATFORM == "rhel8"* || $PLATFORM == "rocky8"* || $PLATFORM == "oel8"* ]] && [[ $GPDB_MAJOR_VERSION == "6" ]]; then
 	export GPDB_RPM_ARCH="rhel8"
+elif [[ $PLATFORM == "rhel9"* || $PLATFORM == "rocky9"* || $PLATFORM == "oel9"* ]] && [[ $GPDB_MAJOR_VERSION == "6" ]]; then
+	export GPDB_RPM_ARCH="rhel9"
 else
 	export GPDB_RPM_ARCH="$PLATFORM"
 fi
@@ -75,6 +77,13 @@ elif [[ $GPDB_MAJOR_VERSION == "6" ]]; then
 		inspec exec ${test_prefix}/install --reporter documentation --no-distinct-exit --no-backend-cache
 		inspec exec ${test_prefix}/remove --reporter documentation --no-backend-cache
 		inspec exec ${test_prefix}/upgrade --reporter documentation --no-distinct-exit --no-backend-cache
+	#TODO rhel9 does not have previous released artifacts, so skip confilicts and upgrade,
+	# should remove the special condition later
+	elif [[ $PLATFORM == "oel9" || $PLATFORM == "rhel9" || $PLATFORM == "rocky9" ]]; then
+		curl https://omnitruck.chef.io/install.sh | bash -s -- -P inspec -v 3
+		test_prefix='greenplum-database-release/ci/concourse/tests/gpdb6/server'
+		inspec exec ${test_prefix}/install --reporter documentation --no-distinct-exit --no-backend-cache
+		inspec exec ${test_prefix}/remove --reporter documentation --no-backend-cache
 	else
 		echo "${PLATFORM} is not yet supported for Greenplum 6.X"
 		exit 1

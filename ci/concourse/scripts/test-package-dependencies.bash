@@ -13,13 +13,15 @@ if [[ $PLATFORM == "rhel"* || $PLATFORM == "rocky"* || $PLATFORM == "oel"* ]]; t
 		sed -i -E -e 's/\[(base|updates|extras)\]/[\1]\nenabled=0/' /etc/yum.repos.d/CentOS-Base.repo
 	fi
 
-	if [[ $PLATFORM == "rhel8" ]]; then
+	if [[ $PLATFORM == "rhel8" || $PLATFORM == "rhel9" ]]; then
 		dnf update -y && dnf install -y subscription-manager
 		rm /etc/rhsm-host
 		subscription-manager register --org=${REDHAT_SUBSCRIPTION_ORG_ID} --activationkey=${REDHAT_SUBSCRIPTION_KEY_ID} || true
 		subscription-manager attach --auto
 		# Required to install *-devel pacakges.
-		subscription-manager repos --enable codeready-builder-for-rhel-8-x86_64-rpms
+		if [[ $PLATFORM == "rhel8" ]]; then
+			subscription-manager repos --enable codeready-builder-for-rhel-8-x86_64-rpms
+		fi
 	fi
 	if [[ $PLATFORM == "rocky8" ]]; then
 		yum install -y findutils
@@ -31,7 +33,7 @@ if [[ $PLATFORM == "rhel"* || $PLATFORM == "rocky"* || $PLATFORM == "oel"* ]]; t
 	# Install greenplum rpm
 	yum install -y ${GPDB_PKG_PATH}/*.rpm
 
-	if [[ $PLATFORM == "rhel8" ]]; then
+	if [[ $PLATFORM == "rhel8" || $PLATFORM == "rhel9" ]]; then
 		subscription-manager remove --all
 		subscription-manager unregister
 		subscription-manager clean
