@@ -2722,6 +2722,7 @@ jobs:
         gpdb_clients_package_installer: rpm_gpdb6_clients_rocky9
       params:
         PLATFORM: rocky9
+        GPDB_MAJOR_VERSION: "6"
     - task: test_package_dependencies
       file: greenplum-database-release/ci/concourse/tasks/test-package-dependencies.yml
       image: rocky-9
@@ -2752,6 +2753,7 @@ jobs:
         gpdb_clients_package_installer: rpm_gpdb6_clients_rocky9
       params:
         PLATFORM: oel9
+        GPDB_MAJOR_VERSION: "6"
     - task: test_package_dependencies
       file: greenplum-database-release/ci/concourse/tasks/test-package-dependencies.yml
       image: oracle-9
