@@ -68,8 +68,6 @@ Requires: libuuid
 # Also rocky9 does not have any cgroup package
 Requires: compat-openssl11
 Requires: libevent
-# it is required by libxerces-c-3.1.so
-Requires: libicu-devel
 # EL 9 does have rsync version which not compatible with our built libzstd 1.3.7,
 # so EL 9 does not use our built libzstd but use system provided libzstd.
 Requires: libzstd
