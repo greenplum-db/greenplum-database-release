@@ -60,7 +60,6 @@ Requires: tar
 Requires: which
 Requires: zip
 Requires: zlib
-Requires: llvm-libs
 Requires: libuuid
 %endif
 
