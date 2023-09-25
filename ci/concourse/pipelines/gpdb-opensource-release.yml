@@ -109,14 +109,6 @@ resources:
     repository: ((gpdb-release-repository))
     access_token: ((releng/github-token-gp-releng))
 
-- name: license_file
-  type: gcs
-  icon: google
-  source:
-    bucket: ((gcs-bucket-for-oss))
-    json_key: ((concourse-gcs-resources-service-account-key))
-    regexp: osl/released/gpdb6/open_source_license_greenplum-database-6.0.0-97773a0-(.*).txt
-
 - name: tanzunet_client
   type: github-release
   source:
@@ -353,12 +345,13 @@ jobs:
     - get: bin_gpdb_centos6
       passed: [compilation-gate]
     - get: gpdb6-centos6-build
-    - get: license_file
+    - get: gpdb-osl
   - task: create_gpdb_rpm_package
     file: greenplum-database-release/ci/concourse/tasks/build-gpdb-rpm.yml
     image: gpdb6-centos6-build
     input_mapping:
       bin_gpdb: bin_gpdb_centos6
+      license_file: gpdb-osl
     params:
       PLATFORM: "rhel6"
       GPDB_NAME: greenplum-db-6
@@ -386,12 +379,13 @@ jobs:
     - get: bin_gpdb_centos7
       passed: [compilation-gate]
     - get: gpdb6-centos7-build
-    - get: license_file
+    - get: gpdb-osl
   - task: create_gpdb_rpm_package
     file: greenplum-database-release/ci/concourse/tasks/build-gpdb-rpm.yml
     image: gpdb6-centos7-build
     input_mapping:
       bin_gpdb: bin_gpdb_centos7
+      license_file: gpdb-osl
     params:
       PLATFORM: "rhel7"
       GPDB_NAME: greenplum-db-6
@@ -419,12 +413,13 @@ jobs:
     - get: bin_gpdb_rhel8
       passed: [compilation-gate]
     - get: gpdb6-rocky8-build
-    - get: license_file
+    - get: gpdb-osl
   - task: create_gpdb_rpm_package
     file: greenplum-database-release/ci/concourse/tasks/build-gpdb-rpm.yml
     image: gpdb6-rocky8-build
     input_mapping:
       bin_gpdb: bin_gpdb_rhel8
+      license_file: gpdb-osl
     params:
       PLATFORM: "rhel8"
       GPDB_NAME: greenplum-db-6
@@ -451,12 +446,13 @@ jobs:
     - get: bin_gpdb_ubuntu18.04_for_github
       passed: [compilation-gate]
     - get: gpdb6-ubuntu18.04-build
-    - get: license_file
+    - get: gpdb-osl
   - task: create_gpdb_deb_package
     file: greenplum-database-release/ci/concourse/tasks/build-gpdb-deb.yml
     image: gpdb6-ubuntu18.04-build
     input_mapping:
       bin_gpdb: bin_gpdb_ubuntu18.04_for_github
+      license_file: gpdb-osl
     params:
       PLATFORM: "ubuntu18.04"
       GPDB_OSS: true
@@ -479,13 +475,14 @@ jobs:
       passed: [compilation-gate]
     - get: bin_gpdb_ubuntu18.04_for_ppa
       passed: [compilation-gate]
-    - get: license_file
+    - get: gpdb-osl
     - get: gpdb6-ubuntu18.04-build
   - task: push_to_ppa
     file: greenplum-database-release/ci/concourse/tasks/build-ppa.yml
     image: gpdb6-ubuntu18.04-build
     input_mapping:
       bin_gpdb: bin_gpdb_ubuntu18.04_for_ppa
+      license_file: gpdb-osl
     params:
       PPA_REPO: ((ppa-repository))
       GPG_PRIVATE_KEY: ((releng/ppa/prod/gpg-private-key))
@@ -559,7 +556,7 @@ jobs:
       passed: [ubuntu18.04_packaging]
     - get: gpdb6-centos6-build
     - get: gp-release-train
-    - get: license_file
+    - get: gpdb-osl
       passed:
       - rhel6_packaging
       - rhel7_packaging
@@ -653,7 +650,7 @@ jobs:
       trigger: true
       passed: [release]
     - get: gpdb_src
-    - get: license_file
+    - get: gpdb-osl
       passed: [release]
     - get: gpdb_rpm_installer_centos6
       passed: [release]
@@ -680,7 +677,7 @@ jobs:
       globs:
       - release_artifacts/*.tar.gz
       - release_artifacts/*.zip
-      - license_file/*.txt
+      - gpdb-osl/*.txt
       - gpdb_rpm_installer_centos6/*.rpm
       - gpdb_rpm_installer_centos7/*.rpm
       - gpdb_rpm_installer_rhel8/*.rpm
@@ -696,7 +693,7 @@ jobs:
       passed: [release]
     - get: tanzunet_client
     - get: pivotal-cf-tanzunet-cli
-    - get: license_file
+    - get: gpdb-osl
       passed: [release]
     - get: gpdb_rpm_installer_centos6
       passed: [release]
@@ -710,7 +707,6 @@ jobs:
     - get: gpdb_deb_package
       passed: [release]
       trigger: true
-    - get: gpdb-osl
     - get: gpdb-odp
     - get: greenplum-database-release
       passed: [release]

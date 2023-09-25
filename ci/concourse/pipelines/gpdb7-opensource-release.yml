@@ -82,13 +82,13 @@ resources:
     repository: ((gpdb-release-repository))
     access_token: ((releng/github-token-gp-releng))
 
-- name: license_file
+- name: gpdb-osl
   type: gcs
   icon: google
   source:
-    bucket: ((gcs-bucket-for-oss))
+    bucket: pivotal-gpdb-concourse-resources-prod
     json_key: ((concourse-gcs-resources-service-account-key))
-    regexp: osl/released/gpdb7/open_source_license_Greenplum_Database_by_VMware_Tanzu_(.*)_beta.txt
+    regexp: osl/released/gpdb7/open_source_license_Greenplum_Database_by_VMware_(((minor-version)))_GA.txt
 
 ## RHEL8 Resources
 - name: bin_gpdb_rhel8
@@ -178,12 +178,13 @@ jobs:
     - get: bin_gpdb_rhel8
       passed: [compilation-gate]
     - get: gpdb7-rocky8-build
-    - get: license_file
+    - get: gpdb-osl
   - task: create_gpdb_rpm_package
     file: greenplum-database-release/ci/concourse/tasks/build-gpdb-rpm.yml
     image: gpdb7-rocky8-build
     input_mapping:
       bin_gpdb: bin_gpdb_rhel8
+      license_file: gpdb-osl
     params:
       PLATFORM: "rhel8"
       GPDB_NAME: greenplum-db-7
@@ -215,7 +216,7 @@ jobs:
     - get: gpdb_rpm_installer_rhel8
       passed: [rhel8_packaging]
     - get: gp-release-train
-    - get: license_file
+    - get: gpdb-osl
       passed:
       - rhel8_packaging
   - task: rename_gpdb_tarball
@@ -285,7 +286,7 @@ jobs:
       trigger: true
       passed: [release]
     - get: gpdb_src
-    - get: license_file
+    - get: gpdb-osl
       passed: [release]
     - get: gpdb_rpm_installer_rhel8
       passed: [release]
@@ -307,7 +308,7 @@ jobs:
       globs:
       - release_artifacts/*.tar.gz
       - release_artifacts/*.zip
-      - license_file/*.txt
+      - gpdb-osl/*.txt
       - gpdb_rpm_installer_rhel8/*.rpm
   - put: slack-start-greenplum-oss
     params:

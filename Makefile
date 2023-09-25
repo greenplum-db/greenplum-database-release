@@ -88,7 +88,7 @@ set-pipeline-dev:
 	--var=commit-sha=.* \
     --var=run_mode=dev \
     --var=golang_version=$(GOLANG_VERSION) \
-	--var=minor-version=.* \
+	--var=minor-version=6.* \
     $(FLY_OPTION_NON_INTERACTIVE)
 
 	$(FLY_CMD) --target=$(CONCOURSE) unpause-pipeline --pipeline=${DEV_PIPELINE_NAME}
@@ -109,7 +109,7 @@ set-gpdb7-pipeline-dev:
 	--var=commit-sha=.* \
     --var=run_mode=dev \
     --var=golang_version=$(GOLANG_VERSION) \
-	--var=minor-version=.* \
+	--var=minor-version=7.* \
     $(FLY_OPTION_NON_INTERACTIVE)
 
 	$(FLY_CMD) --target=$(CONCOURSE) unpause-pipeline --pipeline=${DEV_PIPELINE_7_NAME}
