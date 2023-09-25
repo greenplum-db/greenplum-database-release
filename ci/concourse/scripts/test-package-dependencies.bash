@@ -88,6 +88,11 @@ for j in "${missing_deps[@]}"; do
 			echo "Shared library $j missing"
 			exit 1
 		fi
+	elif [[ "${GPDB_MAJOR_VERSION}" == "7" ]]; then
+		if [[ $j != "libLLVM-15.so" ]]; then
+			echo "Shared library $j missing"
+			exit 1
+		fi
 	else
 		echo "Shared library $j missing"
 		exit 1
