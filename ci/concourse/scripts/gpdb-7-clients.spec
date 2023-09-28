@@ -39,7 +39,6 @@ Requires: libapr1
 Requires: bzip2
 Requires: libedit
 Requires: python3
-Requires: python39
 Requires: python3-psycopg2
 Requires: python3-psutil
 Requires: python3-pyyaml
