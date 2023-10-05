@@ -157,13 +157,6 @@ resources:
     regexp: clients/published/gpdb6/clients-rc-(.*)-rhel7_x86_64.tar.gz
 
 # 6X_STABLE_oel7 only has non debug pipeline
-- name: bin_gpdb6_clients_oel7
-  type: gcs
-  source:
-    bucket: pivotal-gpdb-concourse-resources-prod
-    json_key: ((concourse-gcs-resources-service-account-key))
-    regexp: clients/published/gpdb6/clients-rc-(.*)-oel7_x86_64.debug.tar.gz
-
 - name: bin_gpdb6_clients_rocky8
   type: gcs
   source:
@@ -412,6 +405,55 @@ resources:
     bucket: ((gcs-bucket-intermediates))
     json_key: ((concourse-gcs-resources-service-account-key))
     versioned_file: ((pipeline-name))/bin_gpdb6_ubuntu20.04_with_components/bin_gpdb.tar.gz
+
+- name: bin_gpdb6_clients_centos6_with_components
+  type: gcs
+  source:
+    bucket: ((gcs-bucket-intermediates))
+    json_key: ((concourse-gcs-resources-service-account-key))
+    versioned_file: ((pipeline-name))/bin_gpdb6_clients_centos6_with_components/bin_gpdb_clients.tar.gz
+
+- name: bin_gpdb6_clients_centos7_with_components
+  type: gcs
+  source:
+    bucket: ((gcs-bucket-intermediates))
+    json_key: ((concourse-gcs-resources-service-account-key))
+    versioned_file: ((pipeline-name))/bin_gpdb6_clients_centos7_with_components/bin_gpdb_clients.tar.gz
+
+- name: bin_gpdb6_clients_rocky8_with_components
+  type: gcs
+  source:
+    bucket: ((gcs-bucket-intermediates))
+    json_key: ((concourse-gcs-resources-service-account-key))
+    versioned_file: ((pipeline-name))/bin_gpdb6_clients_rocky8_with_components/bin_gpdb_clients.tar.gz
+
+- name: bin_gpdb6_clients_rocky9_with_components
+  type: gcs
+  source:
+    bucket: ((gcs-bucket-intermediates))
+    json_key: ((concourse-gcs-resources-service-account-key))
+    versioned_file: ((pipeline-name))/bin_gpdb6_clients_rocky9_with_components/bin_gpdb_clients.tar.gz
+
+- name: bin_gpdb6_clients_sles12_with_components
+  type: gcs
+  source:
+    bucket: ((gcs-bucket-intermediates))
+    json_key: ((concourse-gcs-resources-service-account-key))
+    versioned_file: ((pipeline-name))/bin_gpdb6_clients_sles12_with_components/bin_gpdb_clients.tar.gz
+
+- name: bin_gpdb6_clients_ubuntu18.04_with_components
+  type: gcs
+  source:
+    bucket: ((gcs-bucket-intermediates))
+    json_key: ((concourse-gcs-resources-service-account-key))
+    versioned_file: ((pipeline-name))/bin_gpdb6_clients_ubuntu18.04_with_components/bin_gpdb_clients.tar.gz
+
+- name: bin_gpdb6_clients_ubuntu20.04_with_components
+  type: gcs
+  source:
+    bucket: ((gcs-bucket-intermediates))
+    json_key: ((concourse-gcs-resources-service-account-key))
+    versioned_file: ((pipeline-name))/bin_gpdb6_clients_ubuntu20.04_with_components/bin_gpdb_clients.tar.gz
 
 - name: gpdb6-centos6-build
   type: registry-image
@@ -1573,19 +1615,75 @@ jobs:
     params:
       file: gpdb_deb_installer/*.deb
 
+- name: gpdb_clients_component_packaging_ubuntu18.04
+  plan:
+  - in_parallel:
+    - get: gp-greenplum-morgan-stanley
+    - get: bin_gpdb6_clients_ubuntu18.04
+      trigger: true
+    - get: google-cloud-build
+    - get: gp-release
+      passed:
+      - refresh_integrated_components
+    - get: greenplum-database-release
+      passed:
+      - refresh_integrated_components
+      trigger: true
+  - file: gp-release/gpdb6/concourse/tasks/add_client_components.yml
+    image: google-cloud-build
+    input_mapping:
+      bin_gpdb_clients: bin_gpdb6_clients_ubuntu18.04
+    task: add_components_to_bin_gpdb_ubuntu18.04
+    params:
+      COMPONENT_GPSS_LOCATION: ((gpss-BIONIC-gcs-location))
+      GCLOUD_SERVICE_ACCOUNT_KEY: ((concourse-gcs-resources-service-account-key))
+  - params:
+      file: bin_gpdb_clients_with_components/bin_gpdb_clients.tar.gz
+    put: bin_gpdb6_clients_ubuntu18.04_with_components
+
+- name: gpdb_clients_component_packaging_ubuntu20.04
+  plan:
+  - in_parallel:
+    - get: gp-greenplum-morgan-stanley
+    - get: bin_gpdb6_clients_ubuntu20.04
+      trigger: true
+    - get: google-cloud-build
+    - get: gp-release
+      passed:
+      - refresh_integrated_components
+    - get: greenplum-database-release
+      passed:
+      - refresh_integrated_components
+      trigger: true
+  - file: gp-release/gpdb6/concourse/tasks/add_client_components.yml
+    image: google-cloud-build
+    input_mapping:
+      bin_gpdb_clients: bin_gpdb6_clients_ubuntu20.04
+    task: add_components_to_bin_gpdb_ubuntu20.04
+    params:
+      COMPONENT_GPSS_LOCATION: ((gpss-BIONIC-gcs-location))
+      GCLOUD_SERVICE_ACCOUNT_KEY: ((concourse-gcs-resources-service-account-key))
+  - params:
+      file: bin_gpdb_clients_with_components/bin_gpdb_clients.tar.gz
+    put: bin_gpdb6_clients_ubuntu20.04_with_components
+
 - name: create_gpdb6_clients_deb_installer_ubuntu18.04
   plan:
   - in_parallel:
-    - get: bin_gpdb6_clients_ubuntu18.04
+    - get: bin_gpdb6_clients_ubuntu18.04_with_components
       trigger: true
+      passed:
+      - gpdb_clients_component_packaging_ubuntu18.04
     - get: gpdb6-ubuntu18.04-build
     - get: greenplum-database-release
       trigger: true
+      passed:
+      - gpdb_clients_component_packaging_ubuntu18.04
   - in_parallel:
     - file: greenplum-database-release/ci/concourse/tasks/build-gpdb-clients-deb.yml
       image: gpdb6-ubuntu18.04-build
       input_mapping:
-        bin_gpdb_clients: bin_gpdb6_clients_ubuntu18.04
+        bin_gpdb_clients: bin_gpdb6_clients_ubuntu18.04_with_components
       params:
         GPDB_VERSION: 0.0.0
         GPDB_MAJOR_VERSION: "6"
@@ -1599,16 +1697,20 @@ jobs:
 - name: create_gpdb6_clients_deb_installer_ubuntu20.04
   plan:
   - in_parallel:
-    - get: bin_gpdb6_clients_ubuntu20.04
+    - get: bin_gpdb6_clients_ubuntu20.04_with_components
       trigger: true
+      passed:
+      - gpdb_clients_component_packaging_ubuntu20.04
     - get: gpdb6-ubuntu20.04-build
     - get: greenplum-database-release
       trigger: true
+      passed:
+      - gpdb_clients_component_packaging_ubuntu20.04
   - in_parallel:
     - file: greenplum-database-release/ci/concourse/tasks/build-gpdb-clients-deb.yml
       image: gpdb6-ubuntu20.04-build
       input_mapping:
-        bin_gpdb_clients: bin_gpdb6_clients_ubuntu20.04
+        bin_gpdb_clients: bin_gpdb6_clients_ubuntu20.04_with_components
       params:
         GPDB_VERSION: 0.0.0
         GPDB_MAJOR_VERSION: "6"
@@ -1681,19 +1783,151 @@ jobs:
       params:
         file: ppa_release/version.txt
 
+- name: gpdb_clients_component_packaging_centos6
+  plan:
+  - in_parallel:
+    - get: gp-greenplum-morgan-stanley
+    - get: bin_gpdb6_clients_centos6
+      trigger: true
+    - get: google-cloud-build
+    - get: gp-release
+      passed:
+      - refresh_integrated_components
+    - get: greenplum-database-release
+      passed:
+      - refresh_integrated_components
+      trigger: true
+  - file: gp-release/gpdb6/concourse/tasks/add_client_components.yml
+    image: google-cloud-build
+    input_mapping:
+      bin_gpdb_clients: bin_gpdb6_clients_centos6
+    task: add_components_to_bin_gpdb_centos6
+    params:
+      COMPONENT_GPSS_LOCATION: ((gpss-RHEL6-gcs-location))
+      GCLOUD_SERVICE_ACCOUNT_KEY: ((concourse-gcs-resources-service-account-key))
+  - params:
+      file: bin_gpdb_clients_with_components/bin_gpdb_clients.tar.gz
+    put: bin_gpdb6_clients_centos6_with_components
+
+- name: gpdb_clients_component_packaging_centos7
+  plan:
+  - in_parallel:
+    - get: gp-greenplum-morgan-stanley
+    - get: bin_gpdb6_clients_centos7
+      trigger: true
+    - get: google-cloud-build
+    - get: gp-release
+      passed:
+      - refresh_integrated_components
+    - get: greenplum-database-release
+      passed:
+      - refresh_integrated_components
+      trigger: true
+  - file: gp-release/gpdb6/concourse/tasks/add_client_components.yml
+    image: google-cloud-build
+    input_mapping:
+      bin_gpdb_clients: bin_gpdb6_clients_centos7
+    task: add_components_to_bin_gpdb_centos7
+    params:
+      COMPONENT_GPSS_LOCATION: ((gpss-RHEL7-gcs-location))
+      GCLOUD_SERVICE_ACCOUNT_KEY: ((concourse-gcs-resources-service-account-key))
+  - params:
+      file: bin_gpdb_clients_with_components/bin_gpdb_clients.tar.gz
+    put: bin_gpdb6_clients_centos7_with_components
+
+- name: gpdb_clients_component_packaging_rocky8
+  plan:
+  - in_parallel:
+    - get: gp-greenplum-morgan-stanley
+    - get: bin_gpdb6_clients_rocky8
+      trigger: true
+    - get: google-cloud-build
+    - get: gp-release
+      passed:
+      - refresh_integrated_components
+    - get: greenplum-database-release
+      passed:
+      - refresh_integrated_components
+      trigger: true
+  - file: gp-release/gpdb6/concourse/tasks/add_client_components.yml
+    image: google-cloud-build
+    input_mapping:
+      bin_gpdb_clients: bin_gpdb6_clients_rocky8
+    task: add_components_to_bin_gpdb_rocky8
+    params:
+      COMPONENT_GPSS_LOCATION: ((gpss-RHEL8-gcs-location))
+      GCLOUD_SERVICE_ACCOUNT_KEY: ((concourse-gcs-resources-service-account-key))
+  - params:
+      file: bin_gpdb_clients_with_components/bin_gpdb_clients.tar.gz
+    put: bin_gpdb6_clients_rocky8_with_components
+
+- name: gpdb_clients_component_packaging_rocky9
+  plan:
+  - in_parallel:
+    - get: gp-greenplum-morgan-stanley
+    - get: bin_gpdb6_clients_rocky9
+      trigger: true
+    - get: google-cloud-build
+    - get: gp-release
+      passed:
+      - refresh_integrated_components
+    - get: greenplum-database-release
+      passed:
+      - refresh_integrated_components
+      trigger: true
+  - file: gp-release/gpdb6/concourse/tasks/add_client_components.yml
+    image: google-cloud-build
+    input_mapping:
+      bin_gpdb_clients: bin_gpdb6_clients_rocky9
+    task: add_components_to_bin_gpdb_rhel9
+    params:
+      GCLOUD_SERVICE_ACCOUNT_KEY: ((concourse-gcs-resources-service-account-key))
+  - params:
+      file: bin_gpdb_clients_with_components/bin_gpdb_clients.tar.gz
+    put: bin_gpdb6_clients_rocky9_with_components
+
+- name: gpdb_clients_component_packaging_sles12
+  plan:
+  - in_parallel:
+    - get: gp-greenplum-morgan-stanley
+    - get: bin_gpdb6_clients_sles12
+      trigger: true
+    - get: google-cloud-build
+    - get: gp-release
+      passed:
+      - refresh_integrated_components
+    - get: greenplum-database-release
+      passed:
+      - refresh_integrated_components
+      trigger: true
+  - file: gp-release/gpdb6/concourse/tasks/add_client_components.yml
+    image: google-cloud-build
+    input_mapping:
+      bin_gpdb_clients: bin_gpdb6_clients_sles12
+    task: add_components_to_bin_gpdb_sles12
+    params:
+      GCLOUD_SERVICE_ACCOUNT_KEY: ((concourse-gcs-resources-service-account-key))
+  - params:
+      file: bin_gpdb_clients_with_components/bin_gpdb_clients.tar.gz
+    put: bin_gpdb6_clients_sles12_with_components
+
 - name: create_gpdb6_clients_rpm_installer_centos6
   plan:
   - in_parallel:
-    - get: bin_gpdb6_clients_centos6
+    - get: bin_gpdb6_clients_centos6_with_components
       trigger: true
+      passed:
+      - gpdb_clients_component_packaging_centos6
     - get: gpdb6-centos6-build
     - get: greenplum-database-release
       trigger: true
+      passed:
+      - gpdb_clients_component_packaging_centos6
   - in_parallel:
     - file: greenplum-database-release/ci/concourse/tasks/build-gpdb-clients-rpm.yml
       image: gpdb6-centos6-build
       input_mapping:
-        bin_gpdb_clients: bin_gpdb6_clients_centos6
+        bin_gpdb_clients: bin_gpdb6_clients_centos6_with_components
       params:
         GPDB_VERSION: 0.0.0
         PLATFORM: rhel6
@@ -1706,16 +1940,20 @@ jobs:
 - name: create_gpdb6_clients_rpm_installer_centos7
   plan:
   - in_parallel:
-    - get: bin_gpdb6_clients_centos7
+    - get: bin_gpdb6_clients_centos7_with_components
       trigger: true
+      passed:
+      - gpdb_clients_component_packaging_centos7
     - get: gpdb6-centos7-build
     - get: greenplum-database-release
       trigger: true
+      passed:
+      - gpdb_clients_component_packaging_centos7
   - in_parallel:
     - file: greenplum-database-release/ci/concourse/tasks/build-gpdb-clients-rpm.yml
       image: gpdb6-centos7-build
       input_mapping:
-        bin_gpdb_clients: bin_gpdb6_clients_centos7
+        bin_gpdb_clients: bin_gpdb6_clients_centos7_with_components
       params:
         GPDB_VERSION: 0.0.0
         PLATFORM: rhel7
@@ -1728,16 +1966,20 @@ jobs:
 - name: create_gpdb6_clients_rpm_installer_oel7
   plan:
   - in_parallel:
-    - get: bin_gpdb6_clients_oel7
+    - get: bin_gpdb6_clients_centos7_with_components
       trigger: true
+      passed:
+      - gpdb_clients_component_packaging_centos7
     - get: gpdb6-oel7-build
     - get: greenplum-database-release
       trigger: true
+      passed:
+      - gpdb_clients_component_packaging_centos7
   - in_parallel:
     - file: greenplum-database-release/ci/concourse/tasks/build-gpdb-clients-rpm.yml
       image: gpdb6-oel7-build
       input_mapping:
-        bin_gpdb_clients: bin_gpdb6_clients_oel7
+        bin_gpdb_clients: bin_gpdb6_clients_centos7_with_components
       params:
         GPDB_VERSION: 0.0.0
         PLATFORM: oel7
@@ -1750,16 +1992,20 @@ jobs:
 - name: create_gpdb6_clients_rpm_installer_rocky8
   plan:
   - in_parallel:
-    - get: bin_gpdb6_clients_rocky8
+    - get: bin_gpdb6_clients_rocky8_with_components
       trigger: true
+      passed:
+      - gpdb_clients_component_packaging_rocky8
     - get: gpdb6-rocky8-build
     - get: greenplum-database-release
       trigger: true
+      passed:
+      - gpdb_clients_component_packaging_rocky8
   - in_parallel:
     - file: greenplum-database-release/ci/concourse/tasks/build-gpdb-clients-rpm.yml
       image: gpdb6-rocky8-build
       input_mapping:
-        bin_gpdb_clients: bin_gpdb6_clients_rocky8
+        bin_gpdb_clients: bin_gpdb6_clients_rocky8_with_components
       params:
         GPDB_VERSION: 0.0.0
         PLATFORM: rocky8
@@ -1772,16 +2018,20 @@ jobs:
 - name: create_gpdb6_clients_rpm_installer_rocky9
   plan:
   - in_parallel:
-    - get: bin_gpdb6_clients_rocky9
+    - get: bin_gpdb6_clients_rocky9_with_components
       trigger: true
+      passed:
+      - gpdb_clients_component_packaging_rocky9
     - get: gpdb6-rocky9-build
     - get: greenplum-database-release
       trigger: true
+      passed:
+      - gpdb_clients_component_packaging_rocky9
   - in_parallel:
     - file: greenplum-database-release/ci/concourse/tasks/build-gpdb-clients-rpm.yml
       image: gpdb6-rocky9-build
       input_mapping:
-        bin_gpdb_clients: bin_gpdb6_clients_rocky9
+        bin_gpdb_clients: bin_gpdb6_clients_rocky9_with_components
       params:
         GPDB_VERSION: 0.0.0
         PLATFORM: rocky9
@@ -1794,16 +2044,20 @@ jobs:
 - name: create_gpdb6_clients_rpm_installer_sles12
   plan:
   - in_parallel:
-    - get: bin_gpdb6_clients_sles12
+    - get: bin_gpdb6_clients_sles12_with_components
       trigger: true
+      passed:
+      - gpdb_clients_component_packaging_sles12
     - get: gpdb6-sles12-build
     - get: greenplum-database-release
       trigger: true
+      passed:
+      - gpdb_clients_component_packaging_sles12
   - in_parallel:
     - file: greenplum-database-release/ci/concourse/tasks/build-gpdb-clients-rpm.yml
       image: gpdb6-sles12-build
       input_mapping:
-        bin_gpdb_clients: bin_gpdb6_clients_sles12
+        bin_gpdb_clients: bin_gpdb6_clients_sles12_with_components
       params:
         GPDB_VERSION: 0.0.0
         PLATFORM: sles12
@@ -2752,6 +3006,13 @@ groups:
   - gpdb_component_packaging_rocky9
   - gpdb_component_packaging_ubuntu18.04
   - gpdb_component_packaging_ubuntu20.04
+  - gpdb_clients_component_packaging_rocky8
+  - gpdb_clients_component_packaging_rocky9
+  - gpdb_clients_component_packaging_centos7
+  - gpdb_clients_component_packaging_centos6
+  - gpdb_clients_component_packaging_sles12
+  - gpdb_clients_component_packaging_ubuntu18.04
+  - gpdb_clients_component_packaging_ubuntu20.04
   - refresh_integrated_components
   - gpdb_component_packaging_rocky8
   name: All
@@ -2798,6 +3059,13 @@ groups:
   - refresh_integrated_components
   name: gpdb 6 server
 - jobs:
+  - gpdb_clients_component_packaging_rocky8
+  - gpdb_clients_component_packaging_rocky9
+  - gpdb_clients_component_packaging_centos7
+  - gpdb_clients_component_packaging_centos6
+  - gpdb_clients_component_packaging_sles12
+  - gpdb_clients_component_packaging_ubuntu18.04
+  - gpdb_clients_component_packaging_ubuntu20.04
   - create_gpdb6_clients_rpm_installer_sles12
   - test_functionality_clients_gpdb6_rpm_sles12
   - create_gpdb6_clients_rpm_installer_centos6
@@ -2818,4 +3086,5 @@ groups:
   - test_functionality_clients_gpdb6_rpm_rhel9
   - test_functionality_clients_gpdb6_rpm_rocky9
   - test_functionality_clients_gpdb6_rpm_oel9
+  - refresh_integrated_components
   name: gpdb 6 client
