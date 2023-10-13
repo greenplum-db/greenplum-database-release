@@ -11,7 +11,8 @@ resource_types:
 - name: tanzunet
   type: registry-image
   source:
-    repository: gcr.io/data-gpdb-public-images/gcs-resource
+    repository: gcr.io/data-gpdb-public-images/pivnet-resource
+    tag: latest-final
 
 - name: gcs
   type: registry-image
