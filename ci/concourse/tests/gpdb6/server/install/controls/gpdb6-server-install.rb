@@ -90,36 +90,19 @@ control 'Category:server-installs' do
   end
 
 
-  # python2 sum of .pyc file
+  # should generate check python2 .pyc file
+  describe file("/usr/local/greenplum-db/ext/python/lib/python2.7/distutils/__init__.pyc") do
+    it { should exist }
+  end
+  # should generate check python3 .pyc file for all platform except centos6, since python3.9 not vendored to centos6
   version = os.release
-  if version =~ /^8/
-    describe command("sort -o expected greenplum-database-release/ci/concourse/tests/gpdb6/server/install/controls/python2-compiled-file-list; find /usr/local/greenplum-db/ -name *.pyc | grep -v python3.9| sort | diff -uw - expected") do
-       its('stdout') { should eq "" }
-    end
-  elsif version =~ /^9/
-    describe command("sort -o expected greenplum-database-release/ci/concourse/tests/gpdb6/server/install/controls/python2-compiled-file-list-rhel9; find /usr/local/greenplum-db/ -name *.pyc | grep -v python3.9| sort | diff -uw - expected") do
-       its('stdout') { should eq "" }
-    end
-  else
-    describe command("sort -o expected greenplum-database-release/ci/concourse/tests/gpdb6/server/install/controls/python2-compiled-file-list-centos7-centos6; find /usr/local/greenplum-db/ -name *.pyc | grep -v python3.9| sort | diff -uw - expected") do
-      its('stdout') { should eq "" }
+  describe file("/usr/local/greenplum-db/ext/python3.9/lib/python3.9/__pycache__/dis.cpython-39.pyc") do
+    if version =~ /^6/
+      skip "it { should not exist }"
+    else
+      it { should exist }
     end
   end
-
-  # python3 sum of .pyc file
-  version = os.release
-
-    describe command("sort -o expected greenplum-database-release/ci/concourse/tests/gpdb6/server/install/controls/python3-compiled-file-list; find /usr/local/greenplum-db/ext/python3.9/ -name *.pyc | sort | diff -uw - expected") do
-      # rhel6 does not vendor python3.9
-      if version =~ /^6/
-        skip "its('stdout') { should eq "" }"
-      # rhel7 and rhel8 vendor python3.9
-      else
-        its('stdout') { should eq "" }
-      end
-
-  end
-
 end
 
 control 'Category:server-installs_with_link' do

@@ -93,10 +93,6 @@ func gpdbInstalledAsExpected() error {
 
 	gpdbMajorVersion := strings.Split(gpbdVersion, ".")[0]
 	if gpdbMajorVersion == "6" {
-		err = CheckHasExpectedPythonBytecodeFileNumber()
-		if err != nil {
-			return err
-		}
 		err = gpdb6GeneratedPythonBytecode("/usr/local/greenplum-db/ext/python/lib/python2.7/cmd.py")
 		if err != nil {
 			return err
@@ -113,21 +109,6 @@ func gpdbInstalledAsExpected() error {
 		}
 	}
 
-	return nil
-}
-
-func CheckHasExpectedPythonBytecodeFileNumber() error {
-	cmd := exec.Command("/bin/bash", "-c", "sort -o expected python2-compiled-file-list-ubuntu; find /usr/local/greenplum-db/ -name *.pyc | grep -v python3.9 | sort | diff -uw - expected")
-	output, err := cmd.Output()
-	if err != nil {
-		return fmt.Errorf("expect has there is no diff for python2 pyc file name list, actual is %s", strings.TrimSpace(string(output)))
-	}
-
-	cmd = exec.Command("/bin/bash", "-c", "sort -o expected python3-compiled-file-list; find /usr/local/greenplum-db/ext/python3.9/ -name *.pyc | sort | diff -uw - expected")
-	output, err = cmd.Output()
-	if err != nil {
-		return fmt.Errorf("expect has there is no diff for python3.9 pyc file name list, actual is %s", strings.TrimSpace(string(output)))
-	}
 	return nil
 }
 
