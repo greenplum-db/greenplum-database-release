@@ -67,7 +67,7 @@ control 'Category:server-conflict_enterprise_to_oss_same_version' do
 
     title "Install VTGP (Enterprise) first and GPDBVT (OSS) second for different version."
 
-    describe command("yum install -y previous-7.0.0-beta.0-release/greenplum-db-7.0.0-beta.0-*-x86_64.rpm") do
+    describe command("yum install -y previous-7.0.0-release/greenplum-db-7.0.0-*-x86_64.rpm") do
       its('exit_status') {should eq 0}
       its('stdout') { should match /greenplum-db-7*/ }
     end
@@ -81,7 +81,7 @@ control 'Category:server-conflict_enterprise_to_oss_same_version' do
 
     title "Install GPDBVT (OSS) first and VTGP (Enterprise) second for different version."
 
-    describe command("yum install -y previous-7.0.0-beta.0-oss-release/open-source-greenplum-db-7.0.0-beta.0-rhel8-x86_64.rpm") do
+    describe command("yum install -y previous-7.0.0-oss-release/open-source-greenplum-db-7.0.0-el8-x86_64.rpm") do
     its('exit_status') {should eq 0}
     its('stdout') { should match /open-source-greenplum-db-7*/ }
     end

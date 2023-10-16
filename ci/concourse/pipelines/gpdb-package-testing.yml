@@ -314,13 +314,13 @@ resources:
     product_slug: vmware-greenplum
     product_version: 6\.20\.0
 
-- name: previous-7.0.0-beta.0-release
+- name: previous-7.0.0-release
   type: tanzunet
   source:
     api_token: ((releng/public-tanzunet-refresh-token))
     endpoint: ((tanzunet-endpoint))
     product_slug: vmware-greenplum
-    product_version: 7\.0\.0-beta\.0
+    product_version: 7\.0\.0
 
 # the file is comming from https://concourse.releng.gpdb.pivotal.io/teams/main/pipelines/greenplum-database-release/jobs/publish_to_ppa/builds/11
 # it is 6.21.2 ppa deb package, manully updloaded to the following command
@@ -349,12 +349,13 @@ resources:
     product_slug: greenplum-database
     product_version: 6\.20\.0
 
-- name: previous-7.0.0-beta.0-oss-release
+- name: previous-7.0.0-oss-release
   type: github-release
   source:
     owner: greenplum-db
     repository: gpdb
-    tag_filter: 7.0.0-beta.0
+    access_token: ((releng/github-token-gp-releng))
+    tag_filter: 7.0.0$
 
 - name: previous-5.25.0-release
   type: tanzunet
@@ -672,7 +673,7 @@ resources:
   source:
     bucket: pivotal-gpdb-concourse-resources-prod
     json_key: ((concourse-gcs-resources-service-account-key))
-    regexp: osl/released/gpdb7/open_source_license_VMware_Tanzu_Greenplum_(((gpdb7-osl-version-regex))).txt
+    regexp: osl/released/gpdb7/open_source_license_VMware_Greenplum_(((gpdb7-osl-version-regex)))_GA.txt
 
 - name: license_file
   type: gcs
@@ -2877,10 +2878,10 @@ jobs:
       - create_gpdb7_rpm_installer_rocky8
     - get: gpdb7-rhel8-test
     - get: rhel-8
-    - get: previous-7.0.0-beta.0-oss-release
+    - get: previous-7.0.0-oss-release
       params:
         globs:
-        - open-source-greenplum-db-*-rhel8-x86_64.rpm
+        - open-source-greenplum-db-*-el8-x86_64.rpm
     - get: rpm_gpdb7_rocky8_oss
       passed:
       - create_gpdb7_rpm_installer_rocky8_oss
@@ -2889,10 +2890,10 @@ jobs:
       params:
         globs:
         - greenplum-db-*-rhel8-x86_64.rpm
-    - get: previous-7.0.0-beta.0-release
+    - get: previous-7.0.0-release
       params:
         globs:
-        - greenplum-db-*-rhel8-x86_64.rpm
+        - greenplum-db-*-el8-x86_64.rpm
   - in_parallel:
     - task: test_gpdb7_rpm_functionality
       file: greenplum-database-release/ci/concourse/tasks/test-functionality-rpm.yml
@@ -2930,18 +2931,18 @@ jobs:
       passed:
       - create_gpdb7_rpm_installer_rocky8_oss
       trigger: true
-    - get: previous-7.0.0-beta.0-oss-release
+    - get: previous-7.0.0-oss-release
       params:
         globs:
-        - open-source-greenplum-db-*-rhel8-x86_64.rpm
+        - open-source-greenplum-db-*-el8-x86_64.rpm
     - get: previous-6.20.0-release
       params:
         globs:
         - greenplum-db-*-rhel8-x86_64.rpm
-    - get: previous-7.0.0-beta.0-release
+    - get: previous-7.0.0-release
       params:
         globs:
-        - greenplum-db-*-rhel8-x86_64.rpm
+        - greenplum-db-*-el8-x86_64.rpm
   - in_parallel:
     - task: test_gpdb7_rpm_functionality
       file: greenplum-database-release/ci/concourse/tasks/test-functionality-rpm.yml
@@ -2977,18 +2978,18 @@ jobs:
       passed:
       - create_gpdb7_rpm_installer_rocky8_oss
       trigger: true
-    - get: previous-7.0.0-beta.0-oss-release
+    - get: previous-7.0.0-oss-release
       params:
         globs:
-        - open-source-greenplum-db-*-rhel8-x86_64.rpm
+        - open-source-greenplum-db-*-el8-x86_64.rpm
     - get: previous-6.20.0-release
       params:
         globs:
         - greenplum-db-*-rhel8-x86_64.rpm
-    - get: previous-7.0.0-beta.0-release
+    - get: previous-7.0.0-release
       params:
         globs:
-        - greenplum-db-*-rhel8-x86_64.rpm
+        - greenplum-db-*-el8-x86_64.rpm
   - in_parallel:
     - task: test_gpdb7_rpm_functionality
       file: greenplum-database-release/ci/concourse/tasks/test-functionality-rpm.yml

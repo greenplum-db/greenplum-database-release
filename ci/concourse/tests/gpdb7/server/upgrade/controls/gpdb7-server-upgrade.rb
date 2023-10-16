@@ -20,19 +20,19 @@ gpdb_version = rpm_gpdb_version.sub("_", "-") if rpm_gpdb_version != nil
 previous_6_version = File.read('previous-6.20.0-release/version').split('#').first if File.exist?('previous-6.20.0-release/version')
 
 control 'Category:server-rpm_is_upgradable' do
-  # previous-7.0.0-beta.0-release can upgrade to current gpdb7 version rpm
-    describe command("yum install -y previous-7.0.0-beta.0-release/greenplum-db-7.0.0-beta.0-rhel8-x86_64.rpm") do
+  # previous-7.0.0-release can upgrade to current gpdb7 version rpm
+    describe command("yum install -y previous-7.0.0-release/greenplum-db-7.0.0-el8-x86_64.rpm") do
       its('exit_status') { should eq 0 }
     end
 
     describe command("rpm --query greenplum-db-7") do
-      its('stdout') { should match /greenplum-db-7-7.0.0_beta.0*/ }
+      its('stdout') { should match /greenplum-db-7-7.0.0*/ }
       its('exit_status') { should eq 0 }
     end
 
     describe file("/usr/local/greenplum-db") do
       it { should be_symlink }
-      its('link_path') { should eq "/usr/local/greenplum-db-7.0.0-beta.0" }
+      its('link_path') { should eq "/usr/local/greenplum-db-7.0.0" }
     end
 
     describe command("rpm --upgrade #{rpm_full_path}") do
