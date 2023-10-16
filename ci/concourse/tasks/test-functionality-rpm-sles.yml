@@ -6,6 +6,7 @@ inputs:
 - name: gpdb_rpm_installer
 - name: previous-5.25.0-release
 - name: previous-5.28.4-release
+- name: inspec
 
 run:
   path: greenplum-database-release/ci/concourse/scripts/test-functionality-rpm.bash

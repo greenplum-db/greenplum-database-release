@@ -35,15 +35,18 @@ if [[ $PLATFORM == "oel7" ]]; then
 		mv "${old}" "${new}"
 	done
 fi
+
+if [[ $PLATFORM == "rhel6" || $PLATFORM == "rhel7" || $PLATFORM == "oel7" || $PLATFORM == "rhel8" || $PLATFORM == "rocky8" || $PLATFORM == "oel8" || $PLATFORM == "rhel9" || $PLATFORM == "rocky9" || $PLATFORM == "oel9" ]]; then
+	yum install -y inspec/*.rpm
+elif [[ $PLATFORM == "sles11" || $PLATFORM == "sles12" ]]; then
+	rpm -Uvh inspec/*.rpm
+fi
+
 # shellcheck disable=SC2155
 if [[ $GPDB_MAJOR_VERSION == "5" ]]; then
 	test_prefix='greenplum-database-release/ci/concourse/tests/gpdb5/server'
 	export GPDB_VERSION="$(rpm --query --info --package "${GPDB_RPM_PATH}/greenplum-db-*-${GPDB_RPM_ARCH}-x86_64.rpm" | grep Version | awk '{print $3}' | tr --delete '\n')"
 	if [[ $PLATFORM == "rhel"* ]]; then
-		# TODO: inspec should be available on the base container
-		# Install inspec v3 because v4 requires license for commercial use
-		curl https://omnitruck.chef.io/install.sh | bash -s -- -P inspec -v 3
-
 		for test_suite in generic \
 			centos-install \
 			installed \
@@ -52,14 +55,6 @@ if [[ $GPDB_MAJOR_VERSION == "5" ]]; then
 			inspec exec ${test_prefix}/${test_suite}/ --reporter documentation --no-distinct-exit --no-backend-cache
 		done
 	elif [[ $PLATFORM == "sles"* ]]; then
-		# Install inspec
-		wget --no-check-certificate https://packages.chef.io/files/stable/inspec/1.31.1/sles/11/inspec-1.31.1-1.sles11.x86_64.rpm
-		zypper --non-interactive install inspec-1.31.1-1.sles11.x86_64.rpm
-
-		# backend-cache wasn't added until inspec 1.47.0
-		#   - https://discourse.chef.io/t/inspec-v1-47-0-released/12066
-		# hence no need to disable it
-
 		for test_suite in generic \
 			sles-install \
 			installed \
@@ -71,7 +66,6 @@ if [[ $GPDB_MAJOR_VERSION == "5" ]]; then
 elif [[ $GPDB_MAJOR_VERSION == "6" ]]; then
 	export RPM_GPDB_VERSION="$(rpm --query --info --package ${GPDB_RPM_PATH}/greenplum-db-6-"${GPDB_RPM_ARCH}"-x86_64.rpm | awk '/Version/{printf "%s", $3}')"
 	if [[ $PLATFORM == "rhel6" || $PLATFORM == "rhel7" || $PLATFORM == "oel7" || $PLATFORM == "oel8" || $PLATFORM == "rhel8" || $PLATFORM == "rocky8" ]]; then
-		curl https://omnitruck.chef.io/install.sh | bash -s -- -P inspec -v 3
 		test_prefix='greenplum-database-release/ci/concourse/tests/gpdb6/server'
 		inspec exec ${test_prefix}/conflicts --reporter documentation --no-distinct-exit --no-backend-cache
 		inspec exec ${test_prefix}/install --reporter documentation --no-distinct-exit --no-backend-cache
@@ -80,7 +74,6 @@ elif [[ $GPDB_MAJOR_VERSION == "6" ]]; then
 	#TODO rhel9 does not have previous released artifacts, so skip confilicts and upgrade,
 	# should remove the special condition later
 	elif [[ $PLATFORM == "oel9" || $PLATFORM == "rhel9" || $PLATFORM == "rocky9" ]]; then
-		curl https://omnitruck.chef.io/install.sh | bash -s -- -P inspec -v 3
 		test_prefix='greenplum-database-release/ci/concourse/tests/gpdb6/server'
 		inspec exec ${test_prefix}/install --reporter documentation --no-distinct-exit --no-backend-cache
 		inspec exec ${test_prefix}/remove --reporter documentation --no-backend-cache
@@ -91,7 +84,6 @@ elif [[ $GPDB_MAJOR_VERSION == "6" ]]; then
 elif [[ $GPDB_MAJOR_VERSION == "7" ]]; then
 	export RPM_GPDB_VERSION="$(rpm --query --info --package ${GPDB_RPM_PATH}/greenplum-db-7-"${GPDB_RPM_ARCH}"-x86_64.rpm | awk '/Version/{printf "%s", $3}')"
 	if [[ $PLATFORM == "rhel7" || $PLATFORM == "rhel8" || $PLATFORM == "rocky8" || $PLATFORM == "oel8" ]]; then
-		curl https://omnitruck.chef.io/install.sh | bash -s -- -P inspec -v 3
 		test_prefix='greenplum-database-release/ci/concourse/tests/gpdb7/server'
 		inspec exec ${test_prefix}/conflicts --reporter documentation --no-distinct-exit --no-backend-cache
 		inspec exec ${test_prefix}/install --reporter documentation --no-distinct-exit --no-backend-cache

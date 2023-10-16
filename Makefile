@@ -28,7 +28,7 @@ FLY_CMD                    ?= fly_7.8.3
 FLY_OPTION_NON_INTERACTIVE ?=
 
 DEV_GPDB_PACKAGE_TESTING_PIPELINE_NAME ?= dev-gpdb-package-testing-${BRANCH}-${USER}
-
+DEV_GPDB7_PACKAGE_TESTING_PIPELINE_NAME ?= dev-gpdb7-package-testing-${BRANCH}-${USER}
 GOLANG_VERSION = 1.17.6
 
 ## ----------------------------------------------------------------------
@@ -189,6 +189,10 @@ ${WORKSPACE}/gp-release/release-tools/generate-release-configuration:
 generate-variables: ${WORKSPACE}/gp-release/release-tools/generate-release-configuration $(RELEASE_CONSIST)
 	${WORKSPACE}/gp-release/release-tools/generate-release-configuration -path $(RELEASE_CONSIST) 1>$(RELEASE_CONFIG)
 
+.PHONY: generate-7-variables
+generate-7-variables: ${WORKSPACE}/gp-release/release-tools/generate-release-configuration $(RELEASE_CONSIST_GPDB7)
+	${WORKSPACE}/gp-release/release-tools/generate-release-configuration -path $(RELEASE_CONSIST_GPDB7) 1>$(RELEASE_CONFIG_GPDB7)
+
 .PHONY: set-gpdb-package-testing-prod
 set-gpdb-package-testing-prod: generate-variables
 	sed -e 's|/env|/prod|g' ci/concourse/pipelines/gpdb-package-testing.yml > ci/concourse/pipelines/gpdb-package-testing-prod.yml
@@ -222,6 +226,38 @@ set-gpdb-package-testing-dev: generate-variables
 
 	$(FLY_CMD) --target=$(CONCOURSE) unpause-pipeline --pipeline=${DEV_GPDB_PACKAGE_TESTING_PIPELINE_NAME}
 
+.PHONY: set-gpdb7-package-testing-prod
+set-gpdb7-package-testing-prod: generate-7-variables
+	sed -e 's|/env|/prod|g' ci/concourse/pipelines/gpdb7-package-testing.yml > ci/concourse/pipelines/gpdb7-package-testing-prod.yml
+
+	$(FLY_CMD) --target=$(CONCOURSE) \
+	set-pipeline \
+	--pipeline=gpdb7-package-testing \
+	--config=ci/concourse/pipelines/gpdb7-package-testing-prod.yml \
+	--load-vars-from=${RELEASE_CONFIG_GPDB7} \
+	--load-vars-from=ci/concourse/vars/gpdb-package-testing.prod.yml \
+	--load-vars-from=ci/concourse/vars/greenplum-database-release.prod.yml \
+	--var=pipeline-name=gpdb7-package-testing \
+	--var=run_mode=prod \
+	$(FLY_OPTION_NON_INTERACTIVE)
+
+.PHONY: set-gpdb7-package-testing-dev
+set-gpdb7-package-testing-dev: generate-7-variables
+	sed -e 's|/env|/dev|g' ci/concourse/pipelines/gpdb7-package-testing.yml > ci/concourse/pipelines/gpdb7-package-testing-dev.yml
+
+	$(FLY_CMD) --target=$(CONCOURSE) \
+	set-pipeline \
+	--pipeline=${DEV_GPDB7_PACKAGE_TESTING_PIPELINE_NAME} \
+	--config=ci/concourse/pipelines/gpdb7-package-testing-dev.yml \
+	--load-vars-from=${RELEASE_CONFIG_GPDB7} \
+	--load-vars-from=ci/concourse/vars/gpdb-package-testing.dev.yml \
+	--load-vars-from=ci/concourse/vars/greenplum-database-release.dev.yml \
+	--var=greenplum-database-release-git-branch=${BRANCH} \
+	--var=pipeline-name=${DEV_GPDB7_PACKAGE_TESTING_PIPELINE_NAME} \
+	--var=run_mode=dev \
+	$(FLY_OPTION_NON_INTERACTIVE)
+
+	$(FLY_CMD) --target=$(CONCOURSE) unpause-pipeline --pipeline=${DEV_GPDB7_PACKAGE_TESTING_PIPELINE_NAME}
 
 ## ----------------------------------------------------------------------
 ## Lint targets

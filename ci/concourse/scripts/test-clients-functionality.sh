@@ -16,12 +16,13 @@ else
 	export GPDB_CLIENTS_ARCH="$PLATFORM"
 fi
 
+if [[ $PLATFORM == "rhel6" || $PLATFORM == "rhel7" || $PLATFORM == "oel7" || $PLATFORM == "rhel8" || $PLATFORM == "rocky8" || $PLATFORM == "oel8" || $PLATFORM == "rhel9" || $PLATFORM == "rocky9" || $PLATFORM == "oel9" ]]; then
+	yum install -y inspec/*.rpm
+elif [[ $PLATFORM == "sles11" || $PLATFORM == "sles12" ]]; then
+	rpm -Uvh inspec/*.rpm
+fi
+
 if [[ $PLATFORM == "rhel"* || $PLATFORM == "sles"* || $PLATFORM == "rocky"* || $PLATFORM == "oel"* ]]; then
-
-	# TODO: inspec should be available on the base container
-	# Install inspec v3 because v4 requires license for commercial use
-	curl https://omnitruck.chef.io/install.sh | bash -s -- -P inspec -v 3
-
 	GPDB_CLIENTS_VERSION="$(rpm -qip ${GPDB_CLIENTS_PATH}/greenplum-db-clients-*-"${GPDB_CLIENTS_ARCH}"-x86_64.rpm | grep Version | awk '{print $3}' | tr --delete '\n')"
 	export GPDB_CLIENTS_VERSION
 	if [[ "${GPDB_MAJOR_VERSION}" == 7 ]]; then

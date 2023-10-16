@@ -20,6 +20,7 @@ inputs:
   optional: true
 - name: previous-7.0.0-oss-release
   optional: true
+- name: inspec
 
 run:
   path: greenplum-database-release/ci/concourse/scripts/test-functionality-rpm.bash
