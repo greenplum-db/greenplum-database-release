@@ -18,6 +18,8 @@ elif [[ $PLATFORM == "rhel8"* || $PLATFORM == "rocky8"* || $PLATFORM == "oel8"* 
 	export GPDB_RPM_ARCH="rhel8"
 elif [[ $PLATFORM == "rhel9"* || $PLATFORM == "rocky9"* || $PLATFORM == "oel9"* ]] && [[ $GPDB_MAJOR_VERSION == "6" ]]; then
 	export GPDB_RPM_ARCH="rhel9"
+elif [[ $PLATFORM == "rhel9"* || $PLATFORM == "rocky9"* || $PLATFORM == "oel9"* ]] && [[ $GPDB_MAJOR_VERSION == "7" ]]; then
+	export GPDB_RPM_ARCH="el9"
 else
 	export GPDB_RPM_ARCH="$PLATFORM"
 fi
@@ -89,6 +91,10 @@ elif [[ $GPDB_MAJOR_VERSION == "7" ]]; then
 		inspec exec ${test_prefix}/install --reporter documentation --no-distinct-exit --no-backend-cache
 		inspec exec ${test_prefix}/remove --reporter documentation --no-backend-cache
 		inspec exec ${test_prefix}/upgrade --reporter documentation --no-distinct-exit --no-backend-cache
+	elif [[ $PLATFORM == "oel9" || $PLATFORM == "rhel9" || $PLATFORM == "rocky9" ]]; then
+		test_prefix='greenplum-database-release/ci/concourse/tests/gpdb7/server'
+		inspec exec ${test_prefix}/install --reporter documentation --no-distinct-exit --no-backend-cache
+		inspec exec ${test_prefix}/remove --reporter documentation --no-backend-cache
 	else
 		echo "${PLATFORM} is not yet supported for Greenplum 7.X"
 		exit 1

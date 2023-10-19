@@ -46,7 +46,6 @@ Requires: openldap
 Requires: openssh
 Requires: openssh-clients
 Requires: openssh-server
-Requires: openssl
 Requires: perl
 Requires: python3
 Requires: python39
@@ -63,6 +62,14 @@ Requires: zlib
 Requires: libuuid
 %endif
 
+%if "%{platform}" == "rhel9" || "%{platform}" == "rocky9" || "%{platform}" == "oel9"
+Requires: compat-openssl11
+Requires: libuv
+Requires: libicu
+Requires: perl-libs
+Requires: libevent-devel
+Requires: readline-devel
+%endif
 %if "%{platform}" == "rhel8" || "%{platform}" == "rocky8" || "%{platform}" == "oel8"
 Requires: libevent
 Requires: libuv

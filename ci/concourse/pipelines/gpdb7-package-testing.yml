@@ -133,6 +133,20 @@ resources:
     json_key: ((concourse-gcs-resources-service-account-key))
     versioned_file: ((pipeline-name))/bin_gpdb7_rocky8_with_components/bin_gpdb.tar.gz
 
+- name: bin_gpdb7_rocky9
+  type: gcs
+  source:
+    bucket: pivotal-gpdb-concourse-resources-prod
+    json_key: ((concourse-gcs-resources-service-account-key))
+    regexp: server/published/main/server-rc-(.*)-el9_x86_64.debug.tar.gz
+
+- name: bin_gpdb7_rocky9_with_components
+  type: gcs
+  source:
+    bucket: ((gcs-bucket-intermediates))
+    json_key: ((concourse-gcs-resources-service-account-key))
+    versioned_file: ((pipeline-name))/bin_gpdb7_rocky9_with_components/bin_gpdb.tar.gz
+
 - name: bin_gpdb7_clients_rocky8_with_components
   type: gcs
   source:
@@ -267,6 +281,20 @@ resources:
     json_key: ((concourse-gcs-resources-service-account-key))
     versioned_file: ((pipeline-name))/rpm_gpdb_rocky8/gpdb7/greenplum-db-7-el8-x86_64.rpm
 
+- name: rpm_gpdb7_rocky9_oss
+  type: gcs
+  source:
+    bucket: ((gcs-bucket-intermediates))
+    json_key: ((concourse-gcs-resources-service-account-key))
+    versioned_file: ((pipeline-name))/rpm_gpdb_rocky9/gpdb7/open-source-greenplum-db-7-el9-x86_64.rpm
+
+- name: rpm_gpdb7_rocky9
+  type: gcs
+  source:
+    bucket: ((gcs-bucket-intermediates))
+    json_key: ((concourse-gcs-resources-service-account-key))
+    versioned_file: ((pipeline-name))/rpm_gpdb_rocky9/gpdb7/greenplum-db-7-el9-x86_64.rpm
+
 ## ======================================================================
 ##                   _
 ##   __ _ _ __   ___| |__   ___  _ __ ___
@@ -362,16 +390,41 @@ jobs:
       COMPONENT_TIMESTAMP9_LOCATION: ((timestamp9-RHEL8-gcs-location))
       COMPONENT_PGBOUNCER_LOCATION: ((pgbouncer-RHEL8-gcs-location))
       COMPONENT_ADVANCED_PASSWORD_CHECK_LOCATION: ((advanced_password_check-RHEL8-gcs-location))
+      COMPONENT_POSTGRESML_LOCATION: ((postgresml-RHEL8-gcs-location))
       COMPONENT_GPPKG_LOCATION: ((gppkg-RHEL8-gcs-location))
       COMPONENT_PGAUDIT_LOCATION: ((pgaudit-RHEL8-gcs-location))
       COMPONENT_PGVECTOR_LOCATION: ((pgvector-RHEL8-gcs-location))
-      COMPONENT_POSTGRESML_LOCATION: ((postgresml-RHEL8-gcs-location))
       COMPONENT_GPSUPPORT_LOCATION: ((gpsupport-RHEL8-gcs-location))
       COMPONENT_METRICS_COLLECTOR_LOCATION: ((metrics-collector-RHEL8-gcs-location))
       GCLOUD_SERVICE_ACCOUNT_KEY: ((concourse-gcs-resources-service-account-key))
   - params:
       file: bin_gpdb_with_components/bin_gpdb.tar.gz
     put: bin_gpdb7_rocky8_with_components
+
+- name: gpdb7_component_packaging_rocky9
+  plan:
+  - in_parallel:
+    - get: gp-greenplum-morgan-stanley
+    - get: bin_gpdb7_rocky9
+      trigger: true
+    - get: google-cloud-build
+    - get: gp-release
+      passed:
+      - refresh_integrated_components
+    - get: greenplum-database-release
+      passed:
+      - refresh_integrated_components
+      trigger: true
+  - file: gp-release/gpdb7/concourse/tasks/add_components.yml
+    image: google-cloud-build
+    input_mapping:
+      bin_gpdb: bin_gpdb7_rocky9
+    task: add_components_to_bin_gpdb_rhel9
+    params:
+      GCLOUD_SERVICE_ACCOUNT_KEY: ((concourse-gcs-resources-service-account-key))
+  - params:
+      file: bin_gpdb_with_components/bin_gpdb.tar.gz
+    put: bin_gpdb7_rocky9_with_components
 
 - name: gpdb7_clients_component_packaging_rocky8
   plan:
@@ -483,6 +536,67 @@ jobs:
       <<: *gpdb7-rpm-params
       PLATFORM: rocky8
   - put: rpm_gpdb7_rocky8
+    params:
+      file: gpdb_rpm_installer/*.rpm
+
+- name: create_gpdb7_rpm_installer_rocky9_oss
+  plan:
+  - in_parallel:
+    - get: greenplum-database-release
+      passed:
+      - gpdb7_component_packaging_rocky9
+    - get: bin_gpdb7_rocky9_with_components
+      trigger: true
+      passed:
+      - gpdb7_component_packaging_rocky9
+    - get: gpdb7-rocky9-build
+    - get: gpdb7-osl
+  - task: retrieve_gpdb7_src
+    file: greenplum-database-release/ci/concourse/tasks/retrieve-gpdb-src.yml
+    image: gpdb7-rocky9-build
+    input_mapping:
+      bin_gpdb: bin_gpdb7_rocky9_with_components
+  - task: build_rpm_gpdb7_rocky9
+    file: greenplum-database-release/ci/concourse/tasks/build-gpdb-rpm.yml
+    image: gpdb7-rocky9-build
+    input_mapping:
+      bin_gpdb: bin_gpdb7_rocky9_with_components
+      license_file: gpdb7-osl
+    params:
+      <<: *gpdb7-rpm-params-oss
+      PLATFORM: rocky9
+      GPDB_NAME: greenplum-db-7
+  - put: rpm_gpdb7_rocky9_oss
+    params:
+      file: gpdb_rpm_installer/*.rpm
+
+- name: create_gpdb7_rpm_installer_rocky9
+  plan:
+  - in_parallel:
+    - get: bin_gpdb7_rocky9_with_components
+      trigger: true
+      passed:
+      - gpdb7_component_packaging_rocky9
+    - get: greenplum-database-release
+      passed:
+      - gpdb7_component_packaging_rocky9
+    - get: gpdb7-rocky9-build
+    - get: gpdb7-osl
+  - task: retrieve_gpdb7_src
+    file: greenplum-database-release/ci/concourse/tasks/retrieve-gpdb-src.yml
+    image: gpdb7-rocky9-build
+    input_mapping:
+      bin_gpdb: bin_gpdb7_rocky9_with_components
+  - task: build_rpm_gpdb7_rocky9
+    file: greenplum-database-release/ci/concourse/tasks/build-gpdb-rpm.yml
+    image: gpdb7-rocky9-build
+    input_mapping:
+      bin_gpdb: bin_gpdb7_rocky9_with_components
+      license_file: gpdb7-osl
+    params:
+      <<: *gpdb7-rpm-params
+      PLATFORM: rocky9
+  - put: rpm_gpdb7_rocky9
     params:
       file: gpdb_rpm_installer/*.rpm
 
@@ -682,6 +796,119 @@ jobs:
         gpdb_pkg_installer: rpm_gpdb7_rocky8
       params:
         PLATFORM: oel8
+        GPDB_MAJOR_VERSION: "7"
+
+- name: test_functionality_gpdb7_rpm_rhel9
+  plan:
+  - in_parallel:
+    - get: rpm_gpdb7_rocky9
+      passed:
+      - create_gpdb7_rpm_installer_rocky9
+      trigger: true
+    - get: greenplum-database-release
+      passed:
+      - create_gpdb7_rpm_installer_rocky9
+    - get: gpdb7-rhel9-test
+    - get: rhel-9
+    - get: rpm_gpdb7_rocky9_oss
+      passed:
+      - create_gpdb7_rpm_installer_rocky9_oss
+      trigger: true
+    - get: inspec-el7
+  - in_parallel:
+    - task: test_gpdb7_rpm_functionality
+      file: greenplum-database-release/ci/concourse/tasks/test-functionality-rpm.yml
+      image: gpdb7-rhel9-test
+      input_mapping:
+        gpdb_rpm_installer: rpm_gpdb7_rocky9
+        gpdb_rpm_oss_installer: rpm_gpdb7_rocky9_oss
+        inspec: inspec-el7
+      params:
+        PLATFORM: rhel9
+        GPDB_MAJOR_VERSION: "7"
+    - task: test_package_dependencies
+      file: greenplum-database-release/ci/concourse/tasks/test-package-dependencies.yml
+      image: rhel-9
+      input_mapping:
+        gpdb_pkg_installer: rpm_gpdb7_rocky9
+      params:
+        PLATFORM: rhel9
+        GPDB_MAJOR_VERSION: "7"
+        REDHAT_SUBSCRIPTION_ORG_ID: ((releng/redhat_subscription_org_id))
+        REDHAT_SUBSCRIPTION_KEY_ID: ((releng/redhat_subscription_key_id))
+
+- name: test_functionality_gpdb7_rpm_rocky9
+  plan:
+  - in_parallel:
+    - get: rpm_gpdb7_rocky9
+      passed:
+      - create_gpdb7_rpm_installer_rocky9
+      trigger: true
+    - get: greenplum-database-release
+      passed:
+      - create_gpdb7_rpm_installer_rocky9
+    - get: gpdb7-rocky9-test
+    - get: rocky-9
+    - get: rpm_gpdb7_rocky9_oss
+      passed:
+      - create_gpdb7_rpm_installer_rocky9_oss
+      trigger: true
+    - get: inspec-el7
+  - in_parallel:
+    - task: test_gpdb7_rpm_functionality
+      file: greenplum-database-release/ci/concourse/tasks/test-functionality-rpm.yml
+      image: gpdb7-rocky9-test
+      input_mapping:
+        gpdb_rpm_installer: rpm_gpdb7_rocky9
+        gpdb_rpm_oss_installer: rpm_gpdb7_rocky9_oss
+        inspec: inspec-el7
+      params:
+        PLATFORM: rocky9
+        GPDB_MAJOR_VERSION: "7"
+    - task: test_package_dependencies
+      file: greenplum-database-release/ci/concourse/tasks/test-package-dependencies.yml
+      image: rocky-9
+      input_mapping:
+        gpdb_pkg_installer: rpm_gpdb7_rocky9
+      params:
+        PLATFORM: rocky9
+        GPDB_MAJOR_VERSION: "7"
+
+- name: test_functionality_gpdb7_rpm_oel9
+  plan:
+  - in_parallel:
+    - get: rpm_gpdb7_rocky9
+      passed:
+      - create_gpdb7_rpm_installer_rocky9
+      trigger: true
+    - get: greenplum-database-release
+      passed:
+      - create_gpdb7_rpm_installer_rocky9
+    - get: gpdb7-oel9-test
+    - get: oracle-9
+    - get: rpm_gpdb7_rocky9_oss
+      passed:
+      - create_gpdb7_rpm_installer_rocky9_oss
+      trigger: true
+    - get: inspec-el7
+  - in_parallel:
+    - task: test_gpdb7_rpm_functionality
+      file: greenplum-database-release/ci/concourse/tasks/test-functionality-rpm.yml
+      image: gpdb7-oel9-test
+      input_mapping:
+        gpdb_rpm_installer: rpm_gpdb7_rocky9
+        gpdb_rpm_oss_installer: rpm_gpdb7_rocky9_oss
+        inspec: inspec-el7
+      params:
+        PLATFORM: oel9
+        GPDB_MAJOR_VERSION: "7"
+    - task: test_package_dependencies
+      file: greenplum-database-release/ci/concourse/tasks/test-package-dependencies.yml
+      image: oracle-9
+      input_mapping:
+        gpdb_pkg_installer: rpm_gpdb7_rocky9
+      params:
+        PLATFORM: oel9
         GPDB_MAJOR_VERSION: "7"
 
 - name: test_functionality_clients_gpdb7_rpm_rhel8
@@ -900,19 +1127,31 @@ groups:
   - test_functionality_gpdb7_rpm_rhel8
   - test_functionality_gpdb7_rpm_rocky8
   - test_functionality_gpdb7_rpm_oel8
+  - test_functionality_gpdb7_rpm_rhel9
+  - test_functionality_gpdb7_rpm_rocky9
+  - test_functionality_gpdb7_rpm_oel9
   - create_gpdb7_rpm_installer_rocky8_oss
   - refresh_integrated_components
   - gpdb7_component_packaging_rocky8
+  - gpdb7_component_packaging_rocky9
+  - create_gpdb7_rpm_installer_rocky9
+  - create_gpdb7_rpm_installer_rocky9_oss
   - gpdb7_clients_component_packaging_rocky8
   - gpdb7_clients_component_packaging_rocky9
   name: All
 - jobs:
   - gpdb7_component_packaging_rocky8
+  - gpdb7_component_packaging_rocky9
   - create_gpdb7_rpm_installer_rocky8
   - create_gpdb7_rpm_installer_rocky8_oss
+  - create_gpdb7_rpm_installer_rocky9
+  - create_gpdb7_rpm_installer_rocky9_oss
   - test_functionality_gpdb7_rpm_rocky8
   - test_functionality_gpdb7_rpm_rhel8
   - test_functionality_gpdb7_rpm_oel8
+  - test_functionality_gpdb7_rpm_rocky9
+  - test_functionality_gpdb7_rpm_rhel9
+  - test_functionality_gpdb7_rpm_oel9
   - refresh_integrated_components
   name: gpdb 7 server
 - jobs:

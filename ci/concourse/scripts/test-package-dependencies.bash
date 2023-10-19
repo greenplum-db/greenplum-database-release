@@ -18,7 +18,7 @@ if [[ $PLATFORM == "rhel"* || $PLATFORM == "rocky"* || $PLATFORM == "oel"* ]]; t
 		rm /etc/rhsm-host
 		subscription-manager register --org=${REDHAT_SUBSCRIPTION_ORG_ID} --activationkey=${REDHAT_SUBSCRIPTION_KEY_ID} || true
 		subscription-manager attach --auto
-		# Required to install *-devel pacakges.
+		# Required to install *-devel packages.
 		if [[ $PLATFORM == "rhel8" ]]; then
 			subscription-manager repos --enable codeready-builder-for-rhel-8-x86_64-rpms
 		fi
@@ -80,6 +80,8 @@ libraries=($(echo ${file_names[*]} | xargs file | grep ELF | awk -F':' '{print $
 
 # Run 'ldd' on the libraries to check for missing dependencies
 missing_deps=($(echo ${libraries[*]} | xargs ldd | grep "not found" | cut -d " " -f 1)) || true
+
+echo "${missing_deps[@]}"
 
 for j in "${missing_deps[@]}"; do
 	# Ignore the following missing dependencies for GPDB5

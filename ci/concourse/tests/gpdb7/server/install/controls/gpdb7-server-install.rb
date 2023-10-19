@@ -81,9 +81,16 @@ control 'Category:server-installs' do
       end
   end
 
-  describe file("/usr/local/greenplum-db/lib/python/gppylib/__pycache__/gp_era.cpython-36.pyc") do
-    it { should exist}
+  if gpdb_rpm_arch == "el9"
+      describe file("/usr/local/greenplum-db/lib/python/gppylib/__pycache__/gp_era.cpython-39.pyc") do
+        it { should exist}
+      end
+  else
+      describe file("/usr/local/greenplum-db/lib/python/gppylib/__pycache__/gp_era.cpython-36.pyc") do
+        it { should exist}
+      end
   end
+
 
 end
 
