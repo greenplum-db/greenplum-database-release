@@ -71,6 +71,9 @@ Requires: libevent
 # EL 9 does have rsync version which not compatible with our built libzstd 1.3.7,
 # so EL 9 does not use our built libzstd but use system provided libzstd.
 Requires: libzstd
+# In EL 9 Python 3.9 is the default Python implementation,
+# so EL 9 does not use our built python3 but use system provided python3.
+Requires: python3
 %endif
 %if "%{platform}" == "rhel8" || "%{platform}" == "rocky8" || "%{platform}" == "oel8"
 Requires: openssl-libs
