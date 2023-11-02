@@ -68,6 +68,7 @@ Requires: libevent
 Requires: libuv
 Requires: libzstd
 Requires: libcgroup-tools
+Requires: libgomp
 %endif
 %if "%{platform}" == "rhel7"
 Requires: openssl-libs
