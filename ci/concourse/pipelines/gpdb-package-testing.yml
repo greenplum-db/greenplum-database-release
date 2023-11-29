@@ -1176,12 +1176,12 @@ jobs:
     input_mapping:
       bin_gpdb: bin_gpdb6_rocky9
     output_mapping:
-      bin_gpdb_with_components: bin_gpdb_rhel9_with_components
+      bin_gpdb_with_components: bin_gpdb_rocky9_with_components
     task: add_components_to_bin_gpdb_rhel9
     params:
       GCLOUD_SERVICE_ACCOUNT_KEY: ((concourse-gcs-resources-service-account-key))
   - params:
-      file: bin_gpdb_with_components/bin_gpdb.tar.gz
+      file: bin_gpdb_rocky9_with_components/bin_gpdb.tar.gz
     put: bin_gpdb6_rocky9_with_components
 
 - name: gpdb_component_packaging_ubuntu18.04
