@@ -79,6 +79,8 @@ Requires: python3
 Requires: openssl-libs
 Requires: libevent
 Requires: libcgroup-tools
+# EL 8 does not use our built libzstd but use system provided libzstd.
+Requires: libzstd
 %endif
 %if "%{platform}" == "rhel7" || "%{platform}" == "oel7"
 Requires: openssl-libs
