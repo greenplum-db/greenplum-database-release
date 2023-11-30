@@ -14,7 +14,7 @@ debian-release-git-remote: https://github.com/greenplum-db/debian-release.git
 debian-release-git-branch: master
 debian-package-maintainer-fullname: 'GPBOSH (Testing gpdb)'
 debian-package-maintainer-email: gpbosh@pivotal.io
-tanzunet-client-version: v4.8.2
+tanzunet-client-version: v4.8.3
 tanzunet-client-git-remote: git@github.com:pivotal/gp-tanzunet-client.git
 tanzunet-client-branch: main
 tanzunet-endpoint: "https://network.tanzu.vmware.com"
