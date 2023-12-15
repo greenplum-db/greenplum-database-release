@@ -52,6 +52,13 @@ resources:
     repository: gcr.io/data-gpdb-public-images/gpdb7-rocky8-build
     tag: latest
 
+- name: gpdb7-rocky9-build
+  type: registry-image
+  icon: docker
+  source:
+    repository: gcr.io/data-gpdb-public-images/gpdb7-rocky9-build
+    tag: latest
+
 - name: gpdb_src
   type: git
   icon: git
@@ -115,6 +122,31 @@ resources:
     json_key: ((concourse-gcs-resources-service-account-key))
     regexp: greenplum-oss-server/released/gpdb7/open-source-greenplum-db-(.*)-el8-x86_64.rpm
 
+## RHEL9 Resources
+- name: bin_gpdb_rhel9
+  type: gcs
+  icon: google
+  source:
+    bucket: pivotal-gpdb-concourse-resources-prod
+    json_key: ((concourse-gcs-resources-service-account-key))
+    regexp: oss/release-candidates/gpdb7/greenplum-db-oss-(((release-version)))\+(.*)-(((commit-sha)).*)-el9.tar.gz
+
+- name: bin_gpdb_rhel9_release
+  type: gcs
+  icon: google
+  source:
+    bucket: ((gcs-bucket-for-oss))
+    json_key: ((concourse-gcs-resources-service-account-key))
+    regexp: greenplum-oss-server/released/gpdb7/server-(.*)-el9_x86_64.tar.gz
+
+- name: gpdb_rpm_installer_rhel9
+  type: gcs
+  icon: google
+  source:
+    bucket: ((gcs-bucket-for-oss))
+    json_key: ((concourse-gcs-resources-service-account-key))
+    regexp: greenplum-oss-server/released/gpdb7/open-source-greenplum-db-(.*)-el9-x86_64.rpm
+
 - name: pivotal-gpdb
   type: tanzunet
   source:
@@ -161,6 +193,9 @@ jobs:
       - get: bin_gpdb_rhel8
         params:
           skip_download: 'true'
+      - get: bin_gpdb_rhel9
+        params:
+          skip_download: 'true'
 
 - name: rhel8_packaging
   on_failure:
@@ -196,6 +231,40 @@ jobs:
     params:
       file: gpdb_rpm_installer/*.rpm
 
+- name: rhel9_packaging
+  on_failure:
+    <<: *slack-alert
+  plan:
+  - in_parallel:
+    - get: pivotal-gpdb
+      params:
+        globs: []
+      trigger: true
+      passed: [compilation-gate]
+    - get: gpdb_src
+    - get: greenplum-database-release
+      passed: [compilation-gate]
+    - get: bin_gpdb_rhel9
+      passed: [compilation-gate]
+    - get: gpdb7-rocky9-build
+    - get: gpdb-osl
+  - task: create_gpdb_rpm_package
+    file: greenplum-database-release/ci/concourse/tasks/build-gpdb-rpm.yml
+    image: gpdb7-rocky9-build
+    input_mapping:
+      bin_gpdb: bin_gpdb_rhel9
+      license_file: gpdb-osl
+    params:
+      PLATFORM: "rhel9"
+      GPDB_NAME: greenplum-db-7
+      GPDB_RELEASE: 1
+      GPDB_LICENSE: VMware Software EULA
+      GPDB_URL: https://github.com/greenplum-db/gpdb
+      GPDB_OSS: true
+  - put: gpdb_rpm_installer_rhel9
+    params:
+      file: gpdb_rpm_installer/*.rpm
+
 - name: release
   on_failure:
     <<: *slack-alert
@@ -204,21 +273,29 @@ jobs:
     - get: greenplum-database-release
       passed:
       - rhel8_packaging
+      - rhel9_packaging
     - get: pivotal-gpdb
       params:
         globs: []
       trigger: true
       passed:
       - rhel8_packaging
+      - rhel9_packaging
     - get: bin_gpdb_rhel8
       passed: [rhel8_packaging]
       trigger: true
     - get: gpdb_rpm_installer_rhel8
       passed: [rhel8_packaging]
+    - get: bin_gpdb_rhel9
+      passed: [rhel9_packaging]
+      trigger: true
+    - get: gpdb_rpm_installer_rhel9
+      passed: [rhel9_packaging]
     - get: gp-release-train
     - get: gpdb-osl
       passed:
       - rhel8_packaging
+      - rhel9_packaging
   - task: rename_gpdb_tarball
     config:
       platform: linux
@@ -230,6 +307,7 @@ jobs:
       inputs:
       - name: pivotal-gpdb
       - name: bin_gpdb_rhel8
+      - name: bin_gpdb_rhel9
       outputs:
       - name: releases
       run:
@@ -239,6 +317,7 @@ jobs:
         - |
           gpdb_semver=$(cat pivotal-gpdb/version |cut -d "#" -f 1)
           cp -v bin_gpdb_rhel8/greenplum-db-oss-*.tar.gz releases/server-${gpdb_semver}-el8_x86_64.tar.gz
+          cp -v bin_gpdb_rhel9/greenplum-db-oss-*.tar.gz releases/server-${gpdb_semver}-el9_x86_64.tar.gz
   - task: verify_gpdb_versions
     config:
       platform: linux
@@ -252,6 +331,7 @@ jobs:
       - name: pivotal-gpdb
       - name: greenplum-database-release
       - name: bin_gpdb_rhel8
+      - name: bin_gpdb_rhel9
       params:
         RUN_MODE: ((run_mode))
       run:
@@ -266,6 +346,7 @@ jobs:
             exit 0
           fi
           mv bin_gpdb_rhel8/greenplum-db-oss-*.tar.gz bin_gpdb_rhel8/bin_gpdb.tar.gz
+          mv bin_gpdb_rhel9/greenplum-db-oss-*.tar.gz bin_gpdb_rhel9/bin_gpdb.tar.gz
           gpdb_semver=$(cat pivotal-gpdb/version |cut -d "#" -f 1)
           RELEASE_CONSIST=gp-release-train/consist/${gpdb_semver}.toml
           export GPDB_SRC_SHA=$(grep commit ${RELEASE_CONSIST} | uniq | sed 's/.*"\(.*\)"/\1/' | uniq)
@@ -274,6 +355,9 @@ jobs:
     - put: bin_gpdb_rhel8_release
       params:
         file: "releases/server-*el8*.tar.gz"
+    - put: bin_gpdb_rhel9_release
+      params:
+        file: "releases/server-*el9*.tar.gz"
 
 - name: publish_gpdb_github_release
   on_failure:
@@ -289,6 +373,9 @@ jobs:
     - get: gpdb-osl
       passed: [release]
     - get: gpdb_rpm_installer_rhel8
+      passed: [release]
+      trigger: true
+    - get: gpdb_rpm_installer_rhel9
       passed: [release]
       trigger: true
     - get: greenplum-database-release
@@ -310,6 +397,7 @@ jobs:
       - release_artifacts/*.zip
       - gpdb-osl/*.txt
       - gpdb_rpm_installer_rhel8/*.rpm
+      - gpdb_rpm_installer_rhel9/*.rpm
   - put: slack-start-greenplum-oss
     params:
       text_file: end-messages-oss/message
