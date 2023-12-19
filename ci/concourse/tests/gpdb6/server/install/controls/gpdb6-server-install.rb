@@ -94,10 +94,10 @@ control 'Category:server-installs' do
   describe file("/usr/local/greenplum-db/ext/python/lib/python2.7/distutils/__init__.pyc") do
     it { should exist }
   end
-  # should generate check python3 .pyc file for all platform except centos6, since python3.9 not vendored to centos6
+  # should generate check python3 .pyc file for all platform except centos6 and el9 platforms since python3.9 not vendored.
   version = os.release
   describe file("/usr/local/greenplum-db/ext/python3.9/lib/python3.9/__pycache__/dis.cpython-39.pyc") do
-    if version =~ /^6/
+    if version =~ /^6/ || version =~ /^9/
       skip "it { should not exist }"
     else
       it { should exist }
