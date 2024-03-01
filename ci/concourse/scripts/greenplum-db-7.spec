@@ -49,7 +49,6 @@ Requires: openssh-server
 Requires: perl
 Requires: python3
 Requires: python3.11
-Requires: python3.11-devel
 Requires: python3-psycopg2
 Requires: python3-psutil
 Requires: python3-pyyaml
